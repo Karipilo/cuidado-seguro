@@ -1,3 +1,170 @@
+/* Mostrar completa la imagen 'Derechos y deberes' en el carrusel */
+.carousel-item img[alt="Derechos y deberes"] {
+  object-fit: contain !important;
+  background: #fff;
+}
+
+.img-contain {
+  object-fit: contain !important;
+  background: #fff;
+}
+
+/* ===== IMÁGENES MÁS COMPACTAS ===== */
+.card-img-top,
+.card img {
+  max-height: 320px;
+  object-fit: cover;
+}
+
+.carousel-item img,
+.d-block.w-100 {
+  max-height: 520px;
+  object-fit: cover;
+}
+
+.custom-navbar {
+  padding-top: 0.25rem !important;
+  padding-bottom: 0.25rem !important;
+  min-height: 48px;
+}
+
+.custom-navbar .navbar-brand,
+.custom-navbar .nav-link {
+  padding-top: 0.2rem !important;
+  padding-bottom: 0.2rem !important;
+  font-size: 1rem;
+}
+
+.footer-rect .footer-logo {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* ===== FOOTER COMPACTO ===== */
+.footer-rect {
+  background-color: #000;
+  color: #fff;
+  margin-top: 20px;
+  border-radius: 8px 8px 0 0;
+  padding: 10px 16px 6px 16px;
+  font-size: 0.95rem;
+}
+
+.footer-rect h5 {
+  color: #F8BBD0;
+  margin-bottom: 4px;
+  font-size: 1.05rem;
+}
+
+.footer-rect p {
+  margin: 0;
+  font-size: 0.93rem;
+}
+
+.footer-logo {
+  max-width: 60px;
+  border-radius: 50%;
+  background-color: #fff;
+  padding: 4px;
+}
+
+.link-footer {
+  color: #5CC8A1;
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 0.97rem;
+}
+
+.link-footer:hover {
+  text-decoration: underline;
+}
+
+/* ===== NAVBAR VISIBILIDAD ===== */
+.custom-navbar {
+  background-color: #fff !important;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.custom-navbar .navbar-brand,
+.custom-navbar .nav-link,
+.custom-navbar .navbar-text {
+  color: #34495E !important;
+  font-weight: 600;
+}
+
+.custom-navbar .nav-link.active,
+.custom-navbar .nav-link:focus,
+.custom-navbar .nav-link:hover {
+  color: #5CC8A1 !important;
+  background: rgba(92, 200, 161, 0.08);
+  border-radius: 6px;
+}
+
+/* --- Estilos responsivos globales --- */
+html {
+  box-sizing: border-box;
+  font-size: 16px;
+}
+
+*,
+*:before,
+*:after {
+  box-sizing: inherit;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: Arial, sans-serif;
+  background: linear-gradient(rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.5)),
+    url('../images/fondoWeb.png') center center/cover no-repeat;
+}
+
+img,
+video {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+.container {
+  width: 90%;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+@media (max-width: 900px) {
+  .container {
+    max-width: 95vw;
+  }
+
+  @media (min-width: 700px) {
+    body {
+      background-size: cover;
+    }
+  }
+
+  html {
+    font-size: 15px;
+  }
+}
+
+@media (max-width: 600px) {
+  .container {
+    width: 98vw;
+    padding: 0 5px;
+  }
+
+  html {
+    font-size: 14px;
+  }
+
+  body {
+    padding: 0;
+  }
+}
+
 :root {
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
@@ -18,17 +185,13 @@ a {
   color: #646cff;
   text-decoration: inherit;
 }
+
 a:hover {
   color: #535bf2;
 }
 
-body {
-  margin: 0;
-  display: flex;
-  place-items: center;
-  min-width: 320px;
-  min-height: 100vh;
-}
+/* ...existing code... */
+
 
 h1 {
   font-size: 3.2em;
@@ -46,9 +209,11 @@ button {
   cursor: pointer;
   transition: border-color 0.25s;
 }
+
 button:hover {
   border-color: #646cff;
 }
+
 button:focus,
 button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
@@ -59,9 +224,11 @@ button:focus-visible {
     color: #213547;
     background-color: #ffffff;
   }
+
   a:hover {
     color: #747bff;
   }
+
   button {
     background-color: #f9f9f9;
   }
