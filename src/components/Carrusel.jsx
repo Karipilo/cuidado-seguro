@@ -3,6 +3,7 @@ function Carrusel() {
         <div
             id="carouselExample"
             className="carousel slide shadow-sm rounded overflow-hidden"
+
             data-bs-ride="carousel"
             data-bs-interval="3500"
         >
