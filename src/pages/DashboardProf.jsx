@@ -4,7 +4,7 @@ function DashboardProf() {
   return (
     <div>
       <h1>Dashboard Prof</h1>
-      <p>Welcome to the professor's dashboard!</p>
+      <p>Bienvenido a la página del profesional de Salud!</p>
     </div>
   );
 }
