@@ -1,6 +1,6 @@
 import React from "react";
 
-function DastodMedicos() {
+function DatosMedicos() {
   return (
     <div>
       <h1>Datos Médicos</h1>
