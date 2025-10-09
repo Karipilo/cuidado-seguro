@@ -1,82 +1,46 @@
-import React, { useState } from "react";
+// Importamos React y herramientas de React Router
+import React from "react";
 import { useNavigate, Link } from "react-router-dom";
-
+import Formulario from "../components/Formulario";
 
 function Login() {
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
-    const [error, setError] = useState("");
+    // useNavigate nos permite redirigir a otras rutas dentro de la app
     const navigate = useNavigate();
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-
-        // Simulación: validación local simple
+    // Esta función se ejecuta cuando el formulario se envía correctamente
+    const handleLogin = (email, password) => {
+        // Si los datos coinciden con un usuario "profesional"
         if (email === "profesional@cuidado.cl" && password === "1234") {
-            localStorage.setItem("rol", "profesional");
-            navigate("/dashboard-prof");
-        } else if (email === "tutor@cuidado.cl" && password === "1234") {
+            localStorage.setItem("rol", "profesional");     // Guarda el rol en localStorage
+            navigate("/dashboard-prof");                    // Redirige al dashboard del profesional
+            return true;                                    // Devuelve true para que Formulario sepa que fue exitoso
+        }
+
+        // Si los datos coinciden con un usuario "tutor"
+        if (email === "tutor@cuidado.cl" && password === "1234") {
             localStorage.setItem("rol", "tutor");
             navigate("/dashboard-tutor");
-        } else {
-            setError("Correo o contraseña incorrectos");
+            return true;
         }
+
+        // Si los datos no son válidos, se devuelve false (y se mostrará error en el formulario)
+        return false;
     };
 
     return (
         <div className="container py-5">
             <div className="row justify-content-center">
                 <div className="col-md-6 col-lg-4">
-                    <div className="card shadow p-4 rounded-4">
-                        <h3 className="text-center mb-4 text-primary fw-bold">
-                            Iniciar Sesión
-                        </h3>
+                    {/* Usamos el componente Formulario y le pasamos la función handleLogin como prop */}
+                    <Formulario onLogin={handleLogin} />
 
-                        {error && <div className="alert alert-danger">{error}</div>}
-
-                        <form onSubmit={handleSubmit}>
-                            <div className="mb-3">
-                                <label htmlFor="email" className="form-label">
-                                    Correo electrónico
-                                </label>
-                                <input
-                                    type="email"
-                                    id="email"
-                                    className="form-control"
-                                    placeholder="ejemplo@correo.com"
-                                    value={email}
-                                    onChange={(e) => setEmail(e.target.value)}
-                                    required
-                                />
-                            </div>
-
-                            <div className="mb-3">
-                                <label htmlFor="password" className="form-label">
-                                    Contraseña
-                                </label>
-                                <input
-                                    type="password"
-                                    id="password"
-                                    className="form-control"
-                                    placeholder="********"
-                                    value={password}
-                                    onChange={(e) => setPassword(e.target.value)}
-                                    required
-                                />
-                            </div>
-
-                            <button type="submit" className="btn btn-primary w-100 mt-2">
-                                Ingresar
-                            </button>
-                        </form>
-
-                        <p className="text-center mt-3">
-                            ¿No tienes cuenta?{" "}
-                            <Link to="/registro" className="text-decoration-none">
-                                Regístrate aquí
-                            </Link>
-                        </p>
-                    </div>
+                    {/* Enlace para ir a registrarse si el usuario no tiene cuenta */}
+                    <p className="text-center mt-3">
+                        ¿No tienes cuenta?{" "}
+                        <Link to="/registro" className="text-decoration-none">
+                            Regístrate aquí
+                        </Link>
+                    </p>
                 </div>
             </div>
         </div>
