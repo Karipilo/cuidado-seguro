@@ -1,4 +1,3 @@
-// Importamos React y el hook useState para manejar estados internos del componente
 import React, { useState } from "react";
 
 // Componente funcional que recibe como prop la función onLogin (viene de Login.jsx)
@@ -37,9 +36,8 @@ const Formulario = ({ onLogin }) => {
             return;
         }
 
-        // Validamos la contraseña. Si no cumple, mostramos mensaje y detenemos el envío
-        if (!validarEmail(email)) {
-            setError("El correo debe contener @ y terminar en .com");
+        if (!validarPassword(password)) {
+            setError("La contraseña debe tener al menos 6 caracteres, una mayúscula, una minúscula, un número y un carácter especial.");
             return;
         }
 
