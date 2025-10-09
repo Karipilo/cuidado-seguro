@@ -108,7 +108,7 @@ function Registro() {
               <label htmlFor="numRegistro" className="form-label mt-2">N° Registro (RNPI)</label>
               <input type="text" id="numRegistro" className="form-control input-gris-claro" placeholder="Ej: 123456" value={numRegistro} onChange={e => setNumRegistro(e.target.value)} />
 
-              {/* Selector de institución afiliada */}
+              {/* Selector de institución afiliada a Cuidado Seguro */}
               <label htmlFor="institucion" className="form-label mt-2">Institución</label>
               <select id="institucion" className="form-select input-gris-claro" value={institucion} onChange={e => setInstitucion(e.target.value)}>
                 <option value="" disabled>Seleccione...</option>
