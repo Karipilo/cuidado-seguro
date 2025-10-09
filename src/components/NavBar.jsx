@@ -16,7 +16,7 @@ function Navbar() {
                 <div className="collapse navbar-collapse" id="navbarNav">
                     {/* Menú izquierda */}
                     <ul className="navbar-nav">
-                        <li className="nav-item"><Link className="nav-link" to="/register">Registro</Link></li>
+                        <li className="nav-item"><Link className="nav-link" to="/registro">Registro</Link></li>
                         <li className="nav-item"><Link className="nav-link" to="/centros">Centros Y Hogares</Link></li>
                         <li className="nav-item d-none" id="navMiSesionItem">
                             <a id="linkMiSesion" className="nav-link" href="#">Mi sesión</a>

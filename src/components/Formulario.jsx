@@ -1,8 +1,8 @@
 // Importamos React y el hook useState para manejar estados internos del componente
 import React, { useState } from "react";
 
-// Componente funcional que recibe como prop la función onLogin (viene de Login.jsx)
-const Formulario = ({ onLogin }) => {
+// Componente funcional que recibe como prop la función onLogin (viene de Login.jsx) y el modo
+const Formulario = ({ onLogin, modo = "login" }) => {
     // useState permite guardar el contenido que escribe el usuario
     const [email, setEmail] = useState("");         // Guarda el correo ingresado
     const [password, setPassword] = useState("");   // Guarda la contraseña ingresada
@@ -57,7 +57,9 @@ const Formulario = ({ onLogin }) => {
     return (
         <div className="card shadow p-4 rounded-4">
             {/* Título del formulario */}
-            <h3 className="text-center mb-4 text-primary fw-bold">Iniciar Sesión</h3>
+            <h3 className="text-center mb-4 text-primary fw-bold">
+                {modo === "registro" ? "Registro de usuario" : "Iniciar Sesión"}
+            </h3>
 
             {/* Si hay un mensaje de error, lo mostramos en rojo usando clases de Bootstrap */}
             {error && <div className="alert alert-danger">{error}</div>}
@@ -94,7 +96,7 @@ const Formulario = ({ onLogin }) => {
 
                 {/* Botón de envío del formulario */}
                 <button type="submit" className="btn btn-primary w-100 mt-2">
-                    Ingresar
+                    {modo === "registro" ? "Registrarse" : "Ingresar"}
                 </button>
             </form>
         </div>
