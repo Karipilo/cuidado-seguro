@@ -63,6 +63,11 @@ const FormularioRegistro = ({ onRegister }) => {
     // Maneja el envío del formulario
     const handleSubmit = (e) => {
         e.preventDefault();
+
+        // Mostrar en consola si la contraseña es válida o no 
+        console.log("¿Contraseña válida?", validarPassword(password));
+
+        
         // Validaciones
         if (!validarNombre(nombre)) {
             setError("El nombre es obligatorio.");
@@ -96,6 +101,7 @@ const FormularioRegistro = ({ onRegister }) => {
         const success = onRegister(nombre,email, password,tipoUsuario);
         if (!success) {
             setError("No se pudo registrar el usuario");
+            return;
         }
     };
 

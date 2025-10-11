@@ -35,6 +35,13 @@ function Registro() {
       setError("Las contraseñas no coinciden.");
       return;
     }
+    // Nueva Validación: Seguridad de la contraseña
+    const passwordSeguro = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{6,}$/;
+    if (!passwordSeguro.test(password)) {
+      setError("La contraseña debe tener al menos 6 caracterres, una mayúscula, una minúscula, un número y un símbolo especial. ");
+      return;
+    }
+    
     // Simula guardar el usuario en localStorage
     localStorage.setItem("usuario_registrado", JSON.stringify({
       nombre,
