@@ -1,101 +1,81 @@
-// Importa React y los hooks necesarios
-import React, { useState } from "react"; // useState para manejar los valores y cambios del formulario
-import { useNavigate, Link } from "react-router-dom"; // useNavigate permite redirigir; Link para cambiar de página sin recargar
+// Importa React y sus hooks necesarios
+import React, { useState } from "react";
+import { useNavigate, Link } from "react-router-dom"; // Para navegación entre páginas
 
 // Componente principal del formulario de registro
 function FormularioRegistro() {
-    // useNavigate permite redirigir a otra ruta, por ejemplo, después de registrarse
-    const navigate = useNavigate();
+    const navigate = useNavigate(); // Permite redirigir al usuario al login luego del registro
 
     // ----------------------------
-    // ESTADOS GENERALES
+    // ESTADOS COMUNES DEL FORMULARIO
     // ----------------------------
 
-    // Guarda el nombre completo del usuario
-    const [nombre, setNombre] = useState("");
-    // Guarda el email
-    const [email, setEmail] = useState("");
-    // Guarda la contraseña
-    const [password, setPassword] = useState("");
-    // Guarda la confirmación de la contraseña
-    const [repitePassword, setRepitePassword] = useState("");
-    // Guarda si el usuario seleccionó “Profesional” o “Tutor”
-    const [tipoUsuario, setTipoUsuario] = useState("");
+    const [nombre, setNombre] = useState("");              // Nombre completo del usuario
+    const [email, setEmail] = useState("");                // Correo electrónico
+    const [password, setPassword] = useState("");          // Contraseña
+    const [repitePassword, setRepitePassword] = useState("");// Confirmación de contraseña
+    const [tipoUsuario, setTipoUsuario] = useState("");    // "Profesional" o "Tutor"
 
     // ----------------------------
-    // ESTADOS PARA USUARIOS PROFESIONALES
+    // CAMPOS EXCLUSIVOS PARA PROFESIONAL
     // ----------------------------
 
-    // Guarda la especialidad del profesional
-    const [tipoProfesional, setTipoProfesional] = useState("");
-    // Guarda el número de registro RNPI
-    const [rnpi, setRnpi] = useState("");
-    // Guarda la institución a la que pertenece el profesional
-    const [institucion, setInstitucion] = useState("");
+    const [tipoProfesional, setTipoProfesional] = useState(""); // Especialidad del profesional
+    const [rnpi, setRnpi] = useState("");                       // Número RNPI
+    const [institucion, setInstitucion] = useState("");         // Institución a la que pertenece
 
     // ----------------------------
-    // ESTADOS PARA USUARIOS TUTORES
+    // CAMPOS EXCLUSIVOS PARA TUTOR
     // ----------------------------
 
-    // Guarda el parentesco con el paciente
-    const [parentesco, setParentesco] = useState("");
-    // Guarda el ID del paciente asociado
-    const [idPaciente, setIdPaciente] = useState("");
+    const [parentesco, setParentesco] = useState("");      // Parentesco con el paciente
+    const [idPaciente, setIdPaciente] = useState("");      // ID único del paciente
+    const [codigoCentro, setCodigoCentro] = useState("");  // Código entregado por el centro
 
     // ----------------------------
-    // ERROR
+    // ESTADO PARA MANEJAR ERRORES
     // ----------------------------
 
-    // Guarda cualquier mensaje de error que se quiera mostrar al usuario
-    const [error, setError] = useState("");
+    const [error, setError] = useState(""); // Se muestra en pantalla si hay errores
 
     // ----------------------------
-    // FUNCIONES AUXILIARES
+    // VALIDACIONES AUXILIARES
     // ----------------------------
 
-    // Verifica que un correo tenga formato válido (con @ y .)
-    const emailValido = (value) => /\S+@\S+\.\S+/.test(value);
-
-    // Verifica que un campo no esté vacío (ignora espacios en blanco)
-    const noVacio = (value) => String(value).trim().length > 0;
+    const emailValido = (value) => /\S+@\S+\.\S+/.test(value); // Verifica que el email tenga @ y dominio
+    const noVacio = (value) => String(value).trim().length > 0; // Verifica que no esté vacío
 
     // ----------------------------
     // FUNCIÓN QUE MANEJA EL ENVÍO DEL FORMULARIO
     // ----------------------------
 
     const handleSubmit = (e) => {
-        e.preventDefault(); // Evita que se recargue la página al enviar el formulario
+        e.preventDefault(); // Previene el comportamiento por defecto del form (recargar la página)
 
-        // Validación básica: campos obligatorios comunes
+        // Validación de campos comunes
         if (!noVacio(nombre) || !noVacio(email) || !noVacio(password) || !noVacio(repitePassword) || !noVacio(tipoUsuario)) {
             setError("Todos los campos obligatorios deben completarse.");
             return;
         }
 
-        // Validar formato de email
         if (!emailValido(email)) {
             setError("El correo electrónico no tiene un formato válido.");
             return;
         }
 
-        // Validar que las contraseñas coincidan
         if (password !== repitePassword) {
             setError("Las contraseñas no coinciden.");
             return;
         }
 
-        // Validar contraseña segura:
-        // - Mínimo 6 caracteres
-        // - Al menos una mayúscula
-        // - Al menos un número
-        // - Al menos un símbolo
+        // Validación de contraseña segura
         const passwordRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$/;
         if (!passwordRegex.test(password)) {
             setError("La contraseña debe tener al menos 6 caracteres, una mayúscula, un número y un símbolo.");
             return;
         }
 
-        // Si el usuario seleccionó Profesional, validar sus campos
+        // Validación de campos para profesional
         if (tipoUsuario === "Profesional") {
             if (!noVacio(tipoProfesional) || !noVacio(rnpi) || !noVacio(institucion)) {
                 setError("Debes completar los campos del profesional (tipo, RNPI e institución).");
@@ -103,35 +83,34 @@ function FormularioRegistro() {
             }
         }
 
-        // Si el usuario seleccionó Tutor, validar sus campos
+        // Validación de campos para tutor (ahora incluye el código del centro)
         if (tipoUsuario === "Tutor") {
-            if (!noVacio(parentesco) || !noVacio(idPaciente)) {
-                setError("Debes completar los campos del tutor (parentesco e ID del paciente).");
+            if (!noVacio(parentesco) || !noVacio(idPaciente) || !noVacio(codigoCentro)) {
+                setError("Debes completar los campos del tutor (parentesco, ID del paciente y código del centro).");
                 return;
             }
         }
 
-        // Si pasó todas las validaciones:
-        setError(""); // Limpia errores anteriores
-        alert("Registro exitoso ");
-        navigate("/login"); // Redirige al login después de registrarse
+        // Si todo está correcto:
+        setError(""); // Limpia errores
+        alert("Registro exitoso 🎉");
+        navigate("/login"); // Redirige al login
     };
 
     // ----------------------------
-    // RETORNO DEL COMPONENTE (interfaz visual)
+    // INTERFAZ VISUAL DEL COMPONENTE
     // ----------------------------
 
     return (
         <div className="container d-flex justify-content-center align-items-center mt-5">
-            {/* Tarjeta centrada */}
             <div className="card shadow p-4 rounded-4 formulario" style={{ maxWidth: 560, width: "100%" }}>
                 <h3 className="text-center mb-4">Registro de Usuario</h3>
 
-                {/* Muestra error si existe */}
+                {/* Si hay error, se muestra aquí */}
                 {error && <div className="alert alert-danger">{error}</div>}
 
                 <form onSubmit={handleSubmit}>
-                    {/* Campo: Nombre */}
+                    {/* NOMBRE */}
                     <div className="mb-3">
                         <label className="form-label">Nombre completo:</label>
                         <input
@@ -139,12 +118,12 @@ function FormularioRegistro() {
                             className="form-control"
                             value={nombre}
                             onChange={(e) => setNombre(e.target.value)}
-                            placeholder="Ej: Karina Pimentel"
+                            placeholder="Ej: Juan Pérez"
                         />
-                        <small className="form-text text-muted">Ingresa tu nombre completo.</small>
+
                     </div>
 
-                    {/* Campo: Email */}
+                    {/* EMAIL */}
                     <div className="mb-3">
                         <label className="form-label">Correo electrónico:</label>
                         <input
@@ -154,10 +133,10 @@ function FormularioRegistro() {
                             onChange={(e) => setEmail(e.target.value)}
                             placeholder="usuario@correo.com"
                         />
-                        <small className="form-text text-muted">Debe contener “@” y un dominio válido.</small>
+
                     </div>
 
-                    {/* Campo: Contraseña */}
+                    {/* CONTRASEÑA */}
                     <div className="mb-3">
                         <label className="form-label">Contraseña:</label>
                         <input
@@ -165,14 +144,12 @@ function FormularioRegistro() {
                             className="form-control"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
-                            placeholder="••••••••"
+                            placeholder="Mínimo 6 caracteres, una mayúscula, un número y un símbolo"
                         />
-                        <small className="form-text text-muted">
-                            Mínimo 6 caracteres, una mayúscula, un número y un símbolo.
-                        </small>
+
                     </div>
 
-                    {/* Campo: Confirmar contraseña */}
+                    {/* REPITE CONTRASEÑA */}
                     <div className="mb-3">
                         <label className="form-label">Repite la contraseña:</label>
                         <input
@@ -180,11 +157,11 @@ function FormularioRegistro() {
                             className="form-control"
                             value={repitePassword}
                             onChange={(e) => setRepitePassword(e.target.value)}
-                            placeholder="Confirma tu contraseña"
+                            placeholder="Repite tu contraseña"
                         />
                     </div>
 
-                    {/* Selector: Tipo de usuario */}
+                    {/* TIPO DE USUARIO */}
                     <div className="mb-3">
                         <label className="form-label">Tipo de usuario:</label>
                         <select
@@ -198,7 +175,7 @@ function FormularioRegistro() {
                         </select>
                     </div>
 
-                    {/* Si el usuario es PROFESIONAL, aparecen estos campos */}
+                    {/* CAMPOS PROFESIONAL */}
                     {tipoUsuario === "Profesional" && (
                         <>
                             <div className="mb-3">
@@ -210,6 +187,7 @@ function FormularioRegistro() {
                                 >
                                     <option value="">Selecciona tu especialidad</option>
                                     <option value="Enfermero">Enfermero/a</option>
+                                    <option value="Técnico Paramédico">Paramedico</option>
                                     <option value="Kinesiólogo">Kinesiólogo/a</option>
                                     <option value="Médico">Médico/a</option>
                                     <option value="Nutricionista">Nutricionista</option>
@@ -245,7 +223,7 @@ function FormularioRegistro() {
                         </>
                     )}
 
-                    {/* Si el usuario es TUTOR, aparecen estos campos */}
+                    {/* CAMPOS TUTOR */}
                     {tipoUsuario === "Tutor" && (
                         <>
                             <div className="mb-3">
@@ -258,7 +236,7 @@ function FormularioRegistro() {
                                     <option value="">Selecciona parentesco</option>
                                     <option value="Madre">Madre</option>
                                     <option value="Padre">Padre</option>
-                                    <option value="Hermano">Hermano/a</option>
+                                    <option value="Hijo">Hijo/a</option>
                                     <option value="Otro">Otro</option>
                                 </select>
                             </div>
@@ -270,22 +248,32 @@ function FormularioRegistro() {
                                     className="form-control"
                                     value={idPaciente}
                                     onChange={(e) => setIdPaciente(e.target.value)}
-                                    placeholder="Ejemplo: 00123PAC"
+                                    placeholder="Ingrese el rut del paciente"
                                 />
-                                <small className="form-text text-muted">
-                                    Puedes usar cualquier identificador único del paciente.
-                                </small>
+
+                            </div>
+
+                            <div className="mb-3">
+                                <label className="form-label">Código de acceso del centro:</label>
+                                <input
+                                    type="text"
+                                    className="form-control"
+                                    value={codigoCentro}
+                                    onChange={(e) => setCodigoCentro(e.target.value)}
+                                    placeholder="Este código debe ser proporcionado por la institución."
+                                />
+
                             </div>
                         </>
                     )}
 
-                    {/* Botón para enviar el formulario */}
+                    {/* BOTÓN SUBMIT */}
                     <button type="submit" className="btn btn-primary w-100 mt-3">
                         Registrarse
                     </button>
                 </form>
 
-                {/* Enlace para usuarios que ya tienen cuenta */}
+                {/* ENLACE A LOGIN */}
                 <p className="text-center mt-3">
                     ¿Ya tienes cuenta?{" "}
                     <Link to="/login" className="text-decoration-none fw-semibold">
@@ -298,3 +286,4 @@ function FormularioRegistro() {
 }
 
 export default FormularioRegistro;
+
