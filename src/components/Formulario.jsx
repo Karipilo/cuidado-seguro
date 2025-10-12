@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import "../style/formulario.css"; // Importa los estilos específicos del formulario
 
 // Componente funcional que recibe como prop la función onLogin (viene de Login.jsx) y el modo
 const Formulario = ({ onLogin, modo = "login" }) => {

@@ -1,0 +1,98 @@
+.formulario {
+    background-color: #5F9EA0;
+    /* Color principal (cadetblue): fondo del formulario */
+    color: #FFFFFF;
+    /* Texto oscuro (blanco) para contraste */
+    border-radius: 15px;
+    /* Bordes redondeados */
+    padding: 2rem;
+    /* Espaciado interno */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    /* Sombra para profundidad */
+    max-width: 400px;
+    /* Ancho máximo del formulario */
+    margin: auto;
+    /* Centra horizontalmente el formulario */
+}
+
+/* TÍTULO DEL FORMULARIO */
+.formulario h3 {
+    color: #FFF8DC;
+    /* Color acento (cornsilk): resalta el título */
+    text-align: center;
+    /* Centra el texto del título */
+    margin-bottom: 1rem;
+    /* Espaciado inferior */
+}
+
+/* CAMPOS DE ENTRADA */
+.formulario input {
+    background-color: #FFF8DC;
+    /* Color acento (cornsilk): fondo claro del input */
+    color: #708090;
+    /* Texto claro (slate gray): color del texto dentro del input */
+    border: 1px solid #F08080;
+    /* Color secundario (lightcoral): borde del input */
+    border-radius: 10px;
+    /* Bordes redondeados */
+    padding: 10px;
+    /* Espaciado interno */
+    width: 100%;
+    /* Ocupa todo el ancho del formulario */
+    margin-bottom: 1rem;
+    /* Espacio entre inputs */
+    transition: border-color 0.3s;
+    /* Suaviza el cambio de color del borde */
+}
+
+/* EFECTO AL HACER FOCO EN INPUT */
+.formulario input:focus {
+    border-color: #5F9EA0;
+    /* Color principal (cadetblue): destaca el campo activo */
+    outline: none;
+    /* Quita el borde azul por defecto */
+}
+
+/* BOTÓN DE ENVÍO */
+.formulario button {
+    background-color: #F08080;
+    /* Color secundario (lightcoral): color base del botón */
+    color: #FFFFFF;
+    /* Texto oscuro (blanco): contraste sobre el botón */
+    border: none;
+    /* Quita el borde por defecto */
+    padding: 10px;
+    /* Espaciado interno */
+    width: 100%;
+    /* Botón del ancho del formulario */
+    border-radius: 10px;
+    /* Bordes redondeados */
+    cursor: pointer;
+    /* Cambia el cursor al pasar el mouse */
+    font-weight: bold;
+    /* Texto del botón en negrita */
+    transition: background-color 0.3s;
+    /* Transición suave de color */
+}
+
+/* EFECTO HOVER EN BOTÓN */
+.formulario button:hover {
+    background-color: #5F9EA0;
+    /* Cambia a color principal (cadetblue) al pasar el mouse */
+}
+
+/* ENLACES DENTRO DEL FORMULARIO */
+.formulario a {
+    color: #FFF8DC;
+    /* Color acento (cornsilk): color base del enlace */
+    text-decoration: none;
+    /* Quita el subrayado del enlace */
+    font-weight: bold;
+    /* Hace el enlace más visible */
+}
+
+/* EFECTO HOVER EN ENLACES */
+.formulario a:hover {
+    color: #F08080;
+    /* Color secundario (lightcoral): cambia el color al pasar el mouse */
+}
