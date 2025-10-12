@@ -1,106 +1,79 @@
+// Importa React y el hook useState para manejar los estados de los campos
 import React, { useState } from "react";
-import "../style/formulario.css"; // Importa los estilos específicos del formulario
+import "../style/formulario.css";
 
-// Componente funcional que recibe como prop la función onLogin (viene de Login.jsx) y el modo
-const Formulario = ({ onLogin, modo = "login" }) => {
-    // useState permite guardar el contenido que escribe el usuario
-    const [email, setEmail] = useState("");         // Guarda el correo ingresado
-    const [password, setPassword] = useState("");   // Guarda la contraseña ingresada
-    const [error, setError] = useState("");         // Guarda un mensaje de error si ocurre
+function Formulario() {
 
-    // Función para validar el correo electrónico según tus requisitos:
-    // debe tener "@"
-    // debe terminar en ".com"
+    // Estados locales para guardar los datos ingresados por el usuario
+    const [email, setEmail] = useState("");       // Guarda el correo electrónico
+    const [password, setPassword] = useState(""); // Guarda la contraseña
+    const [error, setError] = useState("");       // Guarda mensajes de error si los hay
+
+    // Función para validar el correo
     const validarEmail = (email) => {
+        // El correo debe contener "@" y terminar en ".com"
         return email.includes("@") && email.endsWith(".com");
     };
 
+    // Función que maneja el envío del formulario
 
-    // Función para validar la contraseña con estas reglas:
-    // - mínimo 6 caracteres
-    // - al menos una mayúscula
-    // - al menos una minúscula
-    // - al menos un número
-    // - al menos un carácter especial (@, $, %, etc.)
-    const validarPassword = (password) => {
-        const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{6,}$/;
-        return regex.test(password);
-    };
-
-    // Esta función se ejecuta cuando el usuario envía el formulario
     const handleSubmit = (e) => {
-        e.preventDefault(); // Evita que el formulario recargue la página
+        e.preventDefault(); // Evita que la página se recargue al enviar el formulario
 
-        // Validamos el correo. Si no cumple con las reglas, mostramos error y detenemos todo
+        // Validación simple del correo y contraseña
         if (!validarEmail(email)) {
-            setError("El correo debe tener una mayúscula, mínimo 8 caracteres, un carácter especial, @ y terminar en .com");
+            setError("El correo debe contener '@' y terminar en '.com'");
             return;
         }
 
-        if (!validarPassword(password)) {
-            setError("La contraseña debe tener al menos 6 caracteres, una mayúscula, una minúscula, un número y un carácter especial.");
+        if (password.trim() === "") {
+            setError("La contraseña no puede estar vacía");
             return;
         }
 
+        // Si pasa las validaciones, limpia el error
+        setError("");
 
-        // Si ambas validaciones son correctas, llamamos a la función onLogin
-        const success = onLogin(email, password);
-
-        // Si onLogin devuelve false (es decir, credenciales incorrectas), mostramos error
-        if (!success) {
-            setError("Correo o contraseña incorrectos");
-        }
+        // Aquí podrías manejar el inicio de sesión (por ejemplo, llamar a una API o redirigir)
+        console.log("Inicio de sesión exitoso con:", email);
     };
 
-    // Esta es la parte visual del formulario: campos de texto, botón, etc.
     return (
-        <div className="card shadow p-4 rounded-4">
-            {/* Título del formulario */}
-            <h3 className="text-center mb-4 text-primary fw-bold">
-                {modo === "registro" ? "Registro de usuario" : "Iniciar Sesión"}
-            </h3>
+        // 🔹 Esta clase "formulario" conecta con el CSS en formulario.css
+        <div className="formulario">
+            <h3>Iniciar Sesión</h3>
 
-            {/* Si hay un mensaje de error, lo mostramos en rojo usando clases de Bootstrap */}
-            {error && <div className="alert alert-danger">{error}</div>}
-
-            {/* Formulario principal */}
+            {/* Formulario controlado */}
             <form onSubmit={handleSubmit}>
-                {/* Campo de correo electrónico */}
-                <div className="mb-3">
-                    <label htmlFor="email" className="form-label">Correo electrónico</label>
-                    <input
-                        type="email"                    // Tipo email para validación básica del navegador
-                        id="email"                      // ID para vincular con el label
-                        className="form-control"        // Clase Bootstrap para estilo
-                        placeholder="ejemplo@correo.com"// Texto de ejemplo
-                        value={email}                   // Valor actual del estado email
-                        onChange={(e) => setEmail(e.target.value)} // Actualiza el estado cuando se escribe
-                        required                        // Campo obligatorio
-                    />
-                </div>
+                {/* Campo de correo */}
+                <input
+                    type="email"
+                    placeholder="Correo electrónico"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                />
 
                 {/* Campo de contraseña */}
-                <div className="mb-3">
-                    <label htmlFor="password" className="form-label">Contraseña</label>
-                    <input
-                        type="password"                 // Oculta lo que se escribe
-                        id="password"
-                        className="form-control"
-                        placeholder="********"
-                        value={password}                // Valor actual del estado password
-                        onChange={(e) => setPassword(e.target.value)} // Actualiza estado cuando se escribe
-                        required
-                    />
-                </div>
+                <input
+                    type="password"
+                    placeholder="Contraseña"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                />
 
-                {/* Botón de envío del formulario */}
-                <button type="submit" className="btn btn-primary w-100 mt-2">
-                    {modo === "registro" ? "Registrarse" : "Ingresar"}
-                </button>
+                {/* Si hay un error, lo muestra en pantalla */}
+                {error && <p style={{ color: "#F08080", fontWeight: "bold" }}>{error}</p>}
+
+                {/* Botón de envío */}
+                <button type="submit">Ingresar</button>
             </form>
+
+            {/* Enlace de recuperación de contraseña */}
+            <a href="#">¿Olvidaste tu contraseña?</a>
         </div>
     );
-};
+}
 
-// Exportamos el componente para que pueda ser usado en otras partes como Login.jsx
+
+//Exporta el componente para que pueda usarse en otras partes del proyecto
 export default Formulario;
