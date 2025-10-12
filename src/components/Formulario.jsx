@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import "../style/formulario.css";
 
-function Formulario() {
+function Formulario({ onLogin}) {
 
     // Estados locales para guardar los datos ingresados por el usuario
     const [email, setEmail] = useState("");       // Guarda el correo electrónico
@@ -11,8 +11,8 @@ function Formulario() {
 
     // Función para validar el correo
     const validarEmail = (email) => {
-        // El correo debe contener "@" y terminar en ".com"
-        return email.includes("@") && email.endsWith(".com");
+        const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; // ejemplo: usuario@correo.com
+        return regex.test(email)
     };
 
     // Función que maneja el envío del formulario
@@ -20,22 +20,32 @@ function Formulario() {
     const handleSubmit = (e) => {
         e.preventDefault(); // Evita que la página se recargue al enviar el formulario
 
-        // Validación simple del correo y contraseña
+        // Validación del correo: debe tener formato correcto
         if (!validarEmail(email)) {
-            setError("El correo debe contener '@' y terminar en '.com'");
-            return;
+        setError("El correo debe contener '@' y terminar en '.com'");
+        return;
         }
 
-        if (password.trim() === "") {
-            setError("La contraseña no puede estar vacía");
-            return;
+        // Validación de contraseña: al menos 6 caracteres, una mayúscula, un número y un símbolo
+        const passwordRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$/;
+        if (!passwordRegex.test(password)) {
+        setError("La contraseña debe tener al menos 6 caracteres, una mayúscula, un número y un símbolo");
+        return;
         }
 
         // Si pasa las validaciones, limpia el error
         setError("");
 
-        // Aquí podrías manejar el inicio de sesión (por ejemplo, llamar a una API o redirigir)
-        console.log("Inicio de sesión exitoso con:", email);
+        // LLamamos a la función que simula el login (pasada por props)
+        const loginExitoso = onLogin(email, password);
+
+        if (loginExitoso) {
+            console.log("Inicio de sesión exitoso con:", email);
+        } else {
+            setError("Credenciales incorrectas");
+        }    
+
+    
     };
 
     return (
@@ -46,7 +56,9 @@ function Formulario() {
             {/* Formulario controlado */}
             <form onSubmit={handleSubmit}>
                 {/* Campo de correo */}
+                <label htmlFor="email">Correo electrónico</label>
                 <input
+                    id="email"
                     type="email"
                     placeholder="Correo electrónico"
                     value={email}
@@ -54,7 +66,9 @@ function Formulario() {
                 />
 
                 {/* Campo de contraseña */}
+                <label htmlFor="password">Contraseña</label>
                 <input
+                    id="password"
                     type="password"
                     placeholder="Contraseña"
                     value={password}

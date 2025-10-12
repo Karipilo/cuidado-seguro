@@ -25,7 +25,7 @@ describe("Comportamiento del Formulario", () => {
         fireEvent.submit(screen.getByRole("button", { name: /ingresar/i }));
 
         // Esperamos el mensaje en pantalla (puede tardar un tick del render)
-        const error = await screen.findByText(/el correo debe tener una mayúscula/i);
+        const error = await screen.findByText(/el correo debe contener '@' y terminar en '.com'/i);
         expect(error).toBeInTheDocument();
     });
 
