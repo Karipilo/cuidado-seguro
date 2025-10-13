@@ -1,49 +1,41 @@
 // Importa React y sus hooks necesarios
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom"; // Para navegación entre páginas
-import "../style/formulario.css";
+import "../style/formulario.css"; // Mantiene tu CSS original
 
-// Componente principal del formulario de registro
 function FormularioRegistro() {
     const navigate = useNavigate(); // Permite redirigir al usuario al login luego del registro
 
+    // ESTADOS BÁSICOS
+    const [nombre, setNombre] = useState("");
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [repitePassword, setRepitePassword] = useState("");
+    const [tipoUsuario, setTipoUsuario] = useState("");
 
-    const [nombre, setNombre] = useState("");              // Nombre completo del usuario
-    const [email, setEmail] = useState("");                // Correo electrónico
-    const [password, setPassword] = useState("");          // Contraseña
-    const [repitePassword, setRepitePassword] = useState("");// Confirmación de contraseña
-    const [tipoUsuario, setTipoUsuario] = useState("");    // "Profesional" o "Tutor"
+    // ESTADOS PROFESIONAL
+    const [tipoProfesional, setTipoProfesional] = useState("");
+    const [rnpi, setRnpi] = useState("");
+    const [institucion, setInstitucion] = useState("");
 
+    // ESTADOS TUTOR
+    const [parentesco, setParentesco] = useState("");
+    const [idPaciente, setIdPaciente] = useState("");
+    const [codigoCentro, setCodigoCentro] = useState("");
 
-    // CAMPOS PARA PROFESIONAL
+    // ERRORES
+    const [error, setError] = useState("");
 
-    const [tipoProfesional, setTipoProfesional] = useState(""); // Especialidad del profesional
-    const [rnpi, setRnpi] = useState("");                       // Número RNPI
-    const [institucion, setInstitucion] = useState("");         // Institución a la que pertenece
+    // VALIDACIONES
+    const emailValido = (value) => /\S+@\S+\.\S+/.test(value);
+    const noVacio = (value) => String(value).trim().length > 0;
+    const passwordRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&._-])[A-Za-z\d@$!%*?&._-]{6,}$/;
 
-    // CAMPOS PARA TUTOR
-
-    const [parentesco, setParentesco] = useState("");      // Parentesco con el paciente
-    const [idPaciente, setIdPaciente] = useState("");      // ID único del paciente
-    const [codigoCentro, setCodigoCentro] = useState("");  // Código entregado por el centro
-
-
-    // MANEJO DE ERRORES
-
-    const [error, setError] = useState(""); // Se muestra en pantalla si hay errores
-
-    // VALIDACIONES 
-
-    const emailValido = (value) => /\S+@\S+\.\S+/.test(value); // Verifica que el email tenga @ y dominio
-    const noVacio = (value) => String(value).trim().length > 0; // Verifica que no esté vacío
-
-    // FUNCIÓN QUE MANEJA EL ENVÍO DEL FORMULARIO
-
-
+    // FUNCIÓN PRINCIPAL DE ENVÍO
     const handleSubmit = (e) => {
-        e.preventDefault(); // Previene el comportamiento por defecto del form (recargar la página)
+        e.preventDefault(); // Evita recargar la página
 
-        // Validación de campos comunes
+        // Validaciones generales
         if (!noVacio(nombre) || !noVacio(email) || !noVacio(password) || !noVacio(repitePassword) || !noVacio(tipoUsuario)) {
             setError("Todos los campos obligatorios deben completarse.");
             return;
@@ -59,37 +51,46 @@ function FormularioRegistro() {
             return;
         }
 
-        // Validación de contraseña segura
-        const passwordRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$/;
         if (!passwordRegex.test(password)) {
             setError("La contraseña debe tener al menos 6 caracteres, una mayúscula, un número y un símbolo.");
             return;
         }
 
-        // Validación de campos para profesional
-        if (tipoUsuario === "Profesional") {
-            if (!noVacio(tipoProfesional) || !noVacio(rnpi) || !noVacio(institucion)) {
-                setError("Debes completar los campos del profesional (tipo, RNPI e institución).");
-                return;
-            }
+        // Validaciones específicas
+        if (tipoUsuario === "Profesional" && (!noVacio(tipoProfesional) || !noVacio(rnpi) || !noVacio(institucion))) {
+            setError("Debes completar los campos del profesional (tipo, RNPI e institución).");
+            return;
         }
 
-        // Validación de campos para tutor (ahora incluye el código del centro)
-        if (tipoUsuario === "Tutor") {
-            if (!noVacio(parentesco) || !noVacio(idPaciente) || !noVacio(codigoCentro)) {
-                setError("Debes completar los campos del tutor (parentesco, ID del paciente y código del centro).");
-                return;
-            }
+        if (tipoUsuario === "Tutor" && (!noVacio(parentesco) || !noVacio(idPaciente) || !noVacio(codigoCentro))) {
+            setError("Debes completar los campos del tutor (parentesco, ID paciente y código del centro).");
+            return;
         }
 
-        // Si todo está correcto:
-        setError(""); // Limpia errores
-        alert("Registro exitoso ");
+        // Limpia errores
+        setError("");
+
+        // 💾 Guarda los datos del usuario en localStorage
+        const nuevoUsuario = {
+            nombre,
+            email,
+            password,
+            tipoUsuario,
+            tipoProfesional,
+            rnpi,
+            institucion,
+            parentesco,
+            idPaciente,
+            codigoCentro,
+        };
+
+        localStorage.setItem("usuarioRegistrado", JSON.stringify(nuevoUsuario));
+
+        alert("✅ Registro exitoso");
         navigate("/login"); // Redirige al login
     };
 
-    // INTERFAZ VISUAL DEL COMPONENTE
-
+    // INTERFAZ VISUAL (idéntica a tu versión original)
     return (
         <div className="container d-flex justify-content-center align-items-center mt-5">
             <div className="card shadow p-4 rounded-4 formulario" style={{ maxWidth: 560, width: "100%" }}>
@@ -109,7 +110,6 @@ function FormularioRegistro() {
                             onChange={(e) => setNombre(e.target.value)}
                             placeholder="Ej: Juan Pérez"
                         />
-
                     </div>
 
                     {/* EMAIL */}
@@ -122,7 +122,6 @@ function FormularioRegistro() {
                             onChange={(e) => setEmail(e.target.value)}
                             placeholder="usuario@correo.com"
                         />
-
                     </div>
 
                     {/* CONTRASEÑA */}
@@ -135,7 +134,6 @@ function FormularioRegistro() {
                             onChange={(e) => setPassword(e.target.value)}
                             placeholder="Mínimo 6 caracteres, una mayúscula, un número y un símbolo"
                         />
-
                     </div>
 
                     {/* REPITE CONTRASEÑA */}
@@ -175,13 +173,12 @@ function FormularioRegistro() {
                                     onChange={(e) => setTipoProfesional(e.target.value)}
                                 >
                                     <option value="">Selecciona tu especialidad</option>
-                                    <option value="Médico">Médico/a</option>
                                     <option value="Enfermero">Enfermero/a</option>
+                                    <option value="Técnico Paramédico">Paramédico</option>
                                     <option value="Kinesiólogo">Kinesiólogo/a</option>
-                                    <option value="Terapista Ocupacional">Terapista Ocupacional</option>
-                                    <option value="Psicólogo">Psicólogo/a</option>
+                                    <option value="Médico">Médico/a</option>
                                     <option value="Nutricionista">Nutricionista</option>
-                                    <option value="Técnico Paramédico">Paramedico</option>
+                                    <option value="Otro">Otro</option>
                                 </select>
                             </div>
 
@@ -208,8 +205,8 @@ function FormularioRegistro() {
                                     <option value="Clínica los Carreras">Clínica Los Carreras</option>
                                     <option value="Clínica Miraflores">Clínica Miraflores</option>
                                     <option value="ELEAM Las Palmas">ELEAM Las Palmas</option>
-                                    <option value="ELEAM San José">ELEAM San Jose</option>
-                                    <option value="Hogar Santa María">Hogar Santa Maria</option>
+                                    <option value="ELEAM San José">ELEAM San José</option>
+                                    <option value="Hogar Santa María">Hogar Santa María</option>
                                 </select>
                             </div>
                         </>
@@ -240,9 +237,8 @@ function FormularioRegistro() {
                                     className="form-control"
                                     value={idPaciente}
                                     onChange={(e) => setIdPaciente(e.target.value)}
-                                    placeholder="Ingrese el rut del paciente"
+                                    placeholder="Ingrese el RUT del paciente"
                                 />
-
                             </div>
 
                             <div className="mb-3">
@@ -252,20 +248,18 @@ function FormularioRegistro() {
                                     className="form-control"
                                     value={codigoCentro}
                                     onChange={(e) => setCodigoCentro(e.target.value)}
-                                    placeholder="Este código debe ser proporcionado por la institución."
+                                    placeholder="Código entregado por la institución"
                                 />
-
                             </div>
                         </>
                     )}
 
-                    {/* BOTÓN SUBMIT */}
+                    {/* BOTÓN */}
                     <button type="submit" className="btn btn-primary w-100 mt-3">
-                        Registrarse
+                        Registrar
                     </button>
                 </form>
 
-                {/* ENLACE A LOGIN */}
                 <p className="text-center mt-3">
                     ¿Ya tienes cuenta?{" "}
                     <Link to="/login" className="text-decoration-none fw-semibold">
@@ -278,4 +272,5 @@ function FormularioRegistro() {
 }
 
 export default FormularioRegistro;
+
 

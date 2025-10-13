@@ -1,93 +1,102 @@
-// Importa React y el hook useState para manejar los estados de los campos
+// Importa React y los hooks necesarios
 import React, { useState } from "react";
-import "../style/formulario.css";
+import "../style/formulario.css"; // Importa el estilo
+import { useNavigate, Link } from "react-router-dom";
 
-function Formulario({ onLogin}) {
+function Formulario() {
+    const navigate = useNavigate();
 
-    // Estados locales para guardar los datos ingresados por el usuario
-    const [email, setEmail] = useState("");       // Guarda el correo electrónico
-    const [password, setPassword] = useState(""); // Guarda la contraseña
-    const [error, setError] = useState("");       // Guarda mensajes de error si los hay
+    // Estados locales
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [error, setError] = useState("");
 
-    // Función para validar el correo
-    const validarEmail = (email) => {
-        const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; // ejemplo: usuario@correo.com
-        return regex.test(email)
-    };
+    // Validación de correo
+    const validarEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
-    // Función que maneja el envío del formulario
+    // Expresión regular para contraseñas seguras
+    const passwordRegex =
+        /^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&._-])[A-Za-z\d@$!%*?&._-]{6,}$/;
 
+    // Manejo del inicio de sesión
     const handleSubmit = (e) => {
-        e.preventDefault(); // Evita que la página se recargue al enviar el formulario
+        e.preventDefault();
 
-        // Validación del correo: debe tener formato correcto
+        // Validaciones
         if (!validarEmail(email)) {
-        setError("El correo debe contener '@' y terminar en '.com'");
-        return;
+            setError("El correo debe contener '@' y terminar en '.com'");
+            return;
         }
 
-        // Validación de contraseña: al menos 6 caracteres, una mayúscula, un número y un símbolo
-        const passwordRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$/;
         if (!passwordRegex.test(password)) {
-        setError("La contraseña debe tener al menos 6 caracteres, una mayúscula, un número y un símbolo");
-        return;
+            setError(
+                "La contraseña debe tener al menos 6 caracteres, una mayúscula, un número y un símbolo"
+            );
+            return;
         }
 
-        // Si pasa las validaciones, limpia el error
+        // Limpia errores previos
         setError("");
 
-        // LLamamos a la función que simula el login (pasada por props)
-        const loginExitoso = onLogin(email, password);
+        // 🔹 Recupera los datos guardados del registro
+        const usuarioGuardado = JSON.parse(localStorage.getItem("usuarioRegistrado"));
 
-        if (loginExitoso) {
-            console.log("Inicio de sesión exitoso con:", email);
+        // Verifica credenciales
+        if (
+            usuarioGuardado &&
+            usuarioGuardado.email === email &&
+            usuarioGuardado.password === password
+        ) {
+            alert(`✅ Bienvenido, ${usuarioGuardado.nombre}`);
+            console.log("Inicio de sesión correcto:", usuarioGuardado);
+
+            // Puedes redirigir según el tipo de usuario
+            if (usuarioGuardado.tipoUsuario === "Profesional") {
+                navigate("/dashboardprf");
+            } else {
+                navigate("/paciente");
+            }
         } else {
-            setError("Credenciales incorrectas");
-        }    
-
-    
+            setError("❌ Credenciales incorrectas o usuario no registrado");
+        }
     };
 
+    // Render del formulario
     return (
-        // 🔹 Esta clase "formulario" conecta con el CSS en formulario.css
         <div className="formulario">
             <h3>Iniciar Sesión</h3>
 
-            {/* Formulario controlado */}
+            {error && <p style={{ color: "#F08080", fontWeight: "bold" }}>{error}</p>}
+
             <form onSubmit={handleSubmit}>
-                {/* Campo de correo */}
-                <label htmlFor="email">Correo electrónico</label>
+                <label>Correo electrónico</label>
                 <input
-                    id="email"
                     type="email"
-                    placeholder="Correo electrónico"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
+                    placeholder="Correo electrónico"
                 />
 
-                {/* Campo de contraseña */}
-                <label htmlFor="password">Contraseña</label>
+                <label>Contraseña</label>
                 <input
-                    id="password"
                     type="password"
-                    placeholder="Contraseña"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
+                    placeholder="Contraseña"
                 />
 
-                {/* Si hay un error, lo muestra en pantalla */}
-                {error && <p style={{ color: "#F08080", fontWeight: "bold" }}>{error}</p>}
-
-                {/* Botón de envío */}
                 <button type="submit">Ingresar</button>
             </form>
 
-            {/* Enlace de recuperación de contraseña */}
-            <a href="#">¿Olvidaste tu contraseña?</a>
+            <p style={{ textAlign: "center", marginTop: "1rem" }}>
+                ¿No tienes cuenta?{" "}
+                <Link to="/registro" style={{ color: "#FFF8DC", fontWeight: "bold" }}>
+                    Regístrate aquí
+                </Link>
+            </p>
         </div>
     );
 }
 
-
-//Exporta el componente para que pueda usarse en otras partes del proyecto
 export default Formulario;
+
