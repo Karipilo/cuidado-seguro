@@ -175,12 +175,13 @@ function FormularioRegistro() {
                                     onChange={(e) => setTipoProfesional(e.target.value)}
                                 >
                                     <option value="">Selecciona tu especialidad</option>
-                                    <option value="Enfermero">Enfermero/a</option>
-                                    <option value="Técnico Paramédico">Paramedico</option>
-                                    <option value="Kinesiólogo">Kinesiólogo/a</option>
                                     <option value="Médico">Médico/a</option>
+                                    <option value="Enfermero">Enfermero/a</option>
+                                    <option value="Kinesiólogo">Kinesiólogo/a</option>
+                                    <option value="Terapista Ocupacional">Terapista Ocupacional</option>
+                                    <option value="Psicólogo">Psicólogo/a</option>
                                     <option value="Nutricionista">Nutricionista</option>
-                                    <option value="Otro">Otro</option>
+                                    <option value="Técnico Paramédico">Paramedico</option>
                                 </select>
                             </div>
 
