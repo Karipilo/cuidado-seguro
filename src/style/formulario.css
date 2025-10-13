@@ -97,3 +97,49 @@
     color: #F08080;
     /* Color secundario (lightcoral): cambia el color al pasar el mouse */
 }
+
+/* === CORRECCIÓN FORMULARIO DE REGISTRO === */
+/* Fuerza a que la tarjeta también use tus colores personalizados */
+.card.formulario {
+    background-color: #5F9EA0 !important;
+    /* Color principal */
+    color: #FFFFFF !important;
+    /* Texto blanco */
+    border: none !important;
+    /* Sin borde gris */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2) !important;
+    /* Misma sombra */
+    max-width: 400px !important;
+    /* Igual al login */
+    margin: 80px auto !important;
+    /* Centrado vertical */
+}
+
+/* Ajusta los títulos y etiquetas dentro de la tarjeta */
+.card.formulario h3,
+.card.formulario label {
+    color: #FFF8DC !important;
+    /* mismo tono claro del login */
+}
+
+.card.formulario {
+    background-color: #5F9EA0 !important;
+    /* Color principal */
+    color: #FFFFFF !important;
+    /* Texto blanco */
+    border: none !important;
+    /* Sin borde gris */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2) !important;
+    /* Misma sombra */
+    max-width: 400px !important;
+    /* Igual al login */
+    margin: 80px auto !important;
+    /* Centrado vertical */
+}
+
+/* Ajusta los títulos y etiquetas dentro de la tarjeta */
+.card.formulario h3,
+.card.formulario label {
+    color: #FFF8DC !important;
+    /* mismo tono claro del login */
+}
