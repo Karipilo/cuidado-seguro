@@ -1,14 +1,12 @@
 // Importa React y sus hooks necesarios
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom"; // Para navegación entre páginas
+import "../style/formulario.css";
 
 // Componente principal del formulario de registro
 function FormularioRegistro() {
     const navigate = useNavigate(); // Permite redirigir al usuario al login luego del registro
 
-    // ----------------------------
-    // ESTADOS COMUNES DEL FORMULARIO
-    // ----------------------------
 
     const [nombre, setNombre] = useState("");              // Nombre completo del usuario
     const [email, setEmail] = useState("");                // Correo electrónico
@@ -16,38 +14,31 @@ function FormularioRegistro() {
     const [repitePassword, setRepitePassword] = useState("");// Confirmación de contraseña
     const [tipoUsuario, setTipoUsuario] = useState("");    // "Profesional" o "Tutor"
 
-    // ----------------------------
-    // CAMPOS EXCLUSIVOS PARA PROFESIONAL
-    // ----------------------------
+
+    // CAMPOS PARA PROFESIONAL
 
     const [tipoProfesional, setTipoProfesional] = useState(""); // Especialidad del profesional
     const [rnpi, setRnpi] = useState("");                       // Número RNPI
     const [institucion, setInstitucion] = useState("");         // Institución a la que pertenece
 
-    // ----------------------------
-    // CAMPOS EXCLUSIVOS PARA TUTOR
-    // ----------------------------
+    // CAMPOS PARA TUTOR
 
     const [parentesco, setParentesco] = useState("");      // Parentesco con el paciente
     const [idPaciente, setIdPaciente] = useState("");      // ID único del paciente
     const [codigoCentro, setCodigoCentro] = useState("");  // Código entregado por el centro
 
-    // ----------------------------
-    // ESTADO PARA MANEJAR ERRORES
-    // ----------------------------
+
+    // MANEJO DE ERRORES
 
     const [error, setError] = useState(""); // Se muestra en pantalla si hay errores
 
-    // ----------------------------
-    // VALIDACIONES AUXILIARES
-    // ----------------------------
+    // VALIDACIONES 
 
     const emailValido = (value) => /\S+@\S+\.\S+/.test(value); // Verifica que el email tenga @ y dominio
     const noVacio = (value) => String(value).trim().length > 0; // Verifica que no esté vacío
 
-    // ----------------------------
     // FUNCIÓN QUE MANEJA EL ENVÍO DEL FORMULARIO
-    // ----------------------------
+
 
     const handleSubmit = (e) => {
         e.preventDefault(); // Previene el comportamiento por defecto del form (recargar la página)
@@ -93,18 +84,16 @@ function FormularioRegistro() {
 
         // Si todo está correcto:
         setError(""); // Limpia errores
-        alert("Registro exitoso 🎉");
+        alert("Registro exitoso ");
         navigate("/login"); // Redirige al login
     };
 
-    // ----------------------------
     // INTERFAZ VISUAL DEL COMPONENTE
-    // ----------------------------
 
     return (
         <div className="container d-flex justify-content-center align-items-center mt-5">
             <div className="card shadow p-4 rounded-4 formulario" style={{ maxWidth: 560, width: "100%" }}>
-                <h3 className="text-center mb-4">Registro de Usuario</h3>
+                <h3 className="text-center mb-4">REGÍSTRATE</h3>
 
                 {/* Si hay error, se muestra aquí */}
                 {error && <div className="alert alert-danger">{error}</div>}
@@ -214,10 +203,12 @@ function FormularioRegistro() {
                                     onChange={(e) => setInstitucion(e.target.value)}
                                 >
                                     <option value="">Selecciona una institución</option>
-                                    <option value="ELEAM San José">ELEAM San José</option>
-                                    <option value="Hogar Esperanza">Hogar Esperanza</option>
-                                    <option value="Residencia Los Pinos">Residencia Los Pinos</option>
-                                    <option value="Centro Vida Plena">Centro Vida Plena</option>
+                                    <option value="Clínica los Alerces">Clínica Los Alerces</option>
+                                    <option value="Clínica los Carreras">Clínica Los Carreras</option>
+                                    <option value="Clínica Miraflores">Clínica Miraflores</option>
+                                    <option value="ELEAM Las Palmas">ELEAM Las Palmas</option>
+                                    <option value="ELEAM San José">ELEAM San Jose</option>
+                                    <option value="Hogar Santa María">Hogar Santa Maria</option>
                                 </select>
                             </div>
                         </>

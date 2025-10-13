@@ -10,14 +10,14 @@ function Login() {
     // Esta función se ejecuta cuando el formulario se envía correctamente
     const handleLogin = (email, password) => {
         // Si los datos coinciden con un usuario "profesional"
-        if (email === "profesional@cuidado.cl" && password === "1234") {
+        if (email === "" && password === "") {
             localStorage.setItem("rol", "profesional");     // Guarda el rol en localStorage
             navigate("/dashboard-prof");                    // Redirige al dashboard del profesional
             return true;                                    // Devuelve true para que Formulario sepa que fue exitoso
         }
 
         // Si los datos coinciden con un usuario "tutor"
-        if (email === "tutor@cuidado.cl" && password === "1234") {
+        if (email === "" && password === "") {
             localStorage.setItem("rol", "tutor");
             navigate("/dashboard-tutor");
             return true;
