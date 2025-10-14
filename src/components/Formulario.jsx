@@ -1,67 +1,56 @@
-// Importa React y los hooks necesarios
 import React, { useState } from "react";
-import "../style/formulario.css"; // Importa el estilo
 import { useNavigate, Link } from "react-router-dom";
+import "../style/formulario.css";
 
 function Formulario() {
     const navigate = useNavigate();
-
-    // Estados locales
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
 
-    // Validación de correo
     const validarEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    const passwordRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&._-])[A-Za-z\d@$!%*?&._-]{6,}$/;
 
-    // Expresión regular para contraseñas seguras
-    const passwordRegex =
-        /^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&._-])[A-Za-z\d@$!%*?&._-]{6,}$/;
-
-    // Manejo del inicio de sesión
     const handleSubmit = (e) => {
         e.preventDefault();
 
-        // Validaciones
         if (!validarEmail(email)) {
             setError("El correo debe contener '@' y terminar en '.com'");
             return;
         }
 
         if (!passwordRegex.test(password)) {
-            setError(
-                "La contraseña debe tener al menos 6 caracteres, una mayúscula, un número y un símbolo"
-            );
+            setError("La contraseña debe tener al menos 6 caracteres, una mayúscula, un número y un símbolo");
             return;
         }
 
-        // Limpia errores previos
         setError("");
 
-        // 🔹 Recupera los datos guardados del registro
+        // 🔹 Leer el usuario registrado
         const usuarioGuardado = JSON.parse(localStorage.getItem("usuarioRegistrado"));
 
-        // Verifica credenciales
+        // 🔍 Validar credenciales
         if (
             usuarioGuardado &&
             usuarioGuardado.email === email &&
             usuarioGuardado.password === password
         ) {
-            alert(`✅ Bienvenido, ${usuarioGuardado.nombre}`);
-            console.log("Inicio de sesión correcto:", usuarioGuardado);
+            // Guardar sesión activa
+            localStorage.setItem("usuarioActivo", JSON.stringify(usuarioGuardado));
 
-            // Puedes redirigir según el tipo de usuario
+            alert(`Bienvenido(a), ${usuarioGuardado.nombre}`);
+
+            // Redirige según tipo de usuario
             if (usuarioGuardado.tipoUsuario === "Profesional") {
                 navigate("/dashboardprf");
             } else {
                 navigate("/paciente");
             }
         } else {
-            setError("❌ Credenciales incorrectas o usuario no registrado");
+            setError("Credenciales incorrectas o usuario no registrado");
         }
     };
 
-    // Render del formulario
     return (
         <div className="formulario">
             <h3>Iniciar Sesión</h3>
@@ -99,4 +88,5 @@ function Formulario() {
 }
 
 export default Formulario;
+
 
