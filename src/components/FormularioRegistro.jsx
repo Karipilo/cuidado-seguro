@@ -112,21 +112,17 @@ function FormularioRegistro() {
                         />
                     </div>
 
+
                     {/* EMAIL */}
-                    {/* CONTRASEÑA */}
                     <div className="mb-3">
-                        <label className="form-label">Contraseña:</label>
+                        <label className="form-label">Correo electrónico:</label>
                         <input
-                            type="password"
+                            type="email"
                             className="form-control"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            placeholder="******"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            placeholder="usuario@correo.com"
                         />
-                        <small className="text-light">
-                            Min 6 caracteres, una mayúscula, un número y un símbolo
-                            (<strong>@ $ ! % * ? & . _ -</strong>)
-                        </small>
                     </div>
 
 
@@ -138,8 +134,22 @@ function FormularioRegistro() {
                             className="form-control"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
-                            placeholder="Mínimo 6 caracteres, una mayúscula, un número y un símbolo"
+                            placeholder="Ingrese su contraseña"
                         />
+
+                        {/* 💬 Mensaje aclaratorio pequeño y cercano */}
+                        <small
+                            className="text-light"
+                            style={{
+                                fontSize: "0.78rem",     // más pequeño que el texto normal
+                                marginTop: "-12px",       // acerca el texto al input
+                                display: "block",        // asegura que aparezca justo debajo
+                                lineHeight: "1.2",       // reduce espacio vertical
+                            }}
+                        >
+                            Mínimo 6 caracteres, una mayúscula, un número y un símbolo
+                            (<strong>@ $ ! % * ? & . _ -</strong>)
+                        </small>
                     </div>
 
                     {/* REPITE CONTRASEÑA */}

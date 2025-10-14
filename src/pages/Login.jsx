@@ -34,13 +34,7 @@ function Login() {
                     {/* Usamos el componente Formulario y le pasamos la función handleLogin como prop */}
                     <Formulario onLogin={handleLogin} />
 
-                    {/* Enlace para ir a registrarse si el usuario no tiene cuenta */}
-                    <p className="text-center mt-3">
-                        ¿No tienes cuenta?{" "}
-                        <Link to="/registro" className="text-decoration-none">
-                            Regístrate aquí
-                        </Link>
-                    </p>
+
                 </div>
             </div>
         </div>
