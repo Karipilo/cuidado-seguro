@@ -121,10 +121,11 @@ function FormularioRegistro() {
                             className="form-control"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
-                            placeholder="Mínimo 6 caracteres, una mayúscula, un número y un símbolo"
+                            placeholder="******"
                         />
                         <small className="text-light">
-                            Símbolos permitidos: <strong>@ $ ! % * ? & . _ -</strong>
+                            Min 6 caracteres, una mayúscula, un número y un símbolo
+                            (<strong>@ $ ! % * ? & . _ -</strong>)
                         </small>
                     </div>
 
