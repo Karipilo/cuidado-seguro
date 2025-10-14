@@ -52,7 +52,7 @@ function FormularioRegistro() {
         }
 
         if (!passwordRegex.test(password)) {
-            setError("La contraseña debe tener al menos 6 caracteres, una mayúscula, un número y un símbolo.");
+            setError("La contraseña debe tener al menos 6 caracteres, una mayúscula, un número y un símbolo (@ $ ! % * ? & . _ -).");
             return;
         }
 
@@ -90,7 +90,7 @@ function FormularioRegistro() {
         navigate("/login"); // Redirige al login
     };
 
-    // INTERFAZ VISUAL (idéntica a tu versión original)
+    // INTERFAZ VISUAL 
     return (
         <div className="container d-flex justify-content-center align-items-center mt-5">
             <div className="card shadow p-4 rounded-4 formulario" style={{ maxWidth: 560, width: "100%" }}>
@@ -113,16 +113,21 @@ function FormularioRegistro() {
                     </div>
 
                     {/* EMAIL */}
+                    {/* CONTRASEÑA */}
                     <div className="mb-3">
-                        <label className="form-label">Correo electrónico:</label>
+                        <label className="form-label">Contraseña:</label>
                         <input
-                            type="email"
+                            type="password"
                             className="form-control"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            placeholder="usuario@correo.com"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            placeholder="Mínimo 6 caracteres, una mayúscula, un número y un símbolo"
                         />
+                        <small className="text-light">
+                            Símbolos permitidos: <strong>@ $ ! % * ? & . _ -</strong>
+                        </small>
                     </div>
+
 
                     {/* CONTRASEÑA */}
                     <div className="mb-3">
