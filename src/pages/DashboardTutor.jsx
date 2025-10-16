@@ -14,7 +14,7 @@ function DashboardTutor() {
 	const navigate = useNavigate();
 	// useState: crea variables reactivas
 	const [usuario, setUsuario] = useState(null); // guardará el usuario activo 
-	const [vista, setVista] = useState("paciente"); // controla qué sección del panel se muestra (resumen)
+	const [vista, setVista] = useState("detalle"); // controla qué sección del panel se muestra (resumen)
 
 	// useEffect: se ejecuta cuando el componente se monta
 	useEffect(() => {
