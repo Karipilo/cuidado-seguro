@@ -1,7 +1,15 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 function DashboardTutor() {
+	/*return (
+		<div className="botones-dashboard">
+			<Link to="/home" className="btn btn-primary">Home</Link>
+			<Link to="/centros" className="btn btn-secondary">Centros</Link>
+			<Link to="/dashboardTutor" className="btn btn-success">Mi sesión</Link>
+		</div>
+	)*/
 	// useNavigate: nos permite redirigir al usuario
 	const navigate = useNavigate();
 	// useState: crea variables reactivas

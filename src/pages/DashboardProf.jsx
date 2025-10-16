@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import CardResumen from "../components/CardResumen";
+import { Link } from "react-router-dom";  
 
 // Componente principal: DashboardProf
 function DashboardProf() {
+  
   // useNavigate: nos permite redirigir al usuario
   const navigate = useNavigate();
   // useState: crea variables reactivas
