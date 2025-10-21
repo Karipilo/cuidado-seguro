@@ -40,10 +40,10 @@ function Home() {
                 </div>
             </section>
 
-            {/* Carrusel */}
+           {/* Carrusel */}
             <section className="container pb-5">
                 <Carrusel />
-            </section>
+            </section> 
         </main>
     );
 }
