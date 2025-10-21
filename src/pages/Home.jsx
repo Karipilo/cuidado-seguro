@@ -19,7 +19,9 @@ function Home() {
 
                     <div className="card-vision-mision mt-4">
                         <div className="item">
-                            <h4>Visión</h4>
+
+                            <hr />
+                            <h4><strong>Visión</strong></h4>
                             <p>
                                 Ser la plataforma líder en gestión de información clínica institucional,
                                 garantizando accesibilidad, rapidez y seguridad en los cuidados de salud,
@@ -28,22 +30,23 @@ function Home() {
                         </div>
                         <hr />
                         <div className="item">
-                            <h4>Misión</h4>
+                            <h4><strong>Misión</strong></h4>
                             <p>
                                 Proporcionar a instituciones, profesionales de salud y familiares una
                                 herramienta innovadora y segura que permita acceder en segundos a
                                 antecedentes médicos clave, optimizando la continuidad del cuidado,
                                 reduciendo errores y mejorando la calidad de vida de los pacientes.
                             </p>
+                            <hr />
                         </div>
                     </div>
                 </div>
             </section>
 
-           {/* Carrusel */}
+            {/* Carrusel */}
             <section className="container pb-5">
                 <Carrusel />
-            </section> 
+            </section>
         </main>
     );
 }
