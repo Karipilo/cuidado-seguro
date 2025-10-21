@@ -42,9 +42,9 @@ function Formulario() {
 
             // Redirige según tipo de usuario
             if (usuarioGuardado.tipoUsuario === "Profesional") {
-                navigate("/dashboardprf");
+                navigate("/dashboardprof");
             } else {
-                navigate("/paciente");
+                navigate("/dashboardtutor");
             }
         } else {
             setError("Credenciales incorrectas o usuario no registrado");
