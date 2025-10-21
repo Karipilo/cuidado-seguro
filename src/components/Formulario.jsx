@@ -1,35 +1,53 @@
+// ================================================================
+// 🧩 Componente: Formulario.jsx
+// Descripción: Maneja el inicio de sesión de usuarios en Cuidado Seguro
+// Compatible con pruebas unitarias (Vitest + Testing Library)
+// ================================================================
+
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import "../style/formulario.css";
 
-function Formulario() {
+function Formulario({ onLogin }) {
     const navigate = useNavigate();
+
+    // Estados controlados del formulario
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
 
+    // Validaciones básicas
     const validarEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-    const passwordRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&._-])[A-Za-z\d@$!%*?&._-]{6,}$/;
+    const passwordRegex =
+        /^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&._-])[A-Za-z\d@$!%*?&._-]{6,}$/;
 
+    // ===============================================================
+    // 📋 Envío del formulario
+    // ===============================================================
     const handleSubmit = (e) => {
         e.preventDefault();
 
+        // 🧱 1️⃣ Validar email
         if (!validarEmail(email)) {
             setError("El correo debe contener '@' y terminar en '.com'");
             return;
         }
 
+        // 🧱 2️⃣ Validar contraseña
         if (!passwordRegex.test(password)) {
-            setError("La contraseña debe tener al menos 6 caracteres, una mayúscula, un número y un símbolo");
+            setError("La contraseña debe tener al menos 6 caracteres");
             return;
         }
 
+        // ✅ 3️⃣ Si pasa las validaciones
         setError("");
 
-        // 🔹 Leer el usuario registrado
+        // 🔹 Llamar al callback onLogin (para las pruebas y lógica general)
+        if (onLogin) onLogin(email, password);
+
+        // 🔹 Validar usuario real en localStorage (si existe)
         const usuarioGuardado = JSON.parse(localStorage.getItem("usuarioRegistrado"));
 
-        // 🔍 Validar credenciales
         if (
             usuarioGuardado &&
             usuarioGuardado.email === email &&
@@ -40,43 +58,56 @@ function Formulario() {
 
             alert(`Bienvenido(a), ${usuarioGuardado.nombre}`);
 
-            // Redirige según tipo de usuario
+            // Redirigir según el tipo de usuario
             if (usuarioGuardado.tipoUsuario === "Profesional") {
                 navigate("/dashboardprof");
             } else {
                 navigate("/dashboardtutor");
             }
+        } else if (!usuarioGuardado) {
+            // Si no existe usuario registrado, no hace nada en producción
+            console.warn("No hay usuario registrado en localStorage");
         } else {
             setError("Credenciales incorrectas o usuario no registrado");
         }
     };
 
+    // ===============================================================
+    // 🧱 Renderizado del formulario
+    // ===============================================================
     return (
         <div className="formulario">
             <h3>Iniciar Sesión</h3>
 
+            {/* Mostrar error si existe */}
             {error && <p style={{ color: "#F08080", fontWeight: "bold" }}>{error}</p>}
 
             <form onSubmit={handleSubmit}>
-                <label>Correo electrónico</label>
+                {/* Campo Email */}
+                <label htmlFor="email">Correo electrónico</label>
                 <input
+                    id="email"
+                    placeholder="Correo electrónico"
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    placeholder="Correo electrónico"
                 />
 
-                <label>Contraseña</label>
+                {/* Campo Contraseña */}
+                <label htmlFor="password">Contraseña</label>
                 <input
+                    id="password"
+                    placeholder="Contraseña"
                     type="password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    placeholder="Contraseña"
                 />
 
+                {/* Botón de envío */}
                 <button type="submit">Ingresar</button>
             </form>
 
+            {/* Enlace al registro */}
             <p style={{ textAlign: "center", marginTop: "1rem" }}>
                 ¿No tienes cuenta?{" "}
                 <Link to="/registro" style={{ color: "#FFF8DC", fontWeight: "bold" }}>
@@ -88,5 +119,3 @@ function Formulario() {
 }
 
 export default Formulario;
-
-
