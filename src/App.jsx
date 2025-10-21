@@ -31,6 +31,7 @@ function App() {
         <Route path="/dashboardtutor" element={<DashboardTutor />} />
         <Route path="/login" element={<Login />} />
         <Route path="/registro" element={<Registro />} />
+        <Route path="/paciente" element={<Paciente />} />
       </Routes>
 
       {/* Footer visible en todas las páginas */}

@@ -12,14 +12,14 @@ function Login() {
         // Si los datos coinciden con un usuario "profesional"
         if (email === "" && password === "") {
             localStorage.setItem("rol", "profesional");     // Guarda el rol en localStorage
-            navigate("/dashboard-prof");                    // Redirige al dashboard del profesional
+            navigate("/dashboardprof");                    // Redirige al dashboard del profesional
             return true;                                    // Devuelve true para que Formulario sepa que fue exitoso
         }
 
         // Si los datos coinciden con un usuario "tutor"
         if (email === "" && password === "") {
             localStorage.setItem("rol", "tutor");
-            navigate("/dashboard-tutor");
+            navigate("/dashboardtutor");
             return true;
         }
 
