@@ -24,6 +24,7 @@ function App() {
 
       {/* Define todas las rutas del sitio */}
       <Routes>
+        <Route path="/" element={<Home />} />
         <Route path="/home" element={<Home />} />
         <Route path="/centros" element={<Centros />} />
         <Route path="/dashboardprof" element={<DashboardProf />} />
