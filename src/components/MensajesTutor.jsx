@@ -40,41 +40,54 @@ function MensajesTutor({ mensajes, setMensajes, para, setPara, asunto, setAsunto
       </div>
 
       <div className="col-lg-4">
-        <div className="card shadow-sm">
-          <div className="card-header"><strong>Nuevo mensaje</strong></div>
-          <div className="card-body">
-            <div className="mb-2">
-              <label className="form-label">Para</label>
-              <select className="form-select" value={para} onChange={e => setPara(e.target.value)}>
-                <option>Profesional de Salud a cargo</option>
-                <option>Administrativo</option>
-              </select>
-            </div>
-            <div className="mb-2">
-              <label className="form-label">Asunto</label>
-              <input
-                className="form-control"
-                value={asunto}
-                onChange={e => setAsunto(e.target.value)}
-                placeholder="Motivo…"
-              />
-            </div>
-            <div className="mb-3">
-              <label className="form-label">Mensaje</label>
-              <textarea
-                className="form-control"
-                rows="4"
-                value={cuerpo}
-                onChange={e => setCuerpo(e.target.value)}
-                placeholder="Escribe tu mensaje…"
-              />
-            </div>
-            <button className="btn btn-primary w-100" onClick={enviarMensaje}>
-              <i className="bi bi-send"></i> Enviar
-            </button>
-          </div>
-        </div>
+  <div className="card shadow-sm">
+    <div className="card-header">
+      <strong>Nuevo mensaje</strong>
+    </div>
+    <div className="card-body">
+      <div className="mb-2">
+        <label className="form-label" htmlFor="para">Para</label>
+        <select
+          id="para"
+          className="form-select"
+          value={para}
+          onChange={e => setPara(e.target.value)}
+        >
+          <option>Profesional de Salud a cargo</option>
+          <option>Administrativo</option>
+        </select>
       </div>
+
+      <div className="mb-2">
+        <label className="form-label" htmlFor="asunto">Asunto</label>
+        <input
+          id="asunto"
+          className="form-control"
+          value={asunto}
+          onChange={e => setAsunto(e.target.value)}
+          placeholder="Motivo…"
+        />
+      </div>
+
+      <div className="mb-3">
+        <label className="form-label" htmlFor="mensaje">Mensaje</label>
+        <textarea
+          id="mensaje"
+          className="form-control"
+          rows="4"
+          value={cuerpo}
+          onChange={e => setCuerpo(e.target.value)}
+          placeholder="Escribe tu mensaje…"
+        />
+      </div>
+
+      <button className="btn btn-primary w-100" onClick={enviarMensaje}>
+        <i className="bi bi-send"></i> Enviar
+      </button>
+    </div>
+  </div>
+</div>
+
     </div>
   );
 }

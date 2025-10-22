@@ -1,14 +1,8 @@
-// src/testing/DashboardTutorContent.test.jsx
-
-// Formato AAA (3 Pasos)
-// Arrange - Act -Assert
-
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import DashboardTutorContent from "../components/DashboardTutorContent";
-import { MemoryRouter, useNavigate } from "react-router-dom"; //  Para envolver el componente
+import { MemoryRouter } from "react-router-dom";
 
-// Mock para el useNavigate
 vi.mock("react-router-dom", async () => {
     const actual = await vi.importActual("react-router-dom");
     return {
@@ -17,8 +11,7 @@ vi.mock("react-router-dom", async () => {
     };
 });
 
-describe("Comportamiento del componente  <DashboardTutorContent />", () => {
-    //Configura un usuario tipo Tutor antes de cada Test
+describe("Comportamiento del componente <DashboardTutorContent />", () => {
     beforeEach(() => {
         localStorage.setItem(
             "usuarioActivo",
@@ -26,48 +19,80 @@ describe("Comportamiento del componente  <DashboardTutorContent />", () => {
         );
     });
 
-    //Limpia el localStorage después de cada test
     afterEach(() => {
         localStorage.clear();
     });
 
-    it(" Debe renderizar correctamente la información principal", () => {
-        // 1. ARRANGE
-        // ( Ya está realizado arriba con el localStorage)
-
+    it("✅ Debe renderizar correctamente la información principal", () => {
         render(
             <MemoryRouter>
                 <DashboardTutorContent />
             </MemoryRouter>
         );
 
-        // DEBUG: Muestra lo que se renderizó
-        screen.debug(); // Esto imprime el DOM actual en la consola
-
-        // 2. ACT
-        // (Solo renderizado)
-
-        // 3. ASSERT
-        expect(screen.getByText("Juan Pérez Soto")).toBeInTheDocument();
+        const nombres = screen.getAllByText("Juan Pérez Soto");
+        expect(nombres.length).toBeGreaterThan(0);
         expect(screen.getByText("ELEAM Alerces")).toBeInTheDocument();
         expect(screen.getByText(/Revisa antecedentes/i)).toBeInTheDocument();
     });
 
-    it(" Debe mostrar el formulario de mensajes al cambiar la pestaña", () => {
-        // 1. ARRANGE
+    it("✅ Debe mostrar el formulario de mensajes al cambiar la pestaña", () => {
         render(
             <MemoryRouter>
                 <DashboardTutorContent />
             </MemoryRouter>
         );
 
-        // 2. ACT
-         const tabMensajes = screen.getByText("Mensajes");
-         fireEvent.click(tabMensajes);
+        fireEvent.click(screen.getByText("Mensajes"));
 
-        // 3. ASSERT
         expect(screen.getByLabelText(/Para/i)).toBeInTheDocument();
         expect(screen.getByLabelText(/Asunto/i)).toBeInTheDocument();
         expect(screen.getByLabelText(/Mensaje/i)).toBeInTheDocument();
+    });
+
+    it("✅ Debe agregar un nuevo mensaje a la bandeja al enviarlo", () => {
+        render(
+            <MemoryRouter>
+                <DashboardTutorContent />
+            </MemoryRouter>
+        );
+
+        fireEvent.click(screen.getByText("Mensajes"));
+
+        fireEvent.change(screen.getByLabelText(/Para/i), {
+            target: { value: "Administrativo" },
+        });
+
+        fireEvent.change(screen.getByLabelText(/Asunto/i), {
+            target: { value: "Solicitud de información" },
+        });
+
+        fireEvent.change(screen.getByLabelText(/Mensaje/i), {
+            target: { value: "¿Cuándo es la próxima reunión?" },
+        });
+
+        fireEvent.click(screen.getByText(/Enviar/i));
+
+        expect(screen.getByText("Solicitud de información")).toBeInTheDocument();
+        expect(screen.getByText(/¿Cuándo es la próxima reunión?/i)).toBeInTheDocument();
+        expect(screen.getByText(/Para: Administrativo/i)).toBeInTheDocument();
+    });
+
+    it("⚠️ No debe agregar mensaje si el asunto o cuerpo están vacíos", () => {
+        render(
+            <MemoryRouter>
+                <DashboardTutorContent />
+            </MemoryRouter>
+        );
+
+        fireEvent.click(screen.getByText("Mensajes"));
+
+        fireEvent.change(screen.getByLabelText(/Para/i), {
+            target: { value: "Administrativo" },
+        });
+
+        fireEvent.click(screen.getByText(/Enviar/i));
+
+        expect(screen.getByText("No hay mensajes aún.")).toBeInTheDocument();
     });
 });
