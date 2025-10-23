@@ -1,20 +1,19 @@
 // ===============================================================
 // 🧩 Componente: FormularioRegistro.jsx
-// Descripción: Mantiene los estilos originales (formulario.css)
-//              con tres tipos de usuario y redirección automática:
-//              Profesional Interno → /dashboard-prof
-//              Tutor → /dashboard-tutor
-//              Profesional Externo → /dashboard-prof-externo
+// Descripción: Formulario de registro con validaciones completas
+// Incluye campo obligatorio "Acepto términos y condiciones"
 // ===============================================================
 
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import "../style/formulario.css"; // ✅ Mantiene tus colores y diseño original
+import "../style/formulario.css";
 
 function FormularioRegistro() {
     const navigate = useNavigate();
 
-    // ------------------------- ESTADOS -------------------------
+    // ---------------------------------------------------------------
+    // ESTADOS DEL FORMULARIO
+    // ---------------------------------------------------------------
     const [nombre, setNombre] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
@@ -25,7 +24,7 @@ function FormularioRegistro() {
     const [rnpi, setRnpi] = useState("");
     const [institucion, setInstitucion] = useState("");
 
-    // Tutor / Familiar
+    // Tutor
     const [parentesco, setParentesco] = useState("");
     const [idPaciente, setIdPaciente] = useState("");
     const [codigoCentro, setCodigoCentro] = useState("");
@@ -33,18 +32,27 @@ function FormularioRegistro() {
     // Profesional Externo
     const [numeroProfesional, setNumeroProfesional] = useState("");
 
+    // Nuevo estado para checkbox de aceptación de términos
+    const [aceptaTerminos, setAceptaTerminos] = useState(false);
+
+    // Manejo de errores
     const [error, setError] = useState("");
 
-    // ------------------------- VALIDACIONES -------------------------
+    // ---------------------------------------------------------------
+    // VALIDACIONES
+    // ---------------------------------------------------------------
     const emailValido = (v) => /\S+@\S+\.\S+/.test(v);
     const noVacio = (v) => String(v).trim().length > 0;
     const passwordRegex =
         /^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&._-])[A-Za-z\d@$!%*?&._-]{6,}$/;
 
-    // ------------------------- ENVÍO DEL FORMULARIO -------------------------
+    // ---------------------------------------------------------------
+    // FUNCIÓN DE ENVÍO DEL FORMULARIO
+    // ---------------------------------------------------------------
     const handleSubmit = (e) => {
         e.preventDefault();
 
+        // ✅ Validación de campos vacíos
         if (
             !noVacio(nombre) ||
             !noVacio(email) ||
@@ -56,16 +64,19 @@ function FormularioRegistro() {
             return;
         }
 
+        // ✅ Validación formato correo
         if (!emailValido(email)) {
             setError("El correo electrónico no tiene un formato válido.");
             return;
         }
 
+        // ✅ Contraseñas coinciden
         if (password !== repitePassword) {
             setError("Las contraseñas no coinciden.");
             return;
         }
 
+        // ✅ Seguridad de la contraseña
         if (!passwordRegex.test(password)) {
             setError(
                 "La contraseña debe tener al menos 6 caracteres, una mayúscula, un número y un símbolo (@ $ ! % * ? & . _ -)."
@@ -73,12 +84,12 @@ function FormularioRegistro() {
             return;
         }
 
-        // Validaciones específicas según tipo
+        // ✅ Validaciones según tipo de usuario
         if (
             tipoUsuario === "Profesional Interno" &&
             (!noVacio(rnpi) || !noVacio(institucion))
         ) {
-            setError("Debes completar los campos del Profesional Interno (RNPI e institución).");
+            setError("Debes completar RNPI e institución para profesionales internos.");
             return;
         }
 
@@ -86,7 +97,7 @@ function FormularioRegistro() {
             tipoUsuario === "Tutor" &&
             (!noVacio(parentesco) || !noVacio(idPaciente) || !noVacio(codigoCentro))
         ) {
-            setError("Debes completar los campos del Tutor (parentesco, ID paciente y código del centro).");
+            setError("Debes completar parentesco, ID paciente y código del centro.");
             return;
         }
 
@@ -95,9 +106,18 @@ function FormularioRegistro() {
             return;
         }
 
+        // ✅ Validación del checkbox
+        if (!aceptaTerminos) {
+            setError("Debes aceptar los términos y condiciones antes de registrarte.");
+            return;
+        }
+
+        // Si todo está correcto, limpiamos el error
         setError("");
 
-        // Crear el objeto del nuevo usuario
+        // ---------------------------------------------------------------
+        // GUARDAR DATOS DEL USUARIO
+        // ---------------------------------------------------------------
         const nuevoUsuario = {
             nombre,
             email,
@@ -109,13 +129,15 @@ function FormularioRegistro() {
             idPaciente,
             codigoCentro,
             numeroProfesional,
+            aceptaTerminos,
         };
 
-        // Guardar en localStorage
         localStorage.setItem("usuarioRegistrado", JSON.stringify(nuevoUsuario));
         localStorage.setItem("usuarioActivo", JSON.stringify(nuevoUsuario));
 
-        // Redirección según tipo de usuario
+        // ---------------------------------------------------------------
+        // REDIRECCIÓN SEGÚN EL TIPO DE USUARIO
+        // ---------------------------------------------------------------
         if (tipoUsuario === "Profesional Interno") {
             navigate("/dashboard-prof");
         } else if (tipoUsuario === "Tutor") {
@@ -126,10 +148,12 @@ function FormularioRegistro() {
             navigate("/login");
         }
 
-        alert(`✅ Registro exitoso como ${tipoUsuario}`);
+        alert(`Registro exitoso como ${tipoUsuario}`);
     };
 
-    // ------------------------- INTERFAZ VISUAL -------------------------
+    // ---------------------------------------------------------------
+    // INTERFAZ VISUAL
+    // ---------------------------------------------------------------
     return (
         <div className="container d-flex justify-content-center align-items-center mt-5">
             <div
@@ -138,6 +162,7 @@ function FormularioRegistro() {
             >
                 <h3 className="text-center mb-4">REGÍSTRATE</h3>
 
+                {/* Mensaje de error */}
                 {error && <div className="alert alert-danger">{error}</div>}
 
                 <form onSubmit={handleSubmit}>
@@ -175,17 +200,8 @@ function FormularioRegistro() {
                             onChange={(e) => setPassword(e.target.value)}
                             placeholder="Ingrese su contraseña"
                         />
-                        <small
-                            className="text-light"
-                            style={{
-                                fontSize: "0.78rem",
-                                marginTop: "-12px",
-                                display: "block",
-                                lineHeight: "1.2",
-                            }}
-                        >
-                            Mínimo 6 caracteres, una mayúscula, un número y un símbolo
-                            (<strong>@ $ ! % * ? & . _ -</strong>)
+                        <small className="text-light" style={{ fontSize: "0.78rem" }}>
+                            Mínimo 6 caracteres, una mayúscula, un número y un símbolo.
                         </small>
                     </div>
 
@@ -226,7 +242,7 @@ function FormularioRegistro() {
                                     className="form-control"
                                     value={rnpi}
                                     onChange={(e) => setRnpi(e.target.value)}
-                                    placeholder="Ejemplo: 12345"
+                                    placeholder="Ej: 12345"
                                 />
                             </div>
 
@@ -274,7 +290,7 @@ function FormularioRegistro() {
                                     className="form-control"
                                     value={idPaciente}
                                     onChange={(e) => setIdPaciente(e.target.value)}
-                                    placeholder="Ingrese el RUT del paciente"
+                                    placeholder="RUT del paciente"
                                 />
                             </div>
 
@@ -300,17 +316,32 @@ function FormularioRegistro() {
                                 className="form-control"
                                 value={numeroProfesional}
                                 onChange={(e) => setNumeroProfesional(e.target.value)}
-                                placeholder="Ejemplo: 908776"
+                                placeholder="Ej: 908776"
                             />
                         </div>
                     )}
 
+                    {/* CHECKBOX DE TÉRMINOS Y CONDICIONES */}
+                    <div className="form-check mt-3">
+                        <input
+                            className="form-check-input"
+                            type="checkbox"
+                            checked={aceptaTerminos}
+                            onChange={(e) => setAceptaTerminos(e.target.checked)}
+                            id="terminos"
+                        />
+                        <label className="form-check-label" htmlFor="terminos">
+                            Acepto los <Link to="/terminos" className="text-primary">Términos y Condiciones</Link>
+                        </label>
+                    </div>
+
                     {/* BOTÓN */}
-                    <button type="submit" className="btn btn-primary w-100 mt-3">
+                    <button type="submit" className="btn btn-primary w-100 mt-4">
                         Registrar
                     </button>
                 </form>
 
+                {/* Enlace inferior */}
                 <p className="text-center mt-3">
                     ¿Ya tienes cuenta?{" "}
                     <Link to="/login" className="text-decoration-none fw-semibold">
