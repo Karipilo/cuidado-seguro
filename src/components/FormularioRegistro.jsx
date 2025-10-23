@@ -1,42 +1,57 @@
-// Importa React y sus hooks necesarios
+// ===============================================================
+// 🧩 Componente: FormularioRegistro.jsx
+// Descripción: Mantiene los estilos originales (formulario.css)
+//              con tres tipos de usuario y redirección automática:
+//              Profesional Interno → /dashboard-prof
+//              Tutor → /dashboard-tutor
+//              Profesional Externo → /dashboard-prof-externo
+// ===============================================================
+
 import React, { useState } from "react";
-import { useNavigate, Link } from "react-router-dom"; // Para navegación entre páginas
-import "../style/formulario.css"; // Mantiene tu CSS original
+import { useNavigate, Link } from "react-router-dom";
+import "../style/formulario.css"; // ✅ Mantiene tus colores y diseño original
 
 function FormularioRegistro() {
-    const navigate = useNavigate(); // Permite redirigir al usuario al login luego del registro
+    const navigate = useNavigate();
 
-    // ESTADOS BÁSICOS
+    // ------------------------- ESTADOS -------------------------
     const [nombre, setNombre] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [repitePassword, setRepitePassword] = useState("");
     const [tipoUsuario, setTipoUsuario] = useState("");
 
-    // ESTADOS PROFESIONAL
-    const [tipoProfesional, setTipoProfesional] = useState("");
+    // Profesional Interno
     const [rnpi, setRnpi] = useState("");
     const [institucion, setInstitucion] = useState("");
 
-    // ESTADOS TUTOR
+    // Tutor / Familiar
     const [parentesco, setParentesco] = useState("");
     const [idPaciente, setIdPaciente] = useState("");
     const [codigoCentro, setCodigoCentro] = useState("");
 
-    // ERRORES
+    // Profesional Externo
+    const [numeroProfesional, setNumeroProfesional] = useState("");
+
     const [error, setError] = useState("");
 
-    // VALIDACIONES
-    const emailValido = (value) => /\S+@\S+\.\S+/.test(value);
-    const noVacio = (value) => String(value).trim().length > 0;
-    const passwordRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&._-])[A-Za-z\d@$!%*?&._-]{6,}$/;
+    // ------------------------- VALIDACIONES -------------------------
+    const emailValido = (v) => /\S+@\S+\.\S+/.test(v);
+    const noVacio = (v) => String(v).trim().length > 0;
+    const passwordRegex =
+        /^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&._-])[A-Za-z\d@$!%*?&._-]{6,}$/;
 
-    // FUNCIÓN PRINCIPAL DE ENVÍO
+    // ------------------------- ENVÍO DEL FORMULARIO -------------------------
     const handleSubmit = (e) => {
-        e.preventDefault(); // Evita recargar la página
+        e.preventDefault();
 
-        // Validaciones generales
-        if (!noVacio(nombre) || !noVacio(email) || !noVacio(password) || !noVacio(repitePassword) || !noVacio(tipoUsuario)) {
+        if (
+            !noVacio(nombre) ||
+            !noVacio(email) ||
+            !noVacio(password) ||
+            !noVacio(repitePassword) ||
+            !noVacio(tipoUsuario)
+        ) {
             setError("Todos los campos obligatorios deben completarse.");
             return;
         }
@@ -52,51 +67,77 @@ function FormularioRegistro() {
         }
 
         if (!passwordRegex.test(password)) {
-            setError("La contraseña debe tener al menos 6 caracteres, una mayúscula, un número y un símbolo (@ $ ! % * ? & . _ -).");
+            setError(
+                "La contraseña debe tener al menos 6 caracteres, una mayúscula, un número y un símbolo (@ $ ! % * ? & . _ -)."
+            );
             return;
         }
 
-        // Validaciones específicas
-        if (tipoUsuario === "Profesional" && (!noVacio(tipoProfesional) || !noVacio(rnpi) || !noVacio(institucion))) {
-            setError("Debes completar los campos del profesional (tipo, RNPI e institución).");
+        // Validaciones específicas según tipo
+        if (
+            tipoUsuario === "Profesional Interno" &&
+            (!noVacio(rnpi) || !noVacio(institucion))
+        ) {
+            setError("Debes completar los campos del Profesional Interno (RNPI e institución).");
             return;
         }
 
-        if (tipoUsuario === "Tutor" && (!noVacio(parentesco) || !noVacio(idPaciente) || !noVacio(codigoCentro))) {
-            setError("Debes completar los campos del tutor (parentesco, ID paciente y código del centro).");
+        if (
+            tipoUsuario === "Tutor" &&
+            (!noVacio(parentesco) || !noVacio(idPaciente) || !noVacio(codigoCentro))
+        ) {
+            setError("Debes completar los campos del Tutor (parentesco, ID paciente y código del centro).");
             return;
         }
 
-        // Limpia errores
+        if (tipoUsuario === "Profesional Externo" && !noVacio(numeroProfesional)) {
+            setError("Debes ingresar tu número de profesional externo.");
+            return;
+        }
+
         setError("");
 
-        // 💾 Guarda los datos del usuario en localStorage
+        // Crear el objeto del nuevo usuario
         const nuevoUsuario = {
             nombre,
             email,
             password,
             tipoUsuario,
-            tipoProfesional,
             rnpi,
             institucion,
             parentesco,
             idPaciente,
             codigoCentro,
+            numeroProfesional,
         };
 
+        // Guardar en localStorage
         localStorage.setItem("usuarioRegistrado", JSON.stringify(nuevoUsuario));
+        localStorage.setItem("usuarioActivo", JSON.stringify(nuevoUsuario));
 
-        alert("✅ Registro exitoso");
-        navigate("/login"); // Redirige al login
+        // Redirección según tipo de usuario
+        if (tipoUsuario === "Profesional Interno") {
+            navigate("/dashboard-prof");
+        } else if (tipoUsuario === "Tutor") {
+            navigate("/dashboard-tutor");
+        } else if (tipoUsuario === "Profesional Externo") {
+            navigate("/dashboard-prof-externo");
+        } else {
+            navigate("/login");
+        }
+
+        alert(`✅ Registro exitoso como ${tipoUsuario}`);
     };
 
-    // INTERFAZ VISUAL 
+    // ------------------------- INTERFAZ VISUAL -------------------------
     return (
         <div className="container d-flex justify-content-center align-items-center mt-5">
-            <div className="card shadow p-4 rounded-4 formulario" style={{ maxWidth: 560, width: "100%" }}>
+            <div
+                className="card shadow p-4 rounded-4 formulario"
+                style={{ maxWidth: 560, width: "100%" }}
+            >
                 <h3 className="text-center mb-4">REGÍSTRATE</h3>
 
-                {/* Si hay error, se muestra aquí */}
                 {error && <div className="alert alert-danger">{error}</div>}
 
                 <form onSubmit={handleSubmit}>
@@ -112,8 +153,7 @@ function FormularioRegistro() {
                         />
                     </div>
 
-
-                    {/* EMAIL */}
+                    {/* CORREO */}
                     <div className="mb-3">
                         <label className="form-label">Correo electrónico:</label>
                         <input
@@ -125,7 +165,6 @@ function FormularioRegistro() {
                         />
                     </div>
 
-
                     {/* CONTRASEÑA */}
                     <div className="mb-3">
                         <label className="form-label">Contraseña:</label>
@@ -136,15 +175,13 @@ function FormularioRegistro() {
                             onChange={(e) => setPassword(e.target.value)}
                             placeholder="Ingrese su contraseña"
                         />
-
-                        {/* 💬 Mensaje aclaratorio pequeño y cercano */}
                         <small
                             className="text-light"
                             style={{
-                                fontSize: "0.78rem",     // más pequeño que el texto normal
-                                marginTop: "-12px",       // acerca el texto al input
-                                display: "block",        // asegura que aparezca justo debajo
-                                lineHeight: "1.2",       // reduce espacio vertical
+                                fontSize: "0.78rem",
+                                marginTop: "-12px",
+                                display: "block",
+                                lineHeight: "1.2",
                             }}
                         >
                             Mínimo 6 caracteres, una mayúscula, un número y un símbolo
@@ -173,31 +210,15 @@ function FormularioRegistro() {
                             onChange={(e) => setTipoUsuario(e.target.value)}
                         >
                             <option value="">Selecciona una opción</option>
-                            <option value="Profesional">Profesional</option>
-                            <option value="Tutor">Tutor</option>
+                            <option value="Profesional Interno">Profesional Interno</option>
+                            <option value="Tutor">Tutor / Familiar</option>
+                            <option value="Profesional Externo">Profesional Externo</option>
                         </select>
                     </div>
 
-                    {/* CAMPOS PROFESIONAL */}
-                    {tipoUsuario === "Profesional" && (
+                    {/* CAMPOS PROFESIONAL INTERNO */}
+                    {tipoUsuario === "Profesional Interno" && (
                         <>
-                            <div className="mb-3">
-                                <label className="form-label">Tipo de profesional:</label>
-                                <select
-                                    className="form-select"
-                                    value={tipoProfesional}
-                                    onChange={(e) => setTipoProfesional(e.target.value)}
-                                >
-                                    <option value="">Selecciona tu especialidad</option>
-                                    <option value="Enfermero">Enfermero/a</option>
-                                    <option value="Técnico Paramédico">Paramédico</option>
-                                    <option value="Kinesiólogo">Kinesiólogo/a</option>
-                                    <option value="Médico">Médico/a</option>
-                                    <option value="Nutricionista">Nutricionista</option>
-                                    <option value="Otro">Otro</option>
-                                </select>
-                            </div>
-
                             <div className="mb-3">
                                 <label className="form-label">Número RNPI:</label>
                                 <input
@@ -217,8 +238,8 @@ function FormularioRegistro() {
                                     onChange={(e) => setInstitucion(e.target.value)}
                                 >
                                     <option value="">Selecciona una institución</option>
-                                    <option value="Clínica los Alerces">Clínica Los Alerces</option>
-                                    <option value="Clínica los Carreras">Clínica Los Carreras</option>
+                                    <option value="Clínica Los Alerces">Clínica Los Alerces</option>
+                                    <option value="Clínica Los Carreras">Clínica Los Carreras</option>
                                     <option value="Clínica Miraflores">Clínica Miraflores</option>
                                     <option value="ELEAM Las Palmas">ELEAM Las Palmas</option>
                                     <option value="ELEAM San José">ELEAM San José</option>
@@ -258,7 +279,7 @@ function FormularioRegistro() {
                             </div>
 
                             <div className="mb-3">
-                                <label className="form-label">Código de acceso del centro:</label>
+                                <label className="form-label">Código del centro:</label>
                                 <input
                                     type="text"
                                     className="form-control"
@@ -268,6 +289,20 @@ function FormularioRegistro() {
                                 />
                             </div>
                         </>
+                    )}
+
+                    {/* CAMPOS PROFESIONAL EXTERNO */}
+                    {tipoUsuario === "Profesional Externo" && (
+                        <div className="mb-3">
+                            <label className="form-label">Número de Profesional:</label>
+                            <input
+                                type="text"
+                                className="form-control"
+                                value={numeroProfesional}
+                                onChange={(e) => setNumeroProfesional(e.target.value)}
+                                placeholder="Ejemplo: 908776"
+                            />
+                        </div>
                     )}
 
                     {/* BOTÓN */}
@@ -288,5 +323,3 @@ function FormularioRegistro() {
 }
 
 export default FormularioRegistro;
-
-

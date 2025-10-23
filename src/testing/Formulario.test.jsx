@@ -2,43 +2,38 @@
 // Arrange – Act – Assert
 
 
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect, vi } from "vitest"; // vi = mocks / funciones simuladas
 import { render, screen, fireEvent } from "@testing-library/react";
-import { MemoryRouter } from "react-router-dom"; // ✅ Para envolver el componente
 import Formulario from "../components/Formulario";
 
 
+// GRUPO DE PRUEBAS
 describe("🧩 Comportamiento del componente <Formulario />", () => {
 
     // ===========================================================
+    // TEST 1: Renderizado correcto
+    // ===========================================================
     it("✅ Debe renderizar los campos principales del formulario", () => {
-        // 🧱 1. ARRANGE
-        const mockOnLogin = vi.fn();
+        // 🧱 1. ARRANGE - Preparación
+        const mockOnLogin = vi.fn(); // función simulada
+        render(<Formulario onLogin={mockOnLogin} />);
 
-        render(
-            <MemoryRouter>
-                <Formulario onLogin={mockOnLogin} />
-            </MemoryRouter>
-        );
+        // ⚙️ 2. ACT - (no hay acción aquí, solo renderizado inicial)
 
-        // ⚙️ 2. ACT → (solo renderizado)
-
-        // ✅ 3. ASSERT
+        // ✅ 3. ASSERT - Verificación
         expect(screen.getByLabelText(/correo electrónico/i)).toBeInTheDocument();
         expect(screen.getByLabelText(/contraseña/i)).toBeInTheDocument();
         expect(screen.getByRole("button", { name: /ingresar/i })).toBeInTheDocument();
     });
 
+
+    // ===========================================================
+    // TEST 2: Error con campos vacíos
     // ===========================================================
     it("❌ Debe mostrar error si se envía sin rellenar los campos", async () => {
         // 🧱 1. ARRANGE
         const mockOnLogin = vi.fn(() => false);
-
-        render(
-            <MemoryRouter>
-                <Formulario onLogin={mockOnLogin} />
-            </MemoryRouter>
-        );
+        render(<Formulario onLogin={mockOnLogin} />);
 
         // ⚙️ 2. ACT
         fireEvent.submit(screen.getByRole("button", { name: /ingresar/i }));
@@ -48,16 +43,14 @@ describe("🧩 Comportamiento del componente <Formulario />", () => {
         expect(error).toBeInTheDocument();
     });
 
+
+    // ===========================================================
+    // TEST 3: Contraseña no cumple requisitos
     // ===========================================================
     it("⚠️ Debe mostrar error si la contraseña no cumple requisitos", () => {
         // 🧱 1. ARRANGE
         const mockOnLogin = vi.fn(() => false);
-
-        render(
-            <MemoryRouter>
-                <Formulario onLogin={mockOnLogin} />
-            </MemoryRouter>
-        );
+        render(<Formulario onLogin={mockOnLogin} />);
 
         // ⚙️ 2. ACT
         fireEvent.change(screen.getByLabelText(/correo electrónico/i), {
@@ -69,19 +62,18 @@ describe("🧩 Comportamiento del componente <Formulario />", () => {
         fireEvent.click(screen.getByRole("button", { name: /ingresar/i }));
 
         // ✅ 3. ASSERT
-        expect(screen.getByText(/la contraseña debe tener al menos/i)).toBeInTheDocument();
+        expect(screen.getByText(/la contraseña debe tener al menos/i))
+            .toBeInTheDocument();
     });
 
+
+    // ===========================================================
+    // TEST 4: Datos válidos → onLogin llamado
     // ===========================================================
     it("🟢 Debe llamar a onLogin si los datos son válidos", () => {
         // 🧱 1. ARRANGE
         const mockOnLogin = vi.fn(() => true);
-
-        render(
-            <MemoryRouter>
-                <Formulario onLogin={mockOnLogin} />
-            </MemoryRouter>
-        );
+        render(<Formulario onLogin={mockOnLogin} />);
 
         // ⚙️ 2. ACT
         fireEvent.change(screen.getByLabelText(/correo electrónico/i), {

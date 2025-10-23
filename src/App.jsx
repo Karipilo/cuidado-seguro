@@ -14,6 +14,7 @@ import DashboardTutor from "./pages/DashboardTutor";
 import DatosMedicos from "./pages/DatosMedicos";
 import Paciente from "./pages/Paciente";
 import Registro from "./pages/Registro";
+import DashboardProfExterno from "./pages/DashboardProfExterno";
 
 // Componente principal de la aplicación
 function App() {
@@ -27,11 +28,12 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/home" element={<Home />} />
         <Route path="/centros" element={<Centros />} />
-        <Route path="/dashboardprof" element={<DashboardProf />} />
-        <Route path="/dashboardtutor" element={<DashboardTutor />} />
+        <Route path="/dashboard-prof" element={<DashboardProf />} />
+        <Route path="/dashboard-tutor" element={<DashboardTutor />} />
         <Route path="/login" element={<Login />} />
         <Route path="/registro" element={<Registro />} />
-        
+        <Route path="/dashboard-prof-externo" element={<DashboardProfExterno />} />
+
       </Routes>
 
       {/* Footer visible en todas las páginas */}

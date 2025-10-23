@@ -1,6 +1,8 @@
 // ===============================================================
 // 🧩 Componente: DashboardProf.jsx
-// Descripción: Panel principal del usuario tipo "Profesional".
+// Descripción: Panel principal del usuario tipo "Profesional Interno".
+// Muestra resumen, gestión de pacientes y datos actualizados
+// sincronizados desde localStorage (pacientesData).
 // ===============================================================
 
 import React, { useEffect, useState } from "react";
@@ -18,81 +20,32 @@ function DashboardProf() {
   const [vista, setVista] = useState("resumen");
   const [institucion, setInstitucion] = useState("");
   const [pacienteSeleccionado, setPacienteSeleccionado] = useState(null);
-  const [pacienteEditando, setPacienteEditando] = useState(null); // 🆕 para modo edición
-  const [pacientes, setPacientes] = useState([]); // ahora se carga dinámicamente
+  const [pacienteEditando, setPacienteEditando] = useState(null); // por si luego habilitamos edición
+  const [pacientes, setPacientes] = useState([]); // se carga dinámicamente desde localStorage
 
   // ---------------------------------------------------------------
-  // 🔹 CARGA USUARIO Y PACIENTES
+  // 🔹 CARGA DE USUARIO Y PACIENTES DESDE LOCALSTORAGE
   // ---------------------------------------------------------------
   useEffect(() => {
     const activo = JSON.parse(localStorage.getItem("usuarioActivo"));
-    if (!activo || activo.tipoUsuario !== "Profesional") {
+    if (!activo || activo.tipoUsuario !== "Profesional Interno") {
       navigate("/login");
       return;
     }
     setUsuario(activo);
     if (activo.institucion) setInstitucion(activo.institucion);
 
-    // 🔸 Cargar pacientes simulados
-    setPacientes([
-      {
-        id: 1,
-        rut: "4.234.657-k",
-        nombre: "Ana María Pérez Villouta",
-        edad: 78,
-        diagnostico: "Demencia senil",
-        alergias: "Penicilina",
-        medicamentos: ["Rivastigmina 3mg cada 12 hrs", "Quetiapina 25mg noche"],
-        controles: ["Presión: 120/80 mmHg", "Peso: 64 kg"],
-        observaciones: "Paciente estable, sin alteraciones en la conducta.",
-        imagen: "/images/maria.png",
-      },
-      {
-        id: 2,
-        rut: "5.654.234-0",
-        nombre: "Juan José Soto Risopatrón",
-        edad: 82,
-        diagnostico: "Parkinson",
-        alergias: "Ninguna",
-        medicamentos: ["Levodopa 100mg - cada 8 hrs", "Clonazepam 0.5mg - noche"],
-        controles: ["Presión: 130/85 mmHg", "Peso: 70 kg"],
-        observaciones: "Leves temblores controlados con medicación.",
-        imagen: "/images/luis.png",
-      },
-      {
-        id: 3,
-        rut: "6.234.657-3",
-        nombre: "Rousmarie Trinidad Mattus Hasse",
-        edad: 78,
-        diagnostico: "Fractura de cadera",
-        alergias: "Penicilina",
-        medicamentos: ["Tramadol 100 mg al día", "Quetiapina 25mg noche"],
-        controles: ["Presión: 120/80 mmHg", "Peso: 64 kg"],
-        observaciones: "Paciente estable, se realizaron los cambios de posición correspondientes.",
-        imagen: "/images/rosa.png",
-      },
-    ]);
+    // Cargar pacientes sincronizados
+    const almacenados = JSON.parse(localStorage.getItem("pacientesData"));
+    if (almacenados && Array.isArray(almacenados)) {
+      setPacientes(almacenados);
+    } else {
+      setPacientes([]);
+    }
   }, [navigate]);
 
   // ---------------------------------------------------------------
-  // 🔹 FUNCIONES DE ACCIÓN
-  // ---------------------------------------------------------------
-
-  // 🗑️ Eliminar paciente del listado
-  const eliminarPaciente = (id) => {
-    if (window.confirm("¿Estás seguro de eliminar este paciente?")) {
-      setPacientes((prev) => prev.filter((p) => p.id !== id));
-    }
-  };
-
-  // ✏️ Modo edición (simulado)
-  const editarPaciente = (paciente) => {
-    setPacienteEditando(paciente);
-    alert(`Modo edición: ${paciente.nombre}`);
-  };
-
-  // ---------------------------------------------------------------
-  // 🔹 DATOS SIMULADOS PARA EL RESUMEN
+  // 🔹 ESTADÍSTICAS RÁPIDAS (SIMULADAS)
   // ---------------------------------------------------------------
   const stats = {
     pacientes: pacientes.length,
@@ -105,7 +58,7 @@ function DashboardProf() {
   // ---------------------------------------------------------------
   const renderContenido = () => {
     // ============================================================
-    // 1️⃣ VISTA: RESUMEN GENERAL
+    // VISTA 1️⃣: RESUMEN GENERAL
     // ============================================================
     if (vista === "resumen") {
       return (
@@ -113,9 +66,7 @@ function DashboardProf() {
           <h2 className="mt-4 text-center">
             Resumen general
             {institucion && (
-              <span className="text-primary d-block fs-5 mt-1">
-                {institucion}
-              </span>
+              <span className="text-primary d-block fs-5 mt-1">{institucion}</span>
             )}
           </h2>
 
@@ -141,15 +92,15 @@ function DashboardProf() {
     }
 
     // ============================================================
-    // 2️⃣ VISTA: PACIENTES (LISTADO + DETALLE)
+    // VISTA 2️⃣: PACIENTES (LISTADO + DETALLE)
     // ============================================================
     if (vista === "pacientes") {
-      // Si hay un paciente seleccionado → mostrar detalle
+      // 📋 DETALLE DEL PACIENTE
       if (pacienteSeleccionado) {
         return (
           <>
             <h2 className="mt-4">Detalle del Paciente</h2>
-            <p className="text-muted">Información general y médica del paciente.</p>
+            <p className="text-muted">Información clínica actualizada (solo lectura).</p>
 
             <div className="card shadow-sm mt-3">
               <img
@@ -158,31 +109,75 @@ function DashboardProf() {
                 className="card-img-top"
                 style={{ height: "300px", objectFit: "cover" }}
               />
+
               <div className="card-body">
                 <h5 className="fw-semibold mb-3 text-primary">
                   {pacienteSeleccionado.nombre}
                 </h5>
+
                 <p><strong>RUT:</strong> {pacienteSeleccionado.rut}</p>
                 <p><strong>Edad:</strong> {pacienteSeleccionado.edad} años</p>
                 <p><strong>Diagnóstico:</strong> {pacienteSeleccionado.diagnostico}</p>
                 <p><strong>Alergias:</strong> {pacienteSeleccionado.alergias}</p>
+                <p><strong>Observaciones:</strong> {pacienteSeleccionado.observaciones}</p>
+
                 <hr />
-                <h6 className="fw-bold text-primary">Medicamentos</h6>
-                <ul>
-                  {pacienteSeleccionado.medicamentos.map((m, i) => (
-                    <li key={i}>{m}</li>
-                  ))}
-                </ul>
 
-                <h6 className="fw-bold text-primary mt-3">Controles</h6>
-                <ul>
-                  {pacienteSeleccionado.controles.map((c, i) => (
-                    <li key={i}>{c}</li>
-                  ))}
-                </ul>
+                {/* 🩺 Notas Clínicas */}
+                <h6 className="fw-bold text-primary mt-3">🩺 Notas Clínicas</h6>
+                {pacienteSeleccionado.notas?.length > 0 ? (
+                  <ul>
+                    {pacienteSeleccionado.notas.map((n, i) => (
+                      <li key={i}>
+                        <strong>{n.fecha}:</strong> {n.contenido}
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className="text-muted">Sin notas clínicas registradas.</p>
+                )}
 
-                <h6 className="fw-bold text-primary mt-3">Observaciones</h6>
-                <p>{pacienteSeleccionado.observaciones}</p>
+                {/* 💊 Recetas */}
+                <h6 className="fw-bold text-primary mt-3">💊 Recetas</h6>
+                {pacienteSeleccionado.recetas?.length > 0 ? (
+                  <ul>
+                    {pacienteSeleccionado.recetas.map((r, i) => (
+                      <li key={i}>
+                        <strong>{r.fecha}:</strong> {r.contenido}
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className="text-muted">Sin recetas registradas.</p>
+                )}
+
+                {/* 🧪 Exámenes */}
+                <h6 className="fw-bold text-primary mt-3">🧪 Exámenes</h6>
+                {pacienteSeleccionado.examenes?.length > 0 ? (
+                  <ul>
+                    {pacienteSeleccionado.examenes.map((e, i) => (
+                      <li key={i}>
+                        <strong>{e.fecha}:</strong> {e.contenido}
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className="text-muted">Sin exámenes registrados.</p>
+                )}
+
+                {/* 📜 Certificados */}
+                <h6 className="fw-bold text-primary mt-3">📜 Certificados</h6>
+                {pacienteSeleccionado.certificados?.length > 0 ? (
+                  <ul>
+                    {pacienteSeleccionado.certificados.map((c, i) => (
+                      <li key={i}>
+                        <strong>{c.fecha}:</strong> {c.contenido}
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className="text-muted">Sin certificados registrados.</p>
+                )}
 
                 <button
                   className="btn btn-secondary mt-3"
@@ -196,11 +191,11 @@ function DashboardProf() {
         );
       }
 
-      // 🧾 Listado de pacientes
+      // 📋 LISTADO DE PACIENTES
       return (
         <>
           <h2 className="mt-4">Pacientes</h2>
-          <p className="text-muted">Selecciona un paciente o gestiona sus datos.</p>
+          <p className="text-muted">Selecciona un paciente para ver su información.</p>
 
           <div className="card shadow-sm">
             <div className="card-body p-0">
@@ -217,7 +212,7 @@ function DashboardProf() {
                   </thead>
                   <tbody>
                     {pacientes.map((p) => (
-                      <tr key={p.id}>
+                      <tr key={p.rut}>
                         <td style={{ width: "90px" }}>
                           <img
                             src={p.imagen}
@@ -230,26 +225,12 @@ function DashboardProf() {
                         <td>{p.nombre}</td>
                         <td>{p.edad}</td>
                         <td>
-                          <div className="d-flex gap-2">
-                            <button
-                              className="btn btn-outline-primary btn-sm"
-                              onClick={() => setPacienteSeleccionado(p)}
-                            >
-                              Ver
-                            </button>
-                            <button
-                              className="btn btn-outline-warning btn-sm"
-                              onClick={() => editarPaciente(p)}
-                            >
-                              Modificar
-                            </button>
-                            <button
-                              className="btn btn-outline-danger btn-sm"
-                              onClick={() => eliminarPaciente(p.id)}
-                            >
-                              Eliminar
-                            </button>
-                          </div>
+                          <button
+                            className="btn btn-outline-primary btn-sm"
+                            onClick={() => setPacienteSeleccionado(p)}
+                          >
+                            Ver Detalle
+                          </button>
                         </td>
                       </tr>
                     ))}
@@ -263,55 +244,37 @@ function DashboardProf() {
     }
 
     // ============================================================
-    // 3️⃣ VISTA: DATOS IMPORTANTES
+    // VISTA 3️⃣: DATOS IMPORTANTES
     // ============================================================
     if (vista === "datos") {
       return (
         <>
-          <h2 className="mt-4">Agregar Nota Clínica</h2>
+          <h2 className="mt-4">Datos importantes</h2>
           <p className="text-muted">
-            Aquí puedes ingresar información médica relevante para los pacientes institucionalizados.
+            Aquí puedes registrar información adicional o reportes clínicos.
           </p>
 
           <div className="card shadow-sm">
             <div className="card-body">
-              <div className="row g-3">
-                <div className="col-md-4">
-                  <label className="form-label">RUT del paciente</label>
-                  <input className="form-control" placeholder="11.111.111-1" />
-                </div>
-                <div className="col-md-4">
-                  <label className="form-label">Diagnóstico</label>
-                  <input className="form-control" placeholder="Ej: Demencia mixta" />
-                </div>
-                <div className="col-md-4">
-                  <label className="form-label">Alergias</label>
-                  <input className="form-control" placeholder="Ej: Penicilina" />
-                </div>
-                <div className="col-12">
-                  <label className="form-label">Observaciones</label>
-                  <textarea className="form-control" rows="3" placeholder="Notas clínicas..." />
-                </div>
-              </div>
-              <div className="d-flex justify-content-end mt-3">
-                <button className="btn btn-primary">Guardar</button>
-              </div>
+              <p className="text-muted">Esta sección puede conectarse a futuras funciones.</p>
             </div>
           </div>
         </>
       );
     }
+
+    return null;
   };
 
   // ---------------------------------------------------------------
-  // RENDER PRINCIPAL
+  // 🔹 RENDER PRINCIPAL
   // ---------------------------------------------------------------
   if (!usuario) return null;
 
   return (
     <div className="container-fluid">
       <div className="row">
-        {/* SIDEBAR */}
+        {/* SIDEBAR IZQUIERDO */}
         <aside className="col-md-3 col-lg-2 bg-light p-3 min-vh-100 border-end">
           <div className="mb-3">
             <div className="small text-muted">Sesión activa</div>
