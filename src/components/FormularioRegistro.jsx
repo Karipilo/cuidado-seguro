@@ -321,19 +321,37 @@ function FormularioRegistro() {
                         </div>
                     )}
 
-                    {/* CHECKBOX DE TÉRMINOS Y CONDICIONES */}
-                    <div className="form-check mt-3">
-                        <input
-                            className="form-check-input"
-                            type="checkbox"
-                            checked={aceptaTerminos}
-                            onChange={(e) => setAceptaTerminos(e.target.checked)}
-                            id="terminos"
-                        />
-                        <label className="form-check-label" htmlFor="terminos">
-                            Acepto los <Link to="/terminos" className="text-primary">Términos y Condiciones</Link>
-                        </label>
+                    {/* ✅ CHECKBOX DE TÉRMINOS Y CONDICIONES */}
+                    <div className="d-flex justify-content-center align-items-center mt-3">
+                        <div
+                            className="form-check d-flex align-items-center"
+                            style={{ gap: "8px", transform: "scale(0.9)" }} // hace el checkbox más pequeño
+                        >
+                            <input
+                                className="form-check-input m-0"
+                                type="checkbox"
+                                checked={aceptaTerminos}
+                                onChange={(e) => setAceptaTerminos(e.target.checked)}
+                                id="terminos"
+                                style={{
+                                    width: "16px",
+                                    height: "16px",
+                                    cursor: "pointer",
+                                }}
+                            />
+                            <label
+                                className="form-check-label text-light"
+                                htmlFor="terminos"
+                                style={{ fontSize: "0.9rem", cursor: "pointer" }}
+                            >
+                                Acepto los{" "}
+                                <Link to="/terminos" className="text-primary text-decoration-none">
+                                    Términos y Condiciones
+                                </Link>
+                            </label>
+                        </div>
                     </div>
+
 
                     {/* BOTÓN */}
                     <button type="submit" className="btn btn-primary w-100 mt-4">
