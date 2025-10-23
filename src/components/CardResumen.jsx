@@ -1,30 +1,31 @@
+// ===============================================================
+// 🧩 Componente: CardResumen.jsx
+// Descripción: Tarjeta reutilizable para mostrar datos en el resumen
+// (Pacientes, Alertas, Notificaciones, etc.)
+// ===============================================================
+
 import React from "react";
 
-/**
- * CardResumen
- * Muestra una tarjeta Bootstrap con un título y un valor numérico o texto.
- * Se usa en los dashboards para mostrar datos resumidos (pacientes, alertas, etc.)
- * 
- * Props (propiedades que recibe desde el componente padre):
- * titulo → texto principal de la tarjeta (ej: "Pacientes")
- * valor → número o texto a mostrar (ej: 12)
- * extraClass → clases CSS adicionales (opcional, para colores o estilos)
- */
-function CardResumen({ titulo, valor, extraClass = "" }) {
+// ---------------------------------------------------------------
+// Recibe props desde el componente padre (DashboardProf)
+// ---------------------------------------------------------------
+// - titulo → texto superior de la tarjeta (Ej: "Pacientes")
+// - valor → número o contenido dinámico que se muestra destacado
+// ---------------------------------------------------------------
+function CardResumen({ titulo, valor }) {
     return (
-        // Estructura del diseño de la tarjeta (columna Bootstrap)
-        <div className="col-md-3 mb-3">
-            {/* Tarjeta centrada con sombra */}
-            <div className={`card text-center shadow-sm ${extraClass}`}>
-                <div className="card-body">
-                    {/* Título de la tarjeta */}
-                    <h5 className="card-title">{titulo}</h5>
+        // Contenedor principal con clases de Bootstrap
+        // "h-100" hace que todas las tarjetas tengan la misma altura
+        <div className="card text-center shadow-sm h-100 border-0 resumen-card">
+            <div className="card-body d-flex flex-column justify-content-center">
+                {/* 🔹 Título de la tarjeta */}
+                <h5 className="card-title text-secondary fw-semibold">{titulo}</h5>
 
-                    {/* Valor principal en grande */}
-                    <p className="card-text fs-3 fw-bold">{valor}</p>
-                </div>
+                {/* 🔹 Valor dinámico (número, texto o ícono) */}
+                <p className="card-text fs-2 fw-bold mt-2">{valor}</p>
             </div>
         </div>
     );
 }
+
 export default CardResumen;
