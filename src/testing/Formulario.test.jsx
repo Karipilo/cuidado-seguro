@@ -1,31 +1,38 @@
-// Formato AAA (3 PASOS) 
-// Arrange – Act – Assert
-
+// ===============================================================
+// 🧩 Archivo: Formulario.test.jsx
+// Descripción: Pruebas del componente <Formulario /> con Vitest
+// Incluye Router para evitar el error de useNavigate().
+// ===============================================================
 
 import { describe, it, expect, vi } from "vitest"; // vi = mocks / funciones simuladas
 import { render, screen, fireEvent } from "@testing-library/react";
+import { BrowserRouter } from "react-router-dom"; // ✅ Importamos Router
 import Formulario from "../components/Formulario";
 
+// Helper para renderizar con contexto de Router
+const renderWithRouter = (ui) => {
+    return render(<BrowserRouter>{ui}</BrowserRouter>);
+};
 
+// ===============================================================
 // GRUPO DE PRUEBAS
+// ===============================================================
 describe("🧩 Comportamiento del componente <Formulario />", () => {
 
     // ===========================================================
     // TEST 1: Renderizado correcto
     // ===========================================================
     it("✅ Debe renderizar los campos principales del formulario", () => {
-        // 🧱 1. ARRANGE - Preparación
-        const mockOnLogin = vi.fn(); // función simulada
-        render(<Formulario onLogin={mockOnLogin} />);
+        // 🧱 1. ARRANGE
+        const mockOnLogin = vi.fn();
+        renderWithRouter(<Formulario onLogin={mockOnLogin} />);
 
-        // ⚙️ 2. ACT - (no hay acción aquí, solo renderizado inicial)
-
-        // ✅ 3. ASSERT - Verificación
+        // ⚙️ 2. ACT → no hay acciones (solo render)
+        // ✅ 3. ASSERT
         expect(screen.getByLabelText(/correo electrónico/i)).toBeInTheDocument();
         expect(screen.getByLabelText(/contraseña/i)).toBeInTheDocument();
         expect(screen.getByRole("button", { name: /ingresar/i })).toBeInTheDocument();
     });
-
 
     // ===========================================================
     // TEST 2: Error con campos vacíos
@@ -33,7 +40,7 @@ describe("🧩 Comportamiento del componente <Formulario />", () => {
     it("❌ Debe mostrar error si se envía sin rellenar los campos", async () => {
         // 🧱 1. ARRANGE
         const mockOnLogin = vi.fn(() => false);
-        render(<Formulario onLogin={mockOnLogin} />);
+        renderWithRouter(<Formulario onLogin={mockOnLogin} />);
 
         // ⚙️ 2. ACT
         fireEvent.submit(screen.getByRole("button", { name: /ingresar/i }));
@@ -43,14 +50,13 @@ describe("🧩 Comportamiento del componente <Formulario />", () => {
         expect(error).toBeInTheDocument();
     });
 
-
     // ===========================================================
     // TEST 3: Contraseña no cumple requisitos
     // ===========================================================
     it("⚠️ Debe mostrar error si la contraseña no cumple requisitos", () => {
         // 🧱 1. ARRANGE
         const mockOnLogin = vi.fn(() => false);
-        render(<Formulario onLogin={mockOnLogin} />);
+        renderWithRouter(<Formulario onLogin={mockOnLogin} />);
 
         // ⚙️ 2. ACT
         fireEvent.change(screen.getByLabelText(/correo electrónico/i), {
@@ -66,14 +72,13 @@ describe("🧩 Comportamiento del componente <Formulario />", () => {
             .toBeInTheDocument();
     });
 
-
     // ===========================================================
     // TEST 4: Datos válidos → onLogin llamado
     // ===========================================================
     it("🟢 Debe llamar a onLogin si los datos son válidos", () => {
         // 🧱 1. ARRANGE
         const mockOnLogin = vi.fn(() => true);
-        render(<Formulario onLogin={mockOnLogin} />);
+        renderWithRouter(<Formulario onLogin={mockOnLogin} />);
 
         // ⚙️ 2. ACT
         fireEvent.change(screen.getByLabelText(/correo electrónico/i), {

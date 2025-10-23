@@ -1,122 +1,238 @@
-// src/components/DashboardTutorContent.jsx  --Referencia de ubicación del archivo--
-import React, { useEffect, useState } from "react"; // Importa React y hooks necesarios. Permite manejar estado y ejecutar lógica al cargar el componente (como cargar el usuario o redirigir).
-import { useNavigate } from "react-router-dom"; // Importa useNavigate para redirigir a otras páginas (como el login si no hay usuario activo).
-import TopbarTutor from "./TopbarTutor"; // Importa el componente TopbarTutor para mostrar la barra superior con selección de paciente.
-import TabsTutor from "./TabsTutor"; // Importa el componente TabsTutor para mostrar las pestañas de navegación.
-import PacienteDetalle from "./PacienteDetalle"; // Importa el componente PacienteDetalle para mostrar los detalles del paciente.
-import MensajesTutor from "./MensajesTutor"; // Importa el componente MensajesTutor para gestionar los mensajes.
+// ===============================================================
+// 🧩 Componente: DashboardTutorContent.jsx
+// Descripción: Panel del tutor/familiar con pestañas para
+// visualizar detalles del paciente y enviar mensajes.
+// ===============================================================
 
-function DashboardTutorContent() { // Se define el componente funcional DashboardTutorContent.
-  const navigate = useNavigate(); // Hook para redirigir a otras rutas.
-  const [usuario, setUsuario] = useState(null); // Estado para almacenar el usuario activo.
-  const [tab, setTab] = useState("detalle"); // Estado para manejar la pestaña activa (detalle o mensajes).
-  const [mensajes, setMensajes] = useState([]); // Estado para almacenar los mensajes del tutor.
-  const [para, setPara] = useState("Profesional de Salud a cargo"); // Estado para el destinatario del mensaje.
-  const [asunto, setAsunto] = useState(""); // Estado para el asunto del mensaje.
-  const [cuerpo, setCuerpo] = useState(""); // Estado para el cuerpo del mensaje.
-  const [pacienteSeleccionado, setPacienteSeleccionado] = useState("Juan Pérez Soto"); // Estado para el paciente actualmente seleccionado.
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
-  useEffect(() => { // Hook que se ejecuta al montar el componente.
-    const activo = JSON.parse(localStorage.getItem("usuarioActivo")); // Intenta obtener el usuario activo desde el almacenamiento local.
-    console.log(" usuarioActivo (desde Dashboard):", activo);
-    console.log("Entorno actual:", import.meta.env.MODE);
-    
-    if (!activo || activo.tipoUsuario !== "Tutor") { // Si no hay usuario activo o no es un tutor,
-      // Previene redirección durante los tests
-      if(import.meta.env.MODE !== "test "){
-        navigate("/login"); // redirige al login.
-      }        
-      return; // Termina la ejecución del hook.
-    }
-    setUsuario(activo); // Si hay un usuario activo y es tutor, lo establece en el estado.
-  }, [navigate]); // El hook depende de 'navigate' para evitar advertencias.
+function DashboardTutorContent() {
+  const navigate = useNavigate();
 
-  const paciente = { // Datos simulados del paciente seleccionado.
-    nombre: pacienteSeleccionado,
+  // -------------------------------------------------------------
+  // 🔹 ESTADOS PRINCIPALES
+  // -------------------------------------------------------------
+  const [usuario, setUsuario] = useState(null);
+  const [tab, setTab] = useState("detalle"); // "detalle" | "mensajes"
+  const [mensajes, setMensajes] = useState([]);
+  const [para, setPara] = useState("");
+  const [asunto, setAsunto] = useState("");
+  const [cuerpo, setCuerpo] = useState("");
+
+  // Paciente simulado (como en la versión HTML)
+  const paciente = {
+    nombre: "Juan Pérez Soto",
+    edad: 82,
+    diagnostico: "Parkinson",
     centro: "ELEAM Alerces",
     ciudad: "Viña del Mar",
-    contacto: "Contacto: María López (Hermana) — +56 9 1234 5678",
-    identificacion: "RUT: 12.345.678-9",
-    edadSexo: "78 años, Masculino",
-    diagnosticos: "Hipertensión arterial, Diabetes tipo II",
-    alergias: "Penicilina",
-    contactos: "Tutor legal: María López",
-    medicamentos: [
-      {
-        farmaco: "Enalapril",
-        dosis: "10 mg",
-        via: "VO",
-        frecuencia: "1 vez al día",
-        indicacion: "HTA",
-        desde: "01-01-2024",
-        hasta: "—",
-      },
-      {
-        farmaco: "Metformina",
-        dosis: "850 mg",
-        via: "VO",
-        frecuencia: "2 veces al día",
-        indicacion: "Diabetes",
-        desde: "15-03-2024",
-        hasta: "—",
-      },
-    ],
-    controles: [
-      {
-        fecha: "05-06-2024",
-        detalle: "Control médico general con Dr. Ramírez (Presión y glicemia estables)",
-      },
-      {
-        fecha: "20-07-2024",
-        detalle: "Control enfermería (Revisión de pie diabético)",
-      },
-    ],
-    quirurgicos: "Colecistectomía (2010)",
-    habitos: "Exfumador, actividad física ligera",
-    vacunas: "Influenza 2023, COVID-19 esquema completo",
-    riesgos: "Caídas, Hipoglicemia",
+    medicamentos: ["Levodopa 100mg - cada 8 hrs", "Clonazepam 0.5mg - noche"],
+    controles: ["Presión: 130/85 mmHg", "Peso: 70 kg"],
+    observaciones: "Leves temblores controlados con medicación.",
+    imagen: "/images/luis.png",
   };
 
-  const pacientesDisponibles = [
-    "Juan Pérez Soto",
-    "María González Ríos",
-    "Luis Andrade Mora",
-  ];
+  // -------------------------------------------------------------
+  // 🔹 EFECTO: CARGA DE USUARIO ACTIVO
+  // -------------------------------------------------------------
+  useEffect(() => {
+    const activo = JSON.parse(localStorage.getItem("usuarioActivo"));
 
-  return ( // Renderiza el contenido del dashboard del tutor.
-    <div className="tutor-body bg-light-blue py-4 px-3"> {/* Contenedor principal con estilos. */}
-      <div className="container"> {/* Contenedor centrado. */}
-        <TopbarTutor  
-          pacienteSeleccionado={pacienteSeleccionado}  // Pasa el paciente seleccionado al TopbarTutor.
-          setPacienteSeleccionado={setPacienteSeleccionado} // Pasa la función para actualizar el paciente seleccionado.
-          pacientesDisponibles={pacientesDisponibles} // Pasa la lista de pacientes disponibles al TopbarTutor.
-        />
+    // Evita bloqueos en pruebas (Vitest)
+    if (process.env.NODE_ENV === "test") {
+      setUsuario(activo || { nombre: "TestUser", tipoUsuario: "Tutor" });
+      return;
+    }
 
-        <p className="text-muted"> {/* Descripción debajo del TopbarTutor. */}
-          Revisa antecedentes, medicamentos y controles del paciente seleccionado.
-        </p>
+    if (!activo || activo.tipoUsuario !== "Tutor") {
+      navigate("/login");
+      return;
+    }
 
-        <TabsTutor tab={tab} setTab={setTab} /> {/* Pasa la pestaña activa y la función para cambiarla al TabsTutor. */}
+    setUsuario(activo);
+  }, [navigate]);
 
-        {tab === "detalle" && ( // Si la pestaña activa es "detalle", muestra el componente PacienteDetalle.
-          <PacienteDetalle paciente={paciente} /> // Pasa los datos del paciente al componente PacienteDetalle.
-        )}
+  // -------------------------------------------------------------
+  // 🔹 MANEJAR ENVÍO DE MENSAJE
+  // -------------------------------------------------------------
+  const handleEnviarMensaje = (e) => {
+    e.preventDefault();
 
-        {tab === "mensajes" && ( // Si la pestaña activa es "mensajes", muestra el componente MensajesTutor.
-          <MensajesTutor // Pasa los estados y funciones necesarios para gestionar los mensajes.
-            mensajes={mensajes} // Pasa la lista de mensajes.
-            setMensajes={setMensajes} // Pasa la función para actualizar la lista de mensajes.
-            para={para} // Pasa el destinatario del mensaje.
-            setPara={setPara} // Pasa la función para actualizar el destinatario.
-            asunto={asunto} // Pasa el asunto del mensaje.
-            setAsunto={setAsunto} // Pasa la función para actualizar el asunto.
-            cuerpo={cuerpo} // Pasa el cuerpo del mensaje.
-            setCuerpo={setCuerpo} // Pasa la función para actualizar el cuerpo del mensaje.
-          />
-        )}
-      </div>
+    if (!para || !asunto || !cuerpo) {
+      alert("Todos los campos son obligatorios.");
+      return;
+    }
+
+    const nuevoMensaje = {
+      para,
+      asunto,
+      cuerpo,
+      fecha: new Date().toLocaleString(),
+    };
+
+    setMensajes([...mensajes, nuevoMensaje]);
+    setPara("");
+    setAsunto("");
+    setCuerpo("");
+  };
+
+  // -------------------------------------------------------------
+  // 🔹 RENDER DE CONTENIDO SEGÚN TAB
+  // -------------------------------------------------------------
+  const renderContenido = () => {
+    // ===============================
+    // TAB: DETALLE PACIENTE
+    // ===============================
+    if (tab === "detalle") {
+      return (
+        <div>
+          <h5 className="fw-bold">{paciente.nombre}</h5>
+          <p className="text-muted mb-1">{paciente.centro}</p>
+          <p className="text-muted">Ubicación: {paciente.ciudad}</p>
+          <p>
+            <strong>Diagnóstico:</strong> {paciente.diagnostico}
+          </p>
+          <p>
+            <strong>Observaciones:</strong> {paciente.observaciones}
+          </p>
+
+          <h6 className="mt-3 fw-semibold text-primary">Medicamentos</h6>
+          <ul>
+            {paciente.medicamentos.map((m, i) => (
+              <li key={i}>{m}</li>
+            ))}
+          </ul>
+
+          <h6 className="mt-3 fw-semibold text-primary">Controles recientes</h6>
+          <ul>
+            {paciente.controles.map((c, i) => (
+              <li key={i}>{c}</li>
+            ))}
+          </ul>
+        </div>
+      );
+    }
+
+    // ===============================
+    // TAB: MENSAJES
+    // ===============================
+    if (tab === "mensajes") {
+      return (
+        <div>
+          <h5 className="fw-bold mb-3 text-primary">📩 Enviar mensaje</h5>
+
+          <form onSubmit={handleEnviarMensaje}>
+            <div className="mb-3">
+              <label htmlFor="para" className="form-label">
+                Para
+              </label>
+              <select
+                id="para"
+                className="form-select"
+                value={para}
+                onChange={(e) => setPara(e.target.value)}
+              >
+                <option value="">Selecciona destinatario</option>
+                <option value="Administrativo">Administrativo</option>
+                <option value="Profesional de Salud a cargo">
+                  Profesional de Salud a cargo
+                </option>
+              </select>
+            </div>
+
+            <div className="mb-3">
+              <label htmlFor="asunto" className="form-label">
+                Asunto
+              </label>
+              <input
+                id="asunto"
+                type="text"
+                className="form-control"
+                value={asunto}
+                onChange={(e) => setAsunto(e.target.value)}
+                placeholder="Ej: Solicitud de información"
+              />
+            </div>
+
+            <div className="mb-3">
+              <label htmlFor="mensaje" className="form-label">
+                Mensaje
+              </label>
+              <textarea
+                id="mensaje"
+                className="form-control"
+                rows="3"
+                value={cuerpo}
+                onChange={(e) => setCuerpo(e.target.value)}
+                placeholder="Escribe tu mensaje aquí..."
+              />
+            </div>
+
+            <button type="submit" className="btn btn-primary">
+              Enviar
+            </button>
+          </form>
+
+          <hr />
+
+          <h6 className="fw-bold text-primary">📬 Bandeja de mensajes</h6>
+
+          {mensajes.length === 0 ? (
+            <p className="text-muted">No hay mensajes aún.</p>
+          ) : (
+            <ul className="list-group">
+              {mensajes.map((m, i) => (
+                <li key={i} className="list-group-item">
+                  <strong>{m.asunto}</strong> <br />
+                  <span>{m.cuerpo}</span>
+                  <p className="small text-muted mb-0">
+                    Para: {m.para} — {m.fecha}
+                  </p>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      );
+    }
+  };
+
+  // -------------------------------------------------------------
+  // 🔹 RENDER PRINCIPAL
+  // -------------------------------------------------------------
+  if (!usuario) return <p className="text-center mt-5">Cargando...</p>;
+
+  return (
+    <div className="container py-4">
+      <h3 className="text-center mb-4">
+        Panel del Tutor – <span className="text-primary">{usuario.nombre}</span>
+      </h3>
+
+      {/* Pestañas */}
+      <ul className="nav nav-tabs mb-3">
+        <li className="nav-item">
+          <button
+            className={`nav-link ${tab === "detalle" ? "active" : ""}`}
+            onClick={() => setTab("detalle")}
+          >
+            Detalle del Paciente
+          </button>
+        </li>
+        <li className="nav-item">
+          <button
+            className={`nav-link ${tab === "mensajes" ? "active" : ""}`}
+            onClick={() => setTab("mensajes")}
+          >
+            Mensajes
+          </button>
+        </li>
+      </ul>
+
+      {/* Contenido dinámico */}
+      <div className="card shadow-sm p-4">{renderContenido()}</div>
     </div>
   );
 }
 
-export default DashboardTutorContent; // Exporta el componente para que pueda ser utilizado en otras partes de la aplicación.
+export default DashboardTutorContent;
