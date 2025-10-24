@@ -62,7 +62,7 @@ function Formulario({ onLogin }) {
             if (usuarioGuardado.tipoUsuario === "Profesional") {
                 navigate("/dashboardprof");
             } else {
-                navigate("/dashboardtutor");
+                navigate("/dashboard-tutor");
             }
         } else if (!usuarioGuardado) {
             // Si no existe usuario registrado, no hace nada en producción

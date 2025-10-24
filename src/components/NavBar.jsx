@@ -17,7 +17,7 @@ function NavBar() {
     if (!usuarioActivo) return;
 
     if (usuarioActivo.tipoUsuario === "Tutor") {
-      navigate("/dashboardtutor");
+      navigate("/dashboard-tutor");
     } else if (usuarioActivo.tipoUsuario === "Profesional") {
       navigate("/dashboardprofesional");
     } else {

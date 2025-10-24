@@ -1,145 +1,143 @@
+/* ===============================================================
+🎨 ESTILOS DEL FORMULARIO DE REGISTRO / LOGIN — CUIDADO SEGURO
+Mantiene tu paleta original:
+  - Principal: CadetBlue (#5F9EA0)
+  - Secundario: LightCoral (#F08080)
+  - Acento: Cornsilk (#FFF8DC)
+================================================================ */
+
+/* CONTENEDOR PRINCIPAL DEL FORMULARIO */
 .formulario {
     background-color: #5F9EA0;
-    /* Color principal (cadetblue): fondo del formulario */
     color: #FFFFFF;
-    /* Texto oscuro (blanco) para contraste */
     border-radius: 15px;
-    /* Bordes redondeados */
     padding: 2rem;
-    /* Espaciado interno */
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-    /* Sombra para profundidad */
     max-width: 400px;
-    /* Ancho máximo del formulario */
-    margin: 80px auto;
-    /* 💡 agrega espacio arriba y centra horizontalmente */
-
+    margin: 60px auto;
+    /* 💡 más arriba: antes 80px */
 }
 
 /* TÍTULO DEL FORMULARIO */
 .formulario h3 {
     color: #FFF8DC;
-    /* Color acento (cornsilk): resalta el título */
     text-align: center;
-    /* Centra el texto del título */
     margin-bottom: 1rem;
-    /* Espaciado inferior */
+}
+
+/* ETIQUETAS */
+.formulario label {
+    color: #FFF8DC;
+    font-weight: 500;
 }
 
 /* CAMPOS DE ENTRADA */
 .formulario input {
     background-color: #FFFFFF;
-    /* Color acento (cornsilk): fondo claro del input */
     color: #708090;
-    /* Texto claro (slate gray): color del texto dentro del input */
     border: 1px solid #F08080;
-    /* Color secundario (lightcoral): borde del input */
     border-radius: 10px;
-    /* Bordes redondeados */
     padding: 10px;
-    /* Espaciado interno */
     width: 100%;
-    /* Ocupa todo el ancho del formulario */
     margin-bottom: 1rem;
-    /* Espacio entre inputs */
     transition: border-color 0.3s;
-    /* Suaviza el cambio de color del borde */
 }
 
-/* EFECTO AL HACER FOCO EN INPUT */
+/* EFECTO FOCUS */
 .formulario input:focus {
     border-color: #5F9EA0;
-    /* Color principal (cadetblue): destaca el campo activo */
     outline: none;
-    /* Quita el borde azul por defecto */
+}
+
+/* SELECTS */
+.formulario select {
+    background-color: #FFFFFF;
+    color: #708090;
+    border: 1px solid #F08080;
+    border-radius: 10px;
+    padding: 10px;
+    width: 100%;
+    margin-bottom: 1rem;
+    transition: border-color 0.3s;
+}
+
+.formulario select:focus {
+    border-color: #5F9EA0;
+    outline: none;
 }
 
 /* BOTÓN DE ENVÍO */
 .formulario button {
     background-color: #F08080;
-    /* Color secundario (lightcoral): color base del botón */
     color: #FFFFFF;
-    /* Texto oscuro (blanco): contraste sobre el botón */
     border: none;
-    /* Quita el borde por defecto */
     padding: 10px;
-    /* Espaciado interno */
     width: 100%;
-    /* Botón del ancho del formulario */
     border-radius: 10px;
-    /* Bordes redondeados */
     cursor: pointer;
-    /* Cambia el cursor al pasar el mouse */
     font-weight: bold;
-    /* Texto del botón en negrita */
     transition: background-color 0.3s;
-    /* Transición suave de color */
 }
 
 /* EFECTO HOVER EN BOTÓN */
 .formulario button:hover {
     background-color: #5F9EA0;
-    /* Cambia a color principal (cadetblue) al pasar el mouse */
 }
 
-/* ENLACES DENTRO DEL FORMULARIO */
+/* ENLACES */
 .formulario a {
     color: #FFF8DC;
-    /* Color acento (cornsilk): color base del enlace */
     text-decoration: none;
-    /* Quita el subrayado del enlace */
     font-weight: bold;
-    /* Hace el enlace más visible */
 }
 
-/* EFECTO HOVER EN ENLACES */
 .formulario a:hover {
     color: #F08080;
-    /* Color secundario (lightcoral): cambia el color al pasar el mouse */
 }
 
-/* === CORRECCIÓN FORMULARIO DE REGISTRO === */
-/* Fuerza a que la tarjeta también use tus colores personalizados */
+/* CORRECCIÓN TARJETA BOOTSTRAP */
 .card.formulario {
     background-color: #5F9EA0 !important;
-    /* Color principal */
     color: #FFFFFF !important;
-    /* Texto blanco */
     border: none !important;
-    /* Sin borde gris */
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2) !important;
-    /* Misma sombra */
     max-width: 400px !important;
-    /* Igual al login */
-    margin: 80px auto !important;
-    /* Centrado vertical */
+    margin: 60px auto !important;
+    /* 💡 antes 80px, ahora más arriba */
 }
 
-/* Ajusta los títulos y etiquetas dentro de la tarjeta */
 .card.formulario h3,
 .card.formulario label {
     color: #FFF8DC !important;
-    /* mismo tono claro del login */
 }
 
-.card.formulario {
-    background-color: #5F9EA0 !important;
-    /* Color principal */
-    color: #FFFFFF !important;
-    /* Texto blanco */
-    border: none !important;
-    /* Sin borde gris */
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2) !important;
-    /* Misma sombra */
-    max-width: 400px !important;
-    /* Igual al login */
-    margin: 80px auto !important;
-    /* Centrado vertical */
+/* ===============================================================
+🟩 CHECKBOX DE TÉRMINOS Y CONDICIONES
+- Más pequeño
+- Cuadrado
+- Centrado con el texto
+================================================================ */
+.formulario .form-check {
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
-/* Ajusta los títulos y etiquetas dentro de la tarjeta */
-.card.formulario h3,
-.card.formulario label {
-    color: #FFF8DC !important;
-    /* mismo tono claro del login */
+.formulario .form-check-input {
+    width: 16px;
+    /* cuadrado pequeño */
+    height: 16px;
+    margin-right: 8px;
+    cursor: pointer;
+    border-radius: 2px;
+    /* bordes rectos (no redondos) */
+    border: 1px solid #FFF8DC;
+    accent-color: #F08080;
+    /* color del check (lightcoral) */
+}
+
+.formulario .form-check-label {
+    color: #FFF8DC;
+    font-size: 0.95rem;
+    text-align: center;
 }

@@ -1,12 +1,14 @@
 // ===============================================================
 // 🧩 Componente: DashboardTutor.jsx
-// Descripción: Panel del Tutor/Familiar.
-// Permite visualizar la información del paciente asignado
-// con datos sincronizados desde localStorage (pacientesData).
+// Descripción:
+//   Panel del Tutor/Familiar del sistema "Cuidado Seguro".
+//   Muestra la información de los pacientes existentes en
+//   localStorage y permite buscarlos por RUT.
 // ===============================================================
 
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+
 
 function DashboardTutor() {
   // ---------------------------------------------------------------
@@ -17,31 +19,29 @@ function DashboardTutor() {
   const [usuario, setUsuario] = useState(null);
   const [pacientes, setPacientes] = useState([]);
   const [pacienteSeleccionado, setPacienteSeleccionado] = useState(null);
+  const [busquedaRut, setBusquedaRut] = useState(""); // 🔍 búsqueda por RUT
 
   // ---------------------------------------------------------------
   // 🔹 CARGA DE USUARIO Y PACIENTES DESDE LOCALSTORAGE
   // ---------------------------------------------------------------
   useEffect(() => {
     const activo = JSON.parse(localStorage.getItem("usuarioActivo"));
+
+    // Si no hay usuario activo o no es Tutor, redirige al login
     if (!activo || activo.tipoUsuario !== "Tutor") {
       navigate("/login");
       return;
     }
+
     setUsuario(activo);
 
-    // Cargar pacientes sincronizados
-    const almacenados = JSON.parse(localStorage.getItem("pacientesData"));
-    if (almacenados && Array.isArray(almacenados)) {
-      setPacientes(almacenados);
-    } else {
-      setPacientes([]);
-    }
+    // ✅ Cargar pacientes existentes desde localStorage (no modificar nada)
+    const almacenados = JSON.parse(localStorage.getItem("pacientesData")) || [];
+    setPacientes(almacenados);
 
-    // Si el tutor tiene asignado un paciente por su ID
+    // Si el tutor tiene asignado un paciente por su ID, mostrarlo directamente
     if (activo.idPaciente) {
-      const paciente = almacenados?.find(
-        (p) => p.rut === activo.idPaciente
-      );
+      const paciente = almacenados.find((p) => p.rut === activo.idPaciente);
       if (paciente) setPacienteSeleccionado(paciente);
     }
   }, [navigate]);
@@ -53,6 +53,16 @@ function DashboardTutor() {
     setPacienteSeleccionado(p);
   };
 
+  const handleCerrarSesion = () => {
+    localStorage.removeItem("usuarioActivo");
+    navigate("/login");
+  };
+
+  // ✅ Filtro por RUT (no afecta los datos originales)
+  const pacientesFiltrados = pacientes.filter((p) =>
+    p.rut.toLowerCase().includes(busquedaRut.toLowerCase())
+  );
+
   // ---------------------------------------------------------------
   // 🔹 RENDERIZADO PRINCIPAL
   // ---------------------------------------------------------------
@@ -60,20 +70,35 @@ function DashboardTutor() {
 
   return (
     <div className="container-fluid py-4">
+      {/* Encabezado */}
       <div className="text-center mb-4">
         <h2 className="fw-semibold text-primary">Panel del Tutor / Familiar</h2>
         <p className="text-muted mb-0">
           👋 Bienvenido, {usuario.nombre}. Aquí puedes consultar la información del paciente asignado.
         </p>
+
       </div>
 
-      {/* SELECCIONAR PACIENTE (solo si tiene más de uno) */}
+      {/* SELECCIONAR PACIENTE */}
       {!pacienteSeleccionado && (
         <div className="card shadow-sm mb-4">
           <div className="card-body">
             <h5 className="fw-bold text-primary">Selecciona un paciente</h5>
-            {pacientes.length === 0 ? (
-              <p className="text-muted">No hay pacientes registrados en el sistema.</p>
+
+            {/* 🔎 Campo de búsqueda por RUT */}
+            <div className="input-group mb-3 mt-2">
+              <span className="input-group-text">Buscar por RUT</span>
+              <input
+                type="text"
+                className="form-control"
+                placeholder="Ej: 12345678-9"
+                value={busquedaRut}
+                onChange={(e) => setBusquedaRut(e.target.value)}
+              />
+            </div>
+
+            {pacientesFiltrados.length === 0 ? (
+              <p className="text-muted">No se encontraron pacientes con ese RUT.</p>
             ) : (
               <div className="table-responsive">
                 <table className="table table-hover align-middle">
@@ -87,7 +112,7 @@ function DashboardTutor() {
                     </tr>
                   </thead>
                   <tbody>
-                    {pacientes.map((p) => (
+                    {pacientesFiltrados.map((p) => (
                       <tr key={p.rut}>
                         <td style={{ width: "90px" }}>
                           <img
@@ -204,12 +229,7 @@ function DashboardTutor() {
             )}
 
             <div className="text-end">
-              <button
-                className="btn btn-secondary mt-3"
-                onClick={() => setPacienteSeleccionado(null)}
-              >
-                ← Volver al listado
-              </button>
+
             </div>
           </div>
         </div>
