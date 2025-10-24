@@ -1,8 +1,6 @@
-// ===============================================================
-// 🧩 Componente: FormularioRegistro.jsx
-// Descripción: Formulario de registro con validaciones completas
-// Incluye campo obligatorio "Acepto términos y condiciones"
-// ===============================================================
+// Componente: FormularioRegistro.jsx
+// Descripción: Formulario de registro para usuarios del sistema "Cuidado Seguro"
+// Estilos definidos en el archivo formulario.css
 
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
@@ -11,133 +9,62 @@ import "../style/formulario.css";
 function FormularioRegistro() {
     const navigate = useNavigate();
 
-    // ---------------------------------------------------------------
-    // ESTADOS DEL FORMULARIO
-    // ---------------------------------------------------------------
+    // Estados principales
     const [nombre, setNombre] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [repitePassword, setRepitePassword] = useState("");
     const [tipoUsuario, setTipoUsuario] = useState("");
+    const [terminos, setTerminos] = useState(false);
 
-    // Profesional Interno
+    // Campos para profesionales
+    const [tipoProfesional, setTipoProfesional] = useState("");
     const [rnpi, setRnpi] = useState("");
     const [institucion, setInstitucion] = useState("");
 
-    // Tutor
-    const [parentesco, setParentesco] = useState("");
-    const [idPaciente, setIdPaciente] = useState("");
+    // Campos para tutor
+    const [rutFamiliar, setRutFamiliar] = useState("");
     const [codigoCentro, setCodigoCentro] = useState("");
 
-    // Profesional Externo
-    const [numeroProfesional, setNumeroProfesional] = useState("");
+    // Validación del formulario
+    const validarFormulario = () => {
+        if (!nombre || !email || !password || !repitePassword || !tipoUsuario) {
+            alert("Todos los campos son obligatorios.");
+            return false;
+        }
+        if (password !== repitePassword) {
+            alert("Las contraseñas no coinciden.");
+            return false;
+        }
+        if (!terminos) {
+            alert("Debes aceptar los Términos y Condiciones.");
+            return false;
+        }
+        return true;
+    };
 
-    // Nuevo estado para checkbox de aceptación de términos
-    const [aceptaTerminos, setAceptaTerminos] = useState(false);
-
-    // Manejo de errores
-    const [error, setError] = useState("");
-
-    // ---------------------------------------------------------------
-    // VALIDACIONES
-    // ---------------------------------------------------------------
-    const emailValido = (v) => /\S+@\S+\.\S+/.test(v);
-    const noVacio = (v) => String(v).trim().length > 0;
-    const passwordRegex =
-        /^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&._-])[A-Za-z\d@$!%*?&._-]{6,}$/;
-
-    // ---------------------------------------------------------------
-    // FUNCIÓN DE ENVÍO DEL FORMULARIO
-    // ---------------------------------------------------------------
+    // Envío del formulario
     const handleSubmit = (e) => {
         e.preventDefault();
+        if (!validarFormulario()) return;
 
-        // ✅ Validación de campos vacíos
-        if (
-            !noVacio(nombre) ||
-            !noVacio(email) ||
-            !noVacio(password) ||
-            !noVacio(repitePassword) ||
-            !noVacio(tipoUsuario)
-        ) {
-            setError("Todos los campos obligatorios deben completarse.");
-            return;
-        }
-
-        // ✅ Validación formato correo
-        if (!emailValido(email)) {
-            setError("El correo electrónico no tiene un formato válido.");
-            return;
-        }
-
-        // ✅ Contraseñas coinciden
-        if (password !== repitePassword) {
-            setError("Las contraseñas no coinciden.");
-            return;
-        }
-
-        // ✅ Seguridad de la contraseña
-        if (!passwordRegex.test(password)) {
-            setError(
-                "La contraseña debe tener al menos 6 caracteres, una mayúscula, un número y un símbolo (@ $ ! % * ? & . _ -)."
-            );
-            return;
-        }
-
-        // ✅ Validaciones según tipo de usuario
-        if (
-            tipoUsuario === "Profesional Interno" &&
-            (!noVacio(rnpi) || !noVacio(institucion))
-        ) {
-            setError("Debes completar RNPI e institución para profesionales internos.");
-            return;
-        }
-
-        if (
-            tipoUsuario === "Tutor" &&
-            (!noVacio(parentesco) || !noVacio(idPaciente) || !noVacio(codigoCentro))
-        ) {
-            setError("Debes completar parentesco, ID paciente y código del centro.");
-            return;
-        }
-
-        if (tipoUsuario === "Profesional Externo" && !noVacio(numeroProfesional)) {
-            setError("Debes ingresar tu número de profesional externo.");
-            return;
-        }
-
-        // ✅ Validación del checkbox
-        if (!aceptaTerminos) {
-            setError("Debes aceptar los términos y condiciones antes de registrarte.");
-            return;
-        }
-
-        // Si todo está correcto, limpiamos el error
-        setError("");
-
-        // ---------------------------------------------------------------
-        // GUARDAR DATOS DEL USUARIO
-        // ---------------------------------------------------------------
         const nuevoUsuario = {
             nombre,
             email,
             password,
             tipoUsuario,
+            tipoProfesional,
             rnpi,
             institucion,
-            parentesco,
-            idPaciente,
-            codigoCentro,
-            numeroProfesional,
-            aceptaTerminos,
+            idPaciente: rutFamiliar,
+            codigoCentro
         };
 
-        localStorage.setItem("usuarioRegistrado", JSON.stringify(nuevoUsuario));
+        const usuarios = JSON.parse(localStorage.getItem("usuarios")) || [];
+        usuarios.push(nuevoUsuario);
+        localStorage.setItem("usuarios", JSON.stringify(usuarios));
         localStorage.setItem("usuarioActivo", JSON.stringify(nuevoUsuario));
 
-        // ---------------------------------------------------------------
-        // REDIRECCIÓN SEGÚN EL TIPO DE USUARIO
-        // ---------------------------------------------------------------
         if (tipoUsuario === "Profesional Interno") {
             navigate("/dashboard-prof");
         } else if (tipoUsuario === "Tutor") {
@@ -145,227 +72,139 @@ function FormularioRegistro() {
         } else if (tipoUsuario === "Profesional Externo") {
             navigate("/dashboard-prof-externo");
         } else {
-            navigate("/login");
+            navigate("/home");
         }
-
-        alert(`Registro exitoso como ${tipoUsuario}`);
     };
 
-    // ---------------------------------------------------------------
-    // INTERFAZ VISUAL
-    // ---------------------------------------------------------------
+    // Render del formulario
     return (
-        <div className="container d-flex justify-content-center align-items-center mt-5">
-            <div
-                className="card shadow p-4 rounded-4 formulario"
-                style={{ maxWidth: 560, width: "100%" }}
-            >
-                <h3 className="text-center mb-4">REGÍSTRATE</h3>
+        <div className="container">
+            <div className="row justify-content-center mt-3 mb-5">
+                <div className="col-12 col-sm-10 col-md-8 col-lg-5">
+                    <div className="formulario card shadow-lg p-4">
+                        <h3 className="text-center mb-3">Registro de Usuario</h3>
 
-                {/* Mensaje de error */}
-                {error && <div className="alert alert-danger">{error}</div>}
-
-                <form onSubmit={handleSubmit}>
-                    {/* NOMBRE */}
-                    <div className="mb-3">
-                        <label className="form-label">Nombre completo:</label>
-                        <input
-                            type="text"
-                            className="form-control"
-                            value={nombre}
-                            onChange={(e) => setNombre(e.target.value)}
-                            placeholder="Ej: Juan Pérez"
-                        />
-                    </div>
-
-                    {/* CORREO */}
-                    <div className="mb-3">
-                        <label className="form-label">Correo electrónico:</label>
-                        <input
-                            type="email"
-                            className="form-control"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            placeholder="usuario@correo.com"
-                        />
-                    </div>
-
-                    {/* CONTRASEÑA */}
-                    <div className="mb-3">
-                        <label className="form-label">Contraseña:</label>
-                        <input
-                            type="password"
-                            className="form-control"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            placeholder="Ingrese su contraseña"
-                        />
-                        <small className="text-light" style={{ fontSize: "0.78rem" }}>
-                            Mínimo 6 caracteres, una mayúscula, un número y un símbolo.
-                        </small>
-                    </div>
-
-                    {/* REPITE CONTRASEÑA */}
-                    <div className="mb-3">
-                        <label className="form-label">Repite la contraseña:</label>
-                        <input
-                            type="password"
-                            className="form-control"
-                            value={repitePassword}
-                            onChange={(e) => setRepitePassword(e.target.value)}
-                            placeholder="Repite tu contraseña"
-                        />
-                    </div>
-
-                    {/* TIPO DE USUARIO */}
-                    <div className="mb-3">
-                        <label className="form-label">Tipo de usuario:</label>
-                        <select
-                            className="form-select"
-                            value={tipoUsuario}
-                            onChange={(e) => setTipoUsuario(e.target.value)}
-                        >
-                            <option value="">Selecciona una opción</option>
-                            <option value="Profesional Interno">Profesional Interno</option>
-                            <option value="Tutor">Tutor / Familiar</option>
-                            <option value="Profesional Externo">Profesional Externo</option>
-                        </select>
-                    </div>
-
-                    {/* CAMPOS PROFESIONAL INTERNO */}
-                    {tipoUsuario === "Profesional Interno" && (
-                        <>
-                            <div className="mb-3">
-                                <label className="form-label">Número RNPI:</label>
-                                <input
-                                    type="text"
-                                    className="form-control"
-                                    value={rnpi}
-                                    onChange={(e) => setRnpi(e.target.value)}
-                                    placeholder="Ej: 12345"
-                                />
-                            </div>
-
-                            <div className="mb-3">
-                                <label className="form-label">Institución:</label>
-                                <select
-                                    className="form-select"
-                                    value={institucion}
-                                    onChange={(e) => setInstitucion(e.target.value)}
-                                >
-                                    <option value="">Selecciona una institución</option>
-                                    <option value="Clínica Los Alerces">Clínica Los Alerces</option>
-                                    <option value="Clínica Los Carreras">Clínica Los Carreras</option>
-                                    <option value="Clínica Miraflores">Clínica Miraflores</option>
-                                    <option value="ELEAM Las Palmas">ELEAM Las Palmas</option>
-                                    <option value="ELEAM San José">ELEAM San José</option>
-                                    <option value="Hogar Santa María">Hogar Santa María</option>
-                                </select>
-                            </div>
-                        </>
-                    )}
-
-                    {/* CAMPOS TUTOR */}
-                    {tipoUsuario === "Tutor" && (
-                        <>
-                            <div className="mb-3">
-                                <label className="form-label">Parentesco:</label>
-                                <select
-                                    className="form-select"
-                                    value={parentesco}
-                                    onChange={(e) => setParentesco(e.target.value)}
-                                >
-                                    <option value="">Selecciona parentesco</option>
-                                    <option value="Madre">Madre</option>
-                                    <option value="Padre">Padre</option>
-                                    <option value="Hijo">Hijo/a</option>
-                                    <option value="Otro">Otro</option>
-                                </select>
-                            </div>
-
-                            <div className="mb-3">
-                                <label className="form-label">ID del paciente:</label>
-                                <input
-                                    type="text"
-                                    className="form-control"
-                                    value={idPaciente}
-                                    onChange={(e) => setIdPaciente(e.target.value)}
-                                    placeholder="RUT del paciente"
-                                />
-                            </div>
-
-                            <div className="mb-3">
-                                <label className="form-label">Código del centro:</label>
-                                <input
-                                    type="text"
-                                    className="form-control"
-                                    value={codigoCentro}
-                                    onChange={(e) => setCodigoCentro(e.target.value)}
-                                    placeholder="Código entregado por la institución"
-                                />
-                            </div>
-                        </>
-                    )}
-
-                    {/* CAMPOS PROFESIONAL EXTERNO */}
-                    {tipoUsuario === "Profesional Externo" && (
-                        <div className="mb-3">
-                            <label className="form-label">Número de Profesional:</label>
+                        <form onSubmit={handleSubmit}>
+                            <label>Nombre completo</label>
                             <input
                                 type="text"
-                                className="form-control"
-                                value={numeroProfesional}
-                                onChange={(e) => setNumeroProfesional(e.target.value)}
-                                placeholder="Ej: 908776"
+                                value={nombre}
+                                onChange={(e) => setNombre(e.target.value)}
+                                placeholder="Ej: Juan Pérez"
+                                required
                             />
-                        </div>
-                    )}
 
-                    {/* ✅ CHECKBOX DE TÉRMINOS Y CONDICIONES */}
-                    <div className="d-flex justify-content-center align-items-center mt-3">
-                        <div
-                            className="form-check d-flex align-items-center"
-                            style={{ gap: "8px", transform: "scale(0.9)" }} // hace el checkbox más pequeño
-                        >
+                            <label>Correo electrónico</label>
                             <input
-                                className="form-check-input m-0"
-                                type="checkbox"
-                                checked={aceptaTerminos}
-                                onChange={(e) => setAceptaTerminos(e.target.checked)}
-                                id="terminos"
-                                style={{
-                                    width: "16px",
-                                    height: "16px",
-                                    cursor: "pointer",
-                                }}
+                                type="email"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                placeholder="usuario@correo.com"
+                                required
                             />
-                            <label
-                                className="form-check-label text-light"
-                                htmlFor="terminos"
-                                style={{ fontSize: "0.9rem", cursor: "pointer" }}
+
+                            <label>Contraseña</label>
+                            <input
+                                type="password"
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                placeholder="Mínimo 6 caracteres"
+                                required
+                            />
+
+                            <label>Repite tu contraseña</label>
+                            <input
+                                type="password"
+                                value={repitePassword}
+                                onChange={(e) => setRepitePassword(e.target.value)}
+                                placeholder="Repite la contraseña"
+                                required
+                            />
+
+                            <label>Tipo de usuario</label>
+                            <select
+                                value={tipoUsuario}
+                                onChange={(e) => setTipoUsuario(e.target.value)}
+                                required
                             >
-                                Acepto los{" "}
-                                <Link to="/terminos" className="text-primary text-decoration-none">
-                                    Términos y Condiciones
-                                </Link>
-                            </label>
-                        </div>
+                                <option value="">Selecciona...</option>
+                                <option value="Profesional Interno">Profesional Interno</option>
+                                <option value="Tutor">Tutor / Familiar</option>
+                                <option value="Profesional Externo">Profesional Externo</option>
+                            </select>
+
+                            {(tipoUsuario === "Profesional Interno" || tipoUsuario === "Profesional Externo") && (
+                                <>
+                                    <label>Tipo Profesional</label>
+                                    <input
+                                        type="text"
+                                        value={tipoProfesional}
+                                        onChange={(e) => setTipoProfesional(e.target.value)}
+                                        placeholder="Ej: Enfermero, Kinesiólogo"
+                                    />
+
+                                    <label>RNPI</label>
+                                    <input
+                                        type="text"
+                                        value={rnpi}
+                                        onChange={(e) => setRnpi(e.target.value)}
+                                        placeholder="Número de registro"
+                                    />
+
+                                    <label>Institución</label>
+                                    <input
+                                        type="text"
+                                        value={institucion}
+                                        onChange={(e) => setInstitucion(e.target.value)}
+                                        placeholder="Centro o institución"
+                                    />
+                                </>
+                            )}
+
+                            {tipoUsuario === "Tutor" && (
+                                <>
+                                    <label>RUT del Familiar (Paciente en el Centro)</label>
+                                    <input
+                                        type="text"
+                                        value={rutFamiliar}
+                                        onChange={(e) => setRutFamiliar(e.target.value)}
+                                        placeholder="Ej: 12345678-9"
+                                        required
+                                    />
+
+                                    <label>Código del Centro</label>
+                                    <input
+                                        type="text"
+                                        value={codigoCentro}
+                                        onChange={(e) => setCodigoCentro(e.target.value)}
+                                        placeholder="Ej: ELEAM001"
+                                        required
+                                    />
+                                </>
+                            )}
+
+                            <div className="form-check text-center my-3">
+                                <input
+                                    type="checkbox"
+                                    className="form-check-input"
+                                    id="terminos"
+                                    checked={terminos}
+                                    onChange={() => setTerminos(!terminos)}
+                                    style={{ width: "18px", height: "18px" }}
+                                />
+                                <label htmlFor="terminos" className="form-check-label ms-2">
+                                    Acepto los <Link to="/terminos">Términos y Condiciones</Link>
+                                </label>
+                            </div>
+
+                            <button type="submit">Registrarme</button>
+                        </form>
+
+                        <p className="text-center mt-3">
+                            ¿Ya tienes cuenta? <Link to="/login">Inicia sesión aquí</Link>
+                        </p>
                     </div>
-
-
-                    {/* BOTÓN */}
-                    <button type="submit" className="btn btn-primary w-100 mt-4">
-                        Registrar
-                    </button>
-                </form>
-
-                {/* Enlace inferior */}
-                <p className="text-center mt-3">
-                    ¿Ya tienes cuenta?{" "}
-                    <Link to="/login" className="text-decoration-none fw-semibold">
-                        Inicia sesión
-                    </Link>
-                </p>
+                </div>
             </div>
         </div>
     );
