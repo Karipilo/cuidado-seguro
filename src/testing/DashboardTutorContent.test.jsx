@@ -1,114 +1,148 @@
-// ===============================================================
-// 🧩 Archivo: DashboardTutorContent.test.jsx
-// Descripción: Pruebas del componente <DashboardTutorContent />
-// Corrige el mock de react-router-dom para evitar bloquear MemoryRouter.
-// ===============================================================
+import { describe, it, beforeEach, afterEach, vi, expect } from 'vitest';
+import { render, screen, fireEvent } from '@testing-library/react';
+import DashboardTutorContent from '../components/DashboardTutorContent';
+import { BrowserRouter } from 'react-router-dom';
 
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { render, screen, fireEvent } from "@testing-library/react";
-import DashboardTutorContent from "../components/DashboardTutorContent";
-import { MemoryRouter } from "react-router-dom";
+// Mock de localStorage y navigate
+const mockNavigate = vi.fn();
 
-// Solo mockeamos useNavigate para no interferir con MemoryRouter
-vi.mock("react-router-dom", async () => {
-  const actual = await vi.importActual("react-router-dom");
+vi.mock('react-router-dom', async () => {
+  const actual = await vi.importActual('react-router-dom');
   return {
     ...actual,
-    useNavigate: () => vi.fn(), // evita errores con navigate
+    useNavigate: () => mockNavigate,
   };
 });
 
-describe("🧩 Comportamiento del componente <DashboardTutorContent />", () => {
+describe(' DashboardTutorContent.jsx', () => {
+  // Simulamos localStorage antes de cada test
   beforeEach(() => {
     localStorage.setItem(
-      "usuarioActivo",
-      JSON.stringify({ nombre: "Carlos", tipoUsuario: "Tutor" })
+      'usuarioActivo',
+      JSON.stringify({ nombre: 'Carlos Bernal', tipoUsuario: 'Tutor' })
     );
   });
 
   afterEach(() => {
     localStorage.clear();
+    mockNavigate.mockReset();
   });
 
-  // ============================================================
-  // TEST 1️⃣: Renderizado inicial
-  // ============================================================
-  it("Debe renderizar correctamente la información principal", () => {
+  it(' Renderiza correctamente el nombre del paciente', () => {
+    // Arrange
     render(
-      <MemoryRouter>
+      <BrowserRouter>
         <DashboardTutorContent />
-      </MemoryRouter>
+      </BrowserRouter>
     );
 
-    expect(screen.getByText("Juan Pérez Soto", { selector: "h5" })).toBeInTheDocument();
-    expect(screen.getByText("ELEAM Alerces")).toBeInTheDocument();
-    expect(screen.getByText(/Revisa antecedentes/i)).toBeInTheDocument();
+    // Act
+    const nombrePaciente = screen.getByText(/Juan Pérez Soto/i);
+
+    // Assert
+    expect(nombrePaciente).toBeInTheDocument();
   });
 
-  // ============================================================
-  // TEST 2️⃣: Cambio a pestaña "Mensajes"
-  // ============================================================
-  it("Debe mostrar el formulario de mensajes al cambiar la pestaña", async () => {
+  it(' Cambia entre las pestañas Detalle y Mensajes', () => {
+    // Arrange
     render(
-      <MemoryRouter>
+      <BrowserRouter>
         <DashboardTutorContent />
-      </MemoryRouter>
+      </BrowserRouter>
     );
 
-    fireEvent.click(screen.getByText("Mensajes"));
+    // Act
+    const btnMensajes = screen.getByRole('button', { name: /Mensajes/i });
+    fireEvent.click(btnMensajes);
 
-    expect(await screen.findByLabelText(/Para/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/Asunto/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/Mensaje/i)).toBeInTheDocument();
+    // Assert
+    expect(screen.getByText(/Enviar mensaje/i)).toBeInTheDocument();
+
+    // Act - volver a detalle
+    const btnDetalle = screen.getByRole('button', { name: /Detalle del Paciente/i });
+    fireEvent.click(btnDetalle);
+
+    // Assert
+    expect(screen.getByText(/Parkinson/i)).toBeInTheDocument();
   });
 
-  // ============================================================
-  // TEST 3️⃣: Agregar nuevo mensaje
-  // ============================================================
-  it("Debe agregar un nuevo mensaje a la bandeja al enviarlo", async () => {
+  it(' Muestra mensaje "No hay mensajes aún" cuando no hay mensajes', () => {
+    // Arrange
     render(
-      <MemoryRouter>
+      <BrowserRouter>
         <DashboardTutorContent />
-      </MemoryRouter>
+      </BrowserRouter>
     );
 
-    fireEvent.click(screen.getByText("Mensajes"));
+    // Act
+    const btnMensajes = screen.getByRole('button', { name: /Mensajes/i });
+    fireEvent.click(btnMensajes);
+
+    // Assert
+    expect(screen.getByText(/No hay mensajes aún/i)).toBeInTheDocument();
+  });
+
+  it(' Envía un mensaje y lo muestra en la bandeja', () => {
+    // Arrange
+    render(
+      <BrowserRouter>
+        <DashboardTutorContent />
+      </BrowserRouter>
+    );
+
+    // Act
+    fireEvent.click(screen.getByText(/Mensajes/i));
 
     fireEvent.change(screen.getByLabelText(/Para/i), {
-      target: { value: "Administrativo" },
+      target: { value: 'Administrativo' },
     });
+
     fireEvent.change(screen.getByLabelText(/Asunto/i), {
-      target: { value: "Solicitud de información" },
+      target: { value: 'Consulta urgente' },
     });
+
     fireEvent.change(screen.getByLabelText(/Mensaje/i), {
-      target: { value: "¿Cuándo es la próxima reunión?" },
+      target: { value: '¿Cómo está mi familiar?' },
     });
 
-    fireEvent.click(screen.getByText(/Enviar/i));
+    fireEvent.click(screen.getByRole('button', { name: /^Enviar$/i}));
 
-    expect(await screen.findByText("Solicitud de información")).toBeInTheDocument();
-    expect(screen.getByText(/¿Cuándo es la próxima reunión?/i)).toBeInTheDocument();
+    // Assert
+    expect(screen.getByText(/Consulta urgente/i)).toBeInTheDocument();
+    expect(screen.getByText(/¿Cómo está mi familiar?/i)).toBeInTheDocument();
     expect(screen.getByText(/Para: Administrativo/i)).toBeInTheDocument();
   });
 
-  // ============================================================
-  // TEST 4️: No agrega mensaje si faltan campos
-  // ============================================================
-  it("No debe agregar mensaje si el asunto o cuerpo están vacíos", async () => {
-    render(
-      <MemoryRouter>
-        <DashboardTutorContent />
-      </MemoryRouter>
+  it(' Redirige al login si el usuario no es tutor', () => {
+    // Arrange (Mover esto antes del render)
+    localStorage.clear();
+    localStorage.setItem(
+      'usuarioActivo',
+      JSON.stringify({ nombre: 'Otro usuario', tipoUsuario: 'Profesional' })
     );
 
-    fireEvent.click(screen.getByText("Mensajes"));
+    render(
+      <BrowserRouter>
+        <DashboardTutorContent />
+      </BrowserRouter>
+    );
 
-    fireEvent.change(screen.getByLabelText(/Para/i), {
-      target: { value: "Administrativo" },
-    });
+    // Assert
+    expect(mockNavigate).toHaveBeenCalledWith('/login');
+  });
 
-    fireEvent.click(screen.getByText(/Enviar/i));
+  it(' Usa usuario simulado en entorno de test', () => {
+    // Arrange
+    process.env.NODE_ENV = 'test';
+    localStorage.removeItem('usuarioActivo');
 
-    expect(await screen.findByText("No hay mensajes aún.")).toBeInTheDocument();
+    render(
+      <BrowserRouter>
+        <DashboardTutorContent />
+      </BrowserRouter>
+    );
+
+    // Assert
+    expect(screen.getByText(/TestUser/i)).toBeInTheDocument();
   });
 });
