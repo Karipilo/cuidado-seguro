@@ -6,6 +6,7 @@
 
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { paciente } from "../data";
 
 function DashboardTutorContent() {
   const navigate = useNavigate();
@@ -46,10 +47,10 @@ function DashboardTutorContent() {
     }
 
     if (!activo) {
-      setUsuario({ nombre: "TestUser", tipoUsuario: "Tutor"});
+      setUsuario({ nombre: "TestUser", tipoUsuario: "Tutor" });
       return;
     }
-    
+
     if (activo.tipoUsuario !== "Tutor") {
       navigate("/login");
       return;

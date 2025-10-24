@@ -65,8 +65,12 @@ function DashboardTutor() {
           <div className="card mb-4 shadow-sm">
             <div className="card-body">
               <h5 className="text-primary fw-bold">Información del Familiar</h5>
-              <p><strong>Nombre:</strong> {usuario.nombre}</p>
-              <p><strong>Email:</strong> {usuario.email}</p>
+              <p>
+                <strong>Nombre:</strong> {usuario.nombre}
+              </p>
+              <p>
+                <strong>Email:</strong> {usuario.email}
+              </p>
             </div>
           </div>
 
@@ -91,7 +95,10 @@ function DashboardTutor() {
                   onChange={(e) => setCuerpo(e.target.value)}
                 />
               </div>
-              <button className="btn btn-primary w-100" onClick={handleEnviarMensaje}>
+              <button
+                className="btn btn-primary w-100"
+                onClick={handleEnviarMensaje}
+              >
                 Enviar
               </button>
             </div>
@@ -106,8 +113,10 @@ function DashboardTutor() {
                 <ul className="list-group list-group-flush">
                   {mensajes.map((m, i) => (
                     <li key={i} className="list-group-item">
-                      <strong>{m.fecha}</strong><br />
-                      <strong>Asunto:</strong> {m.asunto}<br />
+                      <strong>{m.fecha}</strong>
+                      <br />
+                      <strong>Asunto:</strong> {m.asunto}
+                      <br />
                       {m.cuerpo}
                     </li>
                   ))}
@@ -127,16 +136,34 @@ function DashboardTutor() {
                     src={pacienteSeleccionado.imagen}
                     alt={pacienteSeleccionado.nombre}
                     className="rounded-circle shadow-sm"
-                    style={{ width: "150px", height: "150px", objectFit: "cover" }}
+                    style={{
+                      width: "150px",
+                      height: "150px",
+                      objectFit: "cover",
+                    }}
                   />
                 </div>
                 <div className="col-md-8">
-                  <h4 className="text-primary">{pacienteSeleccionado.nombre}</h4>
-                  <p><strong>RUT:</strong> {pacienteSeleccionado.rut}</p>
-                  <p><strong>Edad:</strong> {pacienteSeleccionado.edad} años</p>
-                  <p><strong>Diagnóstico:</strong> {pacienteSeleccionado.diagnostico}</p>
-                  <p><strong>Alergias:</strong> {pacienteSeleccionado.alergias}</p>
-                  <p><strong>Observaciones:</strong> {pacienteSeleccionado.observaciones}</p>
+                  <h4 className="text-primary">
+                    {pacienteSeleccionado.nombre}
+                  </h4>
+                  <p>
+                    <strong>RUT:</strong> {pacienteSeleccionado.rut}
+                  </p>
+                  <p>
+                    <strong>Edad:</strong> {pacienteSeleccionado.edad} años
+                  </p>
+                  <p>
+                    <strong>Diagnóstico:</strong>{" "}
+                    {pacienteSeleccionado.diagnostico}
+                  </p>
+                  <p>
+                    <strong>Alergias:</strong> {pacienteSeleccionado.alergias}
+                  </p>
+                  <p>
+                    <strong>Observaciones:</strong>{" "}
+                    {pacienteSeleccionado.observaciones}
+                  </p>
                 </div>
               </div>
 

@@ -29,8 +29,15 @@ function NavBar() {
     <nav className="navbar navbar-expand-lg navbar-dark custom-navbar">
       <div className="container-fluid">
         {/* Logo + Home */}
-        <img src="images/logo.png" alt="logoCuidadoSeguro" width="50" height="45" />
-        <Link className="navbar-brand ms-2" to="/">Home</Link>
+        <img
+          src="images/logo.png"
+          alt="logoCuidadoSeguro"
+          width="50"
+          height="45"
+        />
+        <Link className="navbar-brand ms-2" to="/">
+          Home
+        </Link>
 
         {/* Hamburguesa móvil */}
         <button
@@ -46,12 +53,16 @@ function NavBar() {
           {/* 🔹 Sección izquierda */}
           <ul className="navbar-nav me-auto">
             <li className="nav-item">
-              <Link className="nav-link" to="/centros">Centros</Link>
+              <Link className="nav-link" to="/centros">
+                Centros
+              </Link>
             </li>
 
             {!usuarioActivo && (
-              <li className="nav-item">
-                <Link className="nav-link" to="/registro">Registro</Link>
+              <li className="nav-item align-items-center">
+                <Link className="nav-link" to="/registro">
+                  Registro
+                </Link>
               </li>
             )}
           </ul>
@@ -60,7 +71,10 @@ function NavBar() {
           <ul className="navbar-nav ms-auto align-items-center gap-2">
             {usuarioActivo && (
               <li className="nav-item">
-                <button className="btn btn-outline-success btn-sm" onClick={irAMiSesion}>
+                <button
+                  className="btn btn-outline-success btn-sm"
+                  onClick={irAMiSesion}
+                >
                   Mi sesión
                 </button>
               </li>
@@ -68,7 +82,9 @@ function NavBar() {
 
             {!usuarioActivo && (
               <li className="nav-item">
-                <Link className="nav-link" to="/login">Inicio de sesión</Link>
+                <Link className="nav-link" to="/login">
+                  Inicio de sesión
+                </Link>
               </li>
             )}
 
@@ -80,7 +96,10 @@ function NavBar() {
                   </span>
                 </li>
                 <li className="nav-item">
-                  <button className="btn btn-link nav-link" onClick={handleLogout}>
+                  <button
+                    className="btn btn-link nav-link"
+                    onClick={handleLogout}
+                  >
                     Cerrar sesión
                   </button>
                 </li>
@@ -94,5 +113,3 @@ function NavBar() {
 }
 
 export default NavBar;
-
-
