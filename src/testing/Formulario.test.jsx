@@ -17,12 +17,12 @@ const renderWithRouter = (ui) => {
 // ===============================================================
 // GRUPO DE PRUEBAS
 // ===============================================================
-describe("🧩 Comportamiento del componente <Formulario />", () => {
+describe("Comportamiento del componente <Formulario />", () => {
 
     // ===========================================================
     // TEST 1: Renderizado correcto
     // ===========================================================
-    it("✅ Debe renderizar los campos principales del formulario", () => {
+    it("Debe renderizar los campos principales del formulario", () => {
         // 🧱 1. ARRANGE
         const mockOnLogin = vi.fn();
         renderWithRouter(<Formulario onLogin={mockOnLogin} />);
@@ -37,7 +37,7 @@ describe("🧩 Comportamiento del componente <Formulario />", () => {
     // ===========================================================
     // TEST 2: Error con campos vacíos
     // ===========================================================
-    it("❌ Debe mostrar error si se envía sin rellenar los campos", async () => {
+    it("Debe mostrar error si se envía sin rellenar los campos", async () => {
         // 🧱 1. ARRANGE
         const mockOnLogin = vi.fn(() => false);
         renderWithRouter(<Formulario onLogin={mockOnLogin} />);
@@ -53,7 +53,7 @@ describe("🧩 Comportamiento del componente <Formulario />", () => {
     // ===========================================================
     // TEST 3: Contraseña no cumple requisitos
     // ===========================================================
-    it("⚠️ Debe mostrar error si la contraseña no cumple requisitos", () => {
+    it("Debe mostrar error si la contraseña no cumple requisitos", () => {
         // 🧱 1. ARRANGE
         const mockOnLogin = vi.fn(() => false);
         renderWithRouter(<Formulario onLogin={mockOnLogin} />);
@@ -75,7 +75,7 @@ describe("🧩 Comportamiento del componente <Formulario />", () => {
     // ===========================================================
     // TEST 4: Datos válidos → onLogin llamado
     // ===========================================================
-    it("🟢 Debe llamar a onLogin si los datos son válidos", () => {
+    it("Debe llamar a onLogin si los datos son válidos", () => {
         // 🧱 1. ARRANGE
         const mockOnLogin = vi.fn(() => true);
         renderWithRouter(<Formulario onLogin={mockOnLogin} />);
