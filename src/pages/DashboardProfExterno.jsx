@@ -1,9 +1,8 @@
 // ===============================================================
-// 🧩 Componente: DashboardProfExterno.jsx
-// Descripción: Panel del Profesional Externo.
-// Permite registrar información (notas, recetas, exámenes,
-// certificados) que se sincroniza en localStorage con todos
-// los demás perfiles.
+// Componente: DashboardProfExterno.jsx
+// Descripción: Panel del Profesional Externo
+// Muestra datos de pacientes, permite registrar información médica (notas, recetas, etc.)
+// y presenta un panel lateral con información del profesional.
 // ===============================================================
 
 import React, { useState, useEffect } from "react";
@@ -12,9 +11,6 @@ import { useNavigate } from "react-router-dom";
 function DashboardProfExterno() {
     const navigate = useNavigate();
 
-    // ---------------------------------------------
-    // 🔹 Datos iniciales (solo si no hay en localStorage)
-    // ---------------------------------------------
     const pacientesBase = [
         {
             rut: "4.234.657-k",
@@ -29,7 +25,7 @@ function DashboardProfExterno() {
             notas: [],
             recetas: [],
             examenes: [],
-            certificados: [],
+            certificados: []
         },
         {
             rut: "5.654.234-0",
@@ -44,7 +40,7 @@ function DashboardProfExterno() {
             notas: [],
             recetas: [],
             examenes: [],
-            certificados: [],
+            certificados: []
         },
         {
             rut: "6.234.657-3",
@@ -59,13 +55,10 @@ function DashboardProfExterno() {
             notas: [],
             recetas: [],
             examenes: [],
-            certificados: [],
-        },
+            certificados: []
+        }
     ];
 
-    // ---------------------------------------------
-    // 🔹 Estados principales
-    // ---------------------------------------------
     const [usuario, setUsuario] = useState(null);
     const [rutBusqueda, setRutBusqueda] = useState("");
     const [paciente, setPaciente] = useState(null);
@@ -73,9 +66,6 @@ function DashboardProfExterno() {
     const [accion, setAccion] = useState("");
     const [texto, setTexto] = useState("");
 
-    // ---------------------------------------------
-    // 🔹 Inicialización
-    // ---------------------------------------------
     useEffect(() => {
         const activo = JSON.parse(localStorage.getItem("usuarioActivo"));
         if (!activo || activo.tipoUsuario !== "Profesional Externo") {
@@ -84,7 +74,6 @@ function DashboardProfExterno() {
         }
         setUsuario(activo);
 
-        // Cargar pacientes globales (si no existen, inicializar)
         const almacenados = JSON.parse(localStorage.getItem("pacientesData"));
         if (almacenados && Array.isArray(almacenados)) {
             setPacientes(almacenados);
@@ -94,9 +83,6 @@ function DashboardProfExterno() {
         }
     }, [navigate]);
 
-    // ---------------------------------------------
-    // 🔹 Buscar paciente por RUT
-    // ---------------------------------------------
     const handleBuscar = () => {
         const encontrado = pacientes.find(
             (p) => p.rut.toLowerCase() === rutBusqueda.toLowerCase()
@@ -104,14 +90,11 @@ function DashboardProfExterno() {
         if (encontrado) {
             setPaciente(encontrado);
         } else {
-            alert("❌ No se encontró un paciente con ese RUT.");
+            alert("No se encontró un paciente con ese RUT. Recuerda usar puntos y guion (Ej: 5.654.234-0).");
             setPaciente(null);
         }
     };
 
-    // ---------------------------------------------
-    // 🔹 Registrar acción y guardar en localStorage
-    // ---------------------------------------------
     const handleRegistrar = () => {
         if (!texto.trim() || !accion) {
             alert("Por favor, selecciona una acción y escribe el contenido.");
@@ -120,10 +103,9 @@ function DashboardProfExterno() {
 
         const nuevaEntrada = {
             contenido: texto,
-            fecha: new Date().toLocaleString(),
+            fecha: new Date().toLocaleString()
         };
 
-        // Actualizar paciente seleccionado
         const actualizado = pacientes.map((p) => {
             if (p.rut === paciente.rut) {
                 const copia = { ...p };
@@ -136,153 +118,150 @@ function DashboardProfExterno() {
             return p;
         });
 
-        // Guardar actualización global
         localStorage.setItem("pacientesData", JSON.stringify(actualizado));
         setPacientes(actualizado);
-
-        // Refrescar el paciente actual
         const pacienteActualizado = actualizado.find((p) => p.rut === paciente.rut);
         setPaciente(pacienteActualizado);
 
         setTexto("");
         setAccion("");
-        alert("✅ Información registrada correctamente y sincronizada con el sistema.");
+        alert("Información registrada correctamente.");
     };
 
-    // ---------------------------------------------
-    // 🔹 Render principal
-    // ---------------------------------------------
     if (!usuario) return null;
 
     return (
-        <div className="container-fluid py-4">
-            <div className="text-center mb-4">
-                <h2 className="fw-semibold text-primary">Panel del Profesional Externo</h2>
-                <p className="text-muted mb-0">
-                    👋 Bienvenido, {usuario.nombre}. Consulta y agrega información clínica a los pacientes del sistema.
-                </p>
-            </div>
-
-            {/* BUSCAR PACIENTE */}
-            <div className="card shadow-sm mb-4">
-                <div className="card-body">
-                    <h5 className="fw-bold text-primary">Buscar paciente</h5>
-                    <div className="row g-3 align-items-center mt-2">
-                        <div className="col-md-4">
-                            <input
-                                type="text"
-                                className="form-control"
-                                placeholder="Ingrese RUT (Ej: 5.654.234-0)"
-                                value={rutBusqueda}
-                                onChange={(e) => setRutBusqueda(e.target.value)}
-                            />
-                        </div>
-                        <div className="col-md-2">
-                            <button className="btn btn-primary w-100" onClick={handleBuscar}>
-                                Buscar
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            {/* DATOS DEL PACIENTE */}
-            {paciente && (
-                <div className="card shadow-sm mb-4">
-                    <div className="card-body">
-                        <div className="row align-items-center">
-                            <div className="col-md-3 text-center">
-                                <img
-                                    src={paciente.imagen}
-                                    alt={paciente.nombre}
-                                    className="rounded-circle shadow-sm"
-                                    style={{ width: "150px", height: "150px", objectFit: "cover" }}
-                                />
-                            </div>
-                            <div className="col-md-9">
-                                <h4 className="text-primary">{paciente.nombre}</h4>
-                                <p><strong>RUT:</strong> {paciente.rut}</p>
-                                <p><strong>Edad:</strong> {paciente.edad} años</p>
-                                <p><strong>Diagnóstico:</strong> {paciente.diagnostico}</p>
-                                <p><strong>Alergias:</strong> {paciente.alergias}</p>
-                                <p><strong>Observaciones:</strong> {paciente.observaciones}</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            )}
-
-            {/* AGREGAR NUEVA INFORMACIÓN */}
-            {paciente && (
-                <div className="card shadow-sm mb-4">
-                    <div className="card-body">
-                        <h5 className="fw-bold text-primary mb-3">Registrar nueva información</h5>
-                        <div className="row g-3">
-                            <div className="col-md-4">
-                                <select
-                                    className="form-select"
-                                    value={accion}
-                                    onChange={(e) => setAccion(e.target.value)}
-                                >
-                                    <option value="">Selecciona una acción</option>
-                                    <option value="nota">Nota clínica</option>
-                                    <option value="receta">Receta</option>
-                                    <option value="examen">Examen</option>
-                                    <option value="certificado">Certificado</option>
-                                </select>
-                            </div>
-                            <div className="col-md-8">
-                                <textarea
+        <div className="container py-4">
+            <div className="row">
+                <div className="col-md-8">
+                    <div className="card mb-4 shadow-sm">
+                        <div className="card-body">
+                            <h5 className="fw-bold text-primary">Buscar paciente</h5>
+                            <div className="input-group mt-2">
+                                <input
+                                    type="text"
                                     className="form-control"
-                                    rows="2"
-                                    placeholder="Escribe el detalle..."
-                                    value={texto}
-                                    onChange={(e) => setTexto(e.target.value)}
-                                ></textarea>
+                                    placeholder="Ingrese RUT con puntos y guion (Ej: 5.654.234-0)"
+                                    value={rutBusqueda}
+                                    onChange={(e) => setRutBusqueda(e.target.value)}
+                                />
+                                <button className="btn btn-primary" onClick={handleBuscar}>
+                                    Buscar
+                                </button>
                             </div>
                         </div>
-                        <div className="text-end mt-3">
-                            <button className="btn btn-success" onClick={handleRegistrar}>
-                                Guardar
-                            </button>
-                        </div>
                     </div>
-                </div>
-            )}
 
-            {/* VISUALIZACIÓN DE REGISTROS */}
-            {paciente && (
-                <div className="row">
-                    {["notas", "recetas", "examenes", "certificados"].map((tipo) => (
-                        <div key={tipo} className="col-md-6 mb-3">
-                            <div className="card shadow-sm">
+                    {paciente && (
+                        <>
+                            <div className="card mb-4 shadow-sm">
                                 <div className="card-body">
-                                    <h6 className="fw-bold text-primary text-capitalize">
-                                        {tipo === "notas"
-                                            ? "🩺 Notas Clínicas"
-                                            : tipo === "recetas"
-                                                ? "💊 Recetas"
-                                                : tipo === "examenes"
-                                                    ? "🧪 Exámenes"
-                                                    : "📜 Certificados"}
-                                    </h6>
-                                    {paciente[tipo].length === 0 ? (
-                                        <p className="text-muted">Sin registros.</p>
-                                    ) : (
-                                        <ul className="list-group small">
-                                            {paciente[tipo].map((item, i) => (
-                                                <li key={i} className="list-group-item">
-                                                    <strong>{item.fecha}:</strong> {item.contenido}
-                                                </li>
-                                            ))}
-                                        </ul>
-                                    )}
+                                    <div className="row">
+                                        <div className="col-md-4 text-center">
+                                            <img
+                                                src={paciente.imagen}
+                                                alt={paciente.nombre}
+                                                className="img-fluid rounded-circle shadow"
+                                                style={{ width: "130px", height: "130px", objectFit: "cover" }}
+                                            />
+                                        </div>
+                                        <div className="col-md-8">
+                                            <h5 className="text-primary fw-bold">{paciente.nombre}</h5>
+                                            <p><strong>RUT:</strong> {paciente.rut}</p>
+                                            <p><strong>Edad:</strong> {paciente.edad} años</p>
+                                            <p><strong>Diagnóstico:</strong> {paciente.diagnostico}</p>
+                                            <p><strong>Alergias:</strong> {paciente.alergias}</p>
+                                            <p><strong>Observaciones:</strong> {paciente.observaciones}</p>
+                                            <p><strong>Medicamentos:</strong></p>
+                                            <ul>
+                                                {paciente.medicamentos.map((med, idx) => (
+                                                    <li key={idx}>{med}</li>
+                                                ))}
+                                            </ul>
+                                            <p><strong>Controles:</strong></p>
+                                            <ul>
+                                                {paciente.controles.map((ctrl, idx) => (
+                                                    <li key={idx}>{ctrl}</li>
+                                                ))}
+                                            </ul>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    ))}
+
+                            <div className="card mb-4 shadow-sm">
+                                <div className="card-body">
+                                    <h5 className="fw-bold mb-3">Registrar nueva información</h5>
+                                    <div className="row g-3">
+                                        <div className="col-md-4">
+                                            <select
+                                                className="form-select"
+                                                value={accion}
+                                                onChange={(e) => setAccion(e.target.value)}
+                                            >
+                                                <option value="">Selecciona una acción</option>
+                                                <option value="nota">Nota clínica</option>
+                                                <option value="receta">Receta</option>
+                                                <option value="examen">Examen</option>
+                                                <option value="certificado">Certificado</option>
+                                            </select>
+                                        </div>
+                                        <div className="col-md-8">
+                                            <textarea
+                                                className="form-control"
+                                                rows="2"
+                                                placeholder="Escribe el detalle..."
+                                                value={texto}
+                                                onChange={(e) => setTexto(e.target.value)}
+                                            ></textarea>
+                                        </div>
+                                    </div>
+                                    <div className="text-end mt-3">
+                                        <button className="btn btn-success" onClick={handleRegistrar}>
+                                            Guardar
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="row">
+                                {["notas", "recetas", "examenes", "certificados"].map((tipo) => (
+                                    <div key={tipo} className="col-md-6 mb-3">
+                                        <div className="card shadow-sm">
+                                            <div className="card-body">
+                                                <h6 className="fw-bold text-capitalize mb-2">{tipo}</h6>
+                                                {paciente[tipo].length === 0 ? (
+                                                    <p className="text-muted">Sin registros.</p>
+                                                ) : (
+                                                    <ul className="list-group list-group-flush">
+                                                        {paciente[tipo].map((item, i) => (
+                                                            <li key={i} className="list-group-item small">
+                                                                <strong>{item.fecha}:</strong> {item.contenido}
+                                                            </li>
+                                                        ))}
+                                                    </ul>
+                                                )}
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </>
+                    )}
                 </div>
-            )}
+
+                <div className="col-md-4">
+                    <div className="card shadow-sm">
+                        <div className="card-body">
+                            <h6 className="fw-bold text-primary">Información del Profesional</h6>
+                            <p><strong>Nombre:</strong> {usuario.nombre}</p>
+                            <p><strong>Email:</strong> {usuario.email}</p>
+                            <p><strong>Tipo:</strong> {usuario.tipoUsuario}</p>
+                            {usuario.rnpi && <p><strong>RNPI:</strong> {usuario.rnpi}</p>}
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     );
 }
