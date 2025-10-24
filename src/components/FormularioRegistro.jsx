@@ -1,229 +1,194 @@
-// FormularioRegistro.jsx
+// ================================================================
+// 🧩 Componente: FormularioRegistro.jsx
+// Descripción: Registro de usuarios con validaciones completas
+// ================================================================
 
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import "../style/formulario.css";
 
+// Validaciones
+const validarEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+const passwordRegex =
+  /^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&._-])[A-Za-z\d@$!%*?&._-]{6,}$/;
+
 function FormularioRegistro() {
-    const navigate = useNavigate();
+  const navigate = useNavigate();
 
-    // Estados del formulario
-    const [nombre, setNombre] = useState("");
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
-    const [repitePassword, setRepitePassword] = useState("");
-    const [tipoUsuario, setTipoUsuario] = useState("");
-    const [rnpi, setRnpi] = useState("");
-    const [tipoProf, setTipoProf] = useState("");
-    const [idPaciente, setIdPaciente] = useState("");
-    const [codigoCentro, setCodigoCentro] = useState("");
-    const [aceptaTerminos, setAceptaTerminos] = useState(false);
-    const [institucion, setInstitucion] = useState("");
+  // Estados
+  const [nombre, setNombre] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [repitePassword, setRepitePassword] = useState("");
+  const [tipoUsuario, setTipoUsuario] = useState("");
+  const [tipoProf, setTipoProf] = useState("");
+  const [institucion, setInstitucion] = useState("");
+  const [rnpi, setRnpi] = useState("");
+  const [idPaciente, setIdPaciente] = useState("");
+  const [codigoCentro, setCodigoCentro] = useState("");
+  const [aceptaTerminos, setAceptaTerminos] = useState(false);
 
+  // Manejar envío
+  const handleSubmit = (e) => {
+    e.preventDefault();
 
-    // Manejar el envío del formulario
-    const handleSubmit = (e) => {
-        e.preventDefault();
+    if (!aceptaTerminos) {
+      alert("Debes aceptar los Términos y Condiciones.");
+      return;
+    }
 
-        if (!aceptaTerminos) {
-            alert("Debes aceptar los Términos y Condiciones.");
-            return;
-        }
+    if (!validarEmail(email)) {
+      alert("El correo debe contener '@' y terminar en '.com'");
+      return;
+    }
 
-        if (password !== repitePassword) {
-            alert("Las contraseñas no coinciden.");
-            return;
-        }
+    if (!passwordRegex.test(password)) {
+      alert("La contraseña debe tener al menos 6 caracteres, una mayúscula, un número y un símbolo.");
+      return;
+    }
 
-        const nuevoUsuario = {
-            nombre,
-            email,
-            password,
-            tipoUsuario,
-        };
+    if (password !== repitePassword) {
+      alert("Las contraseñas no coinciden.");
+      return;
+    }
 
-        if (tipoUsuario === "Tutor") {
-            nuevoUsuario.idPaciente = idPaciente;
-            nuevoUsuario.codigoCentro = codigoCentro;
-        }
-
-        if (tipoUsuario === "Profesional Externo") {
-            nuevoUsuario.tipoProf = tipoProf;
-            nuevoUsuario.rnpi = rnpi;
-        }
-
-        if (tipoUsuario === "Profesional Interno") {
-            nuevoUsuario.tipoProf = tipoProf;
-            nuevoUsuario.institucion = institucion;
-        }
-
-        // Guardar en localStorage
-        localStorage.setItem("usuarioActivo", JSON.stringify(nuevoUsuario));
-        alert("Registro exitoso");
-
-        // Redirigir al dashboard correspondiente
-        if (tipoUsuario === "Tutor") {
-            navigate("/dashboard-tutor");
-        } else if (tipoUsuario === "Profesional Interno") {
-            navigate("/dashboard-prof");
-        } else if (tipoUsuario === "Profesional Externo") {
-            navigate("/dashboard-prof-externo");
-        }
+    const nuevoUsuario = {
+      nombre,
+      email,
+      password,
+      tipoUsuario,
     };
 
-    return (
-        <div className="formulario card formulario">
-            <h3>Registro</h3>
-            <form onSubmit={handleSubmit}>
-                <label>Nombre completo</label>
-                <input
-                    type="text"
-                    value={nombre}
-                    onChange={(e) => setNombre(e.target.value)}
-                    required
-                />
+    if (tipoUsuario === "Profesional Interno") {
+      nuevoUsuario.tipoProf = tipoProf;
+      nuevoUsuario.institucion = institucion;
+    }
 
-                <label>Email</label>
-                <input
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required
-                />
+    if (tipoUsuario === "Profesional Externo") {
+      nuevoUsuario.tipoProf = tipoProf;
+      nuevoUsuario.rnpi = rnpi;
+    }
 
-                <label>Contraseña</label>
-                <input
-                    type="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
-                />
+    if (tipoUsuario === "Tutor") {
+      nuevoUsuario.idPaciente = idPaciente;
+      nuevoUsuario.codigoCentro = codigoCentro;
+    }
 
-                <label>Repite tu contraseña</label>
-                <input
-                    type="password"
-                    value={repitePassword}
-                    onChange={(e) => setRepitePassword(e.target.value)}
-                    required
-                />
+    // Guardar usuario
+    localStorage.setItem("usuarioActivo", JSON.stringify(nuevoUsuario));
+    alert("Registro exitoso");
 
-                <label>Tipo de usuario</label>
-                <select
-                    value={tipoUsuario}
-                    onChange={(e) => setTipoUsuario(e.target.value)}
-                    required
-                >
-                    <option value="">Selecciona una opción</option>
-                    <option value="Profesional Interno">Profesional Interno</option>
-                    <option value="Profesional Externo">Profesional Externo</option>
-                    <option value="Tutor">Tutor</option>
-                </select>
+    // Redirigir según tipo
+    if (tipoUsuario === "Profesional Interno") {
+      navigate("/dashboard-prof");
+    } else if (tipoUsuario === "Profesional Externo") {
+      navigate("/dashboard-prof-externo");
+    } else if (tipoUsuario === "Tutor") {
+      navigate("/dashboard-tutor");
+    }
+  };
 
-                {tipoUsuario === "Profesional Interno" && (
-                <>
-                <label>Tipo Profesional</label>
-                <select
-                    value={tipoProf}
-                    onChange={(e) => setTipoProf(e.target.value)}
-                    required
-                >
-                    <option value="">Seleccione tipo profesional</option>
-                    <option value="Médico">Médico</option>
-                    <option value="Enfermero">Enfermero</option>
-                    <option value="Kinesiólogo">Kinesiólogo</option>
-                    <option value="Psicólogo">Psicólogo</option>
-                    <option value="Nutricionista">Nutricionista</option>
-                    <option value="Terapeuta Ocupacional">Terapeuta Ocupacional</option>
-                    <option value="Paramédico">Paramédico</option>
-                </select>
+  return (
+    <div className="formulario card formulario">
+      <h3>Registro</h3>
+      <form onSubmit={handleSubmit}>
+        <label>Nombre completo</label>
+        <input type="text" value={nombre} onChange={(e) => setNombre(e.target.value)} required />
 
-                <label>Institución</label>
-                <select
-                    value={institucion}
-                    onChange={(e) => setInstitucion(e.target.value)}
-                    required
-                >
-                    <option value="">Seleccione institución</option>
-                    <option value="Clínica Los Alerces">Clínica Los Alerces</option>
-                    <option value="Clínica Los Carrera">Clínica Los Carrera</option>
-                    <option value="Clínica Miraflores">Clínica Miraflores</option>
-                    <option value="ELEAM Las Palmas">ELEAM Las Palmas</option>
-                    <option value="Hogar San José">Hogar San José</option>
-                    <option value="Hogar Santa María">Hogar Santa María</option>
-                </select>
-                </>
-            )}
+        <label>Email</label>
+        <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
 
+        <label>Contraseña</label>
+        <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
 
-                {tipoUsuario === "Profesional Externo" && (
-                <>
-                <label>Tipo de profesional</label>
-                <select
-                    value={tipoProf}
-                    onChange={(e) => setTipoProf(e.target.value)}
-                    required
-                >
-                    <option value="">Selecciona una opción</option>
-                    <option value="Médico">Médico</option>
-                    <option value="Enfermero">Enfermero</option>
-                    <option value="Paramédico">Paramédico</option>
-                    <option value="Nutricionista">Nutricionista</option>
-                    <option value="Otro">Otro</option>
-                </select>
+        <label>Repite tu contraseña</label>
+        <input type="password" value={repitePassword} onChange={(e) => setRepitePassword(e.target.value)} required />
 
-                        <label>RNPI</label>
-                        <input
-                            type="text"
-                            value={rnpi}
-                            onChange={(e) => setRnpi(e.target.value)}
-                            required
-                        />
-                    </>
-                )}
+        <label>Tipo de usuario</label>
+        <select value={tipoUsuario} onChange={(e) => setTipoUsuario(e.target.value)} required>
+          <option value="">Selecciona una opción</option>
+          <option value="Profesional Interno">Profesional Interno</option>
+          <option value="Profesional Externo">Profesional Externo</option>
+          <option value="Tutor">Tutor</option>
+        </select>
 
-                {tipoUsuario === "Tutor" && (
-                    <>
-                        <label>RUT del Familiar</label>
-                        <input
-                            type="text"
-                            value={idPaciente}
-                            onChange={(e) => setIdPaciente(e.target.value)}
-                            required
-                        />
+        {tipoUsuario === "Profesional Interno" && (
+          <>
+            <label>Tipo Profesional</label>
+            <select value={tipoProf} onChange={(e) => setTipoProf(e.target.value)} required>
+              <option value="">Seleccione tipo profesional</option>
+              <option value="Médico">Médico</option>
+              <option value="Enfermero">Enfermero</option>
+              <option value="Kinesiólogo">Kinesiólogo</option>
+              <option value="Psicólogo">Psicólogo</option>
+              <option value="Nutricionista">Nutricionista</option>
+              <option value="Terapeuta Ocupacional">Terapeuta Ocupacional</option>
+              <option value="Paramédico">Paramédico</option>
+            </select>
 
-                        <label>Código del Centro</label>
-                        <input
-                            type="text"
-                            value={codigoCentro}
-                            onChange={(e) => setCodigoCentro(e.target.value)}
-                            required
-                        />
-                    </>
-                )}
+            <label>Institución</label>
+            <select value={institucion} onChange={(e) => setInstitucion(e.target.value)} required>
+              <option value="">Seleccione institución</option>
+              <option value="Clínica Los Alerces">Clínica Los Alerces</option>
+              <option value="Clínica Los Carrera">Clínica Los Carrera</option>
+              <option value="Clínica Miraflores">Clínica Miraflores</option>
+              <option value="ELEAM Las Palmas">ELEAM Las Palmas</option>
+              <option value="Hogar San José">Hogar San José</option>
+              <option value="Hogar Santa María">Hogar Santa María</option>
+            </select>
+          </>
+        )}
 
-                <div className="form-check mb-3 d-flex align-items-center justify-content-center">
-                    <input
-                        type="checkbox"
-                        className="form-check-input me-2"
-                        id="aceptaTerminos"
-                        checked={aceptaTerminos}
-                        onChange={(e) => setAceptaTerminos(e.target.checked)}
-                        style={{ width: "16px", height: "16px" }}
-                        required
-                    />
-                    <label htmlFor="aceptaTerminos" className="form-check-label">
-                        Acepto los Términos y Condiciones
-                    </label>
-                </div>
+        {tipoUsuario === "Profesional Externo" && (
+          <>
+            <label>Tipo de profesional</label>
+            <select value={tipoProf} onChange={(e) => setTipoProf(e.target.value)} required>
+              <option value="">Selecciona una opción</option>
+              <option value="Médico">Médico</option>
+              <option value="Enfermero">Enfermero</option>
+              <option value="Paramédico">Paramédico</option>
+              <option value="Nutricionista">Nutricionista</option>
+              <option value="Otro">Otro</option>
+            </select>
 
-                <button type="submit">Registrarse</button>
-            </form>
+            <label>RNPI</label>
+            <input type="text" value={rnpi} onChange={(e) => setRnpi(e.target.value)} required />
+          </>
+        )}
 
-            <p className="text-center mt-3">
-                ¿Ya tienes cuenta? <Link to="/login">Iniciar sesión</Link>
-            </p>
+        {tipoUsuario === "Tutor" && (
+          <>
+            <label>RUT del Familiar</label>
+            <input type="text" value={idPaciente} onChange={(e) => setIdPaciente(e.target.value)} required />
+
+            <label>Código del Centro</label>
+            <input type="text" value={codigoCentro} onChange={(e) => setCodigoCentro(e.target.value)} required />
+          </>
+        )}
+
+        <div className="form-check mb-3 d-flex align-items-center justify-content-center">
+          <input
+            type="checkbox"
+            className="form-check-input me-2"
+            id="aceptaTerminos"
+            checked={aceptaTerminos}
+            onChange={(e) => setAceptaTerminos(e.target.checked)}
+            style={{ width: "16px", height: "16px" }}
+            required
+          />
+          <label htmlFor="aceptaTerminos" className="form-check-label">
+            Acepto los Términos y Condiciones
+          </label>
         </div>
-    );
+
+        <button type="submit">Registrarse</button>
+      </form>
+
+      <p className="text-center mt-3">
+        ¿Ya tienes cuenta? <Link to="/login">Iniciar sesión</Link>
+      </p>
+    </div>
+  );
 }
 
 export default FormularioRegistro;
