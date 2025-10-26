@@ -1,21 +1,20 @@
-/// ===============================================================
+// ===============================================================
 // Componente: DashboardProf.jsx
-// Descripción: Panel principal del usuario tipo "Profesional Interno".
-// Muestra resumen, gestión de pacientes y datos actualizados
-// sincronizados desde localStorage (clave: "pacientes").
+// Descripción: Panel del Profesional Interno.
+// Permite ver, agregar, modificar y eliminar pacientes,
+// además de ver su información clínica detallada.
 // ===============================================================
 
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import CardResumen from "../components/CardResumen";
-import { Link } from "react-router-dom";
 
 function DashboardProf() {
-  // ---------------------------------------------------------------
-  // HOOKS Y ESTADOS PRINCIPALES
-  // ---------------------------------------------------------------
   const navigate = useNavigate();
 
+  // ---------------------------------------------------------------
+  // Estados principales
+  // ---------------------------------------------------------------
   const [usuario, setUsuario] = useState(null);
   const [vista, setVista] = useState("resumen");
   const [institucion, setInstitucion] = useState("");
@@ -23,40 +22,115 @@ function DashboardProf() {
   const [pacienteEditando, setPacienteEditando] = useState(null);
   const [pacientes, setPacientes] = useState([]);
 
+  // Estados para el formulario de agregar/modificar paciente
+  const [formData, setFormData] = useState({
+    rut: "",
+    nombre: "",
+    edad: "",
+    diagnostico: "",
+    alergias: "",
+    observaciones: "",
+    imagen: "",
+  });
+
   // ---------------------------------------------------------------
-  // CARGA DE USUARIO Y PACIENTES DESDE LOCALSTORAGE
+  // Carga inicial desde localStorage
   // ---------------------------------------------------------------
   useEffect(() => {
-    // 1. Se obtiene el usuario activo desde localStorage.
     const activo = JSON.parse(localStorage.getItem("usuarioActivo"));
 
-    // Si no hay usuario o no es del tipo "Profesional Interno", se redirige al login.
     if (!activo || activo.tipoUsuario !== "Profesional Interno") {
       navigate("/login");
       return;
     }
 
-    // Se almacena el usuario activo en el estado.
     setUsuario(activo);
-
-    // Si el usuario tiene una institución asignada, se guarda también.
     if (activo.institucion) setInstitucion(activo.institucion);
 
-    // 2. Se obtienen los pacientes desde localStorage.
-    //    En App.jsx fueron cargados inicialmente con la clave "pacientes".
     const almacenados = JSON.parse(localStorage.getItem("pacientes"));
-
-    // Si existen pacientes válidos, se guardan en el estado.
     if (almacenados && Array.isArray(almacenados)) {
       setPacientes(almacenados);
-    } else {
-      // Si no hay datos válidos, se inicializa el arreglo vacío.
-      setPacientes([]);
     }
   }, [navigate]);
 
   // ---------------------------------------------------------------
-  // ESTADÍSTICAS RÁPIDAS (SIMULADAS)
+  // Guardar cambios en localStorage
+  // ---------------------------------------------------------------
+  const guardarPacientes = (nuevos) => {
+    setPacientes(nuevos);
+    localStorage.setItem("pacientes", JSON.stringify(nuevos));
+  };
+
+  // ---------------------------------------------------------------
+  // Agregar nuevo paciente
+  // ---------------------------------------------------------------
+  const handleAgregarPaciente = (e) => {
+    e.preventDefault();
+
+    if (
+      !formData.rut.trim() ||
+      !formData.nombre.trim() ||
+      !formData.edad.trim()
+    ) {
+      alert("Debes completar al menos RUT, nombre y edad.");
+      return;
+    }
+
+    const nuevo = {
+      ...formData,
+      edad: parseInt(formData.edad),
+      medicamentos: [],
+      controles: [],
+      notas: [],
+      recetas: [],
+      examenes: [],
+      certificados: [],
+    };
+
+    const actualizados = [...pacientes, nuevo];
+    guardarPacientes(actualizados);
+    alert("Paciente agregado correctamente.");
+
+    // Reinicia formulario
+    setFormData({
+      rut: "",
+      nombre: "",
+      edad: "",
+      diagnostico: "",
+      alergias: "",
+      observaciones: "",
+      imagen: "",
+    });
+    setVista("pacientes");
+  };
+
+  // ---------------------------------------------------------------
+  // Modificar paciente existente
+  // ---------------------------------------------------------------
+  const handleGuardarEdicion = (e) => {
+    e.preventDefault();
+    const actualizados = pacientes.map((p) =>
+      p.rut === pacienteEditando.rut ? { ...p, ...formData } : p
+    );
+    guardarPacientes(actualizados);
+    alert("Paciente modificado correctamente.");
+    setPacienteEditando(null);
+    setVista("pacientes");
+  };
+
+  // ---------------------------------------------------------------
+  // Eliminar paciente
+  // ---------------------------------------------------------------
+  const handleEliminar = (rut) => {
+    if (window.confirm("¿Seguro que deseas eliminar este paciente?")) {
+      const actualizados = pacientes.filter((p) => p.rut !== rut);
+      guardarPacientes(actualizados);
+      alert("Paciente eliminado.");
+    }
+  };
+
+  // ---------------------------------------------------------------
+  // Estadísticas rápidas (simuladas)
   // ---------------------------------------------------------------
   const stats = {
     pacientes: pacientes.length,
@@ -65,12 +139,10 @@ function DashboardProf() {
   };
 
   // ---------------------------------------------------------------
-  // FUNCIÓN QUE DECIDE QUÉ MOSTRAR SEGÚN LA VISTA
+  // Render según vista actual
   // ---------------------------------------------------------------
   const renderContenido = () => {
-    // ============================================================
-    // VISTA 1: RESUMEN GENERAL
-    // ============================================================
+    // --------------------- VISTA: RESUMEN -------------------------
     if (vista === "resumen") {
       return (
         <>
@@ -106,123 +178,159 @@ function DashboardProf() {
       );
     }
 
-    // ============================================================
-    // VISTA 2: PACIENTES (LISTADO + DETALLE)
-    // ============================================================
-    if (vista === "pacientes") {
-      // Detalle del paciente seleccionado
-      if (pacienteSeleccionado) {
-        return (
-          <>
-            <h2 className="mt-4">Detalle del Paciente</h2>
-            <p className="text-muted">
-              Información clínica actualizada (solo lectura).
-            </p>
+    // --------------------- VISTA: AGREGAR PACIENTE -------------------------
+    if (vista === "agregar") {
+      return (
+        <div className="card shadow-sm mt-4">
+          <div className="card-body">
+            <h4 className="text-primary mb-3">Agregar nuevo paciente</h4>
+            <form onSubmit={handleAgregarPaciente}>
+              <div className="row g-3">
+                <div className="col-md-4">
+                  <label>RUT</label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    value={formData.rut}
+                    onChange={(e) =>
+                      setFormData({ ...formData, rut: e.target.value })
+                    }
+                    required
+                  />
+                </div>
+                <div className="col-md-4">
+                  <label>Nombre completo</label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    value={formData.nombre}
+                    onChange={(e) =>
+                      setFormData({ ...formData, nombre: e.target.value })
+                    }
+                    required
+                  />
+                </div>
+                <div className="col-md-4">
+                  <label>Edad</label>
+                  <input
+                    type="number"
+                    className="form-control"
+                    value={formData.edad}
+                    onChange={(e) =>
+                      setFormData({ ...formData, edad: e.target.value })
+                    }
+                    required
+                  />
+                </div>
+                <div className="col-md-6">
+                  <label>Diagnóstico</label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    value={formData.diagnostico}
+                    onChange={(e) =>
+                      setFormData({ ...formData, diagnostico: e.target.value })
+                    }
+                  />
+                </div>
+                <div className="col-md-6">
+                  <label>Alergias</label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    value={formData.alergias}
+                    onChange={(e) =>
+                      setFormData({ ...formData, alergias: e.target.value })
+                    }
+                  />
+                </div>
+                <div className="col-md-12">
+                  <label>Observaciones</label>
+                  <textarea
+                    className="form-control"
+                    rows="2"
+                    value={formData.observaciones}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        observaciones: e.target.value,
+                      })
+                    }
+                  ></textarea>
+                </div>
+                <div className="col-md-12">
+                  <label>URL de Imagen</label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    placeholder="/images/paciente.png"
+                    value={formData.imagen}
+                    onChange={(e) =>
+                      setFormData({ ...formData, imagen: e.target.value })
+                    }
+                  />
+                </div>
+              </div>
 
-            <div className="card shadow-sm mt-3">
-              <img
-                src={pacienteSeleccionado.imagen}
-                alt={pacienteSeleccionado.nombre}
-                className="card-img-top"
-                style={{ height: "300px", objectFit: "cover" }}
-              />
-
-              <div className="card-body">
-                <h5 className="fw-semibold mb-3 text-primary">
-                  {pacienteSeleccionado.nombre}
-                </h5>
-
-                <p>
-                  <strong>RUT:</strong> {pacienteSeleccionado.rut}
-                </p>
-                <p>
-                  <strong>Edad:</strong> {pacienteSeleccionado.edad} años
-                </p>
-                <p>
-                  <strong>Diagnóstico:</strong>{" "}
-                  {pacienteSeleccionado.diagnostico}
-                </p>
-                <p>
-                  <strong>Alergias:</strong> {pacienteSeleccionado.alergias}
-                </p>
-                <p>
-                  <strong>Observaciones:</strong>{" "}
-                  {pacienteSeleccionado.observaciones}
-                </p>
-
-                <hr />
-
-                <h6 className="fw-bold text-primary mt-3">Notas Clínicas</h6>
-                {pacienteSeleccionado.notas?.length > 0 ? (
-                  <ul>
-                    {pacienteSeleccionado.notas.map((n, i) => (
-                      <li key={i}>
-                        <strong>{n.fecha}:</strong> {n.contenido}
-                      </li>
-                    ))}
-                  </ul>
-                ) : (
-                  <p className="text-muted">Sin notas clínicas registradas.</p>
-                )}
-
-                <h6 className="fw-bold text-primary mt-3">Recetas</h6>
-                {pacienteSeleccionado.recetas?.length > 0 ? (
-                  <ul>
-                    {pacienteSeleccionado.recetas.map((r, i) => (
-                      <li key={i}>
-                        <strong>{r.fecha}:</strong> {r.contenido}
-                      </li>
-                    ))}
-                  </ul>
-                ) : (
-                  <p className="text-muted">Sin recetas registradas.</p>
-                )}
-
-                <h6 className="fw-bold text-primary mt-3">Exámenes</h6>
-                {pacienteSeleccionado.examenes?.length > 0 ? (
-                  <ul>
-                    {pacienteSeleccionado.examenes.map((e, i) => (
-                      <li key={i}>
-                        <strong>{e.fecha}:</strong> {e.contenido}
-                      </li>
-                    ))}
-                  </ul>
-                ) : (
-                  <p className="text-muted">Sin exámenes registrados.</p>
-                )}
-
-                <h6 className="fw-bold text-primary mt-3">Certificados</h6>
-                {pacienteSeleccionado.certificados?.length > 0 ? (
-                  <ul>
-                    {pacienteSeleccionado.certificados.map((c, i) => (
-                      <li key={i}>
-                        <strong>{c.fecha}:</strong> {c.contenido}
-                      </li>
-                    ))}
-                  </ul>
-                ) : (
-                  <p className="text-muted">Sin certificados registrados.</p>
-                )}
-
-                <button
-                  className="btn btn-secondary mt-3"
-                  onClick={() => setPacienteSeleccionado(null)}
-                >
-                  ← Volver al listado
+              <div className="text-end mt-3">
+                <button type="submit" className="btn btn-success">
+                  Guardar paciente
                 </button>
               </div>
+            </form>
+          </div>
+        </div>
+      );
+    }
+
+    // --------------------- VISTA: PACIENTES -------------------------
+    if (vista === "pacientes") {
+      if (pacienteSeleccionado) {
+        return (
+          <div className="card shadow-sm mt-4">
+            <div className="card-body">
+              <h4 className="text-primary mb-3">
+                Detalle del paciente: {pacienteSeleccionado.nombre}
+              </h4>
+              <p>
+                <strong>RUT:</strong> {pacienteSeleccionado.rut}
+              </p>
+              <p>
+                <strong>Edad:</strong> {pacienteSeleccionado.edad}
+              </p>
+              <p>
+                <strong>Diagnóstico:</strong> {pacienteSeleccionado.diagnostico}
+              </p>
+              <p>
+                <strong>Alergias:</strong> {pacienteSeleccionado.alergias}
+              </p>
+              <p>
+                <strong>Observaciones:</strong>{" "}
+                {pacienteSeleccionado.observaciones}
+              </p>
+
+              <button
+                className="btn btn-secondary mt-3"
+                onClick={() => setPacienteSeleccionado(null)}
+              >
+                Volver al listado
+              </button>
             </div>
-          </>
+          </div>
         );
       }
 
-      // Listado de pacientes
       return (
         <>
-          <h2 className="mt-4">Pacientes</h2>
-          <p className="text-muted">
-            Selecciona un paciente para ver su información.
-          </p>
+          <div className="d-flex justify-content-between align-items-center mt-4 mb-3">
+            <h4>Listado de pacientes</h4>
+            <button
+              className="btn btn-success"
+              onClick={() => setVista("agregar")}
+            >
+              + Agregar paciente
+            </button>
+          </div>
 
           <div className="card shadow-sm">
             <div className="card-body p-0">
@@ -230,7 +338,6 @@ function DashboardProf() {
                 <table className="table table-hover mb-0 align-middle">
                   <thead className="table-light">
                     <tr>
-                      <th>Imagen</th>
                       <th>RUT</th>
                       <th>Nombre</th>
                       <th>Edad</th>
@@ -240,27 +347,31 @@ function DashboardProf() {
                   <tbody>
                     {pacientes.map((p) => (
                       <tr key={p.rut}>
-                        <td style={{ width: "90px" }}>
-                          <img
-                            src={p.imagen}
-                            alt={p.nombre}
-                            className="rounded-circle"
-                            style={{
-                              width: "60px",
-                              height: "60px",
-                              objectFit: "cover",
-                            }}
-                          />
-                        </td>
                         <td>{p.rut}</td>
                         <td>{p.nombre}</td>
                         <td>{p.edad}</td>
                         <td>
                           <button
-                            className="btn btn-outline-primary btn-sm"
+                            className="btn btn-outline-primary btn-sm me-1"
                             onClick={() => setPacienteSeleccionado(p)}
                           >
-                            Ver Detalle
+                            Ver detalle
+                          </button>
+                          <button
+                            className="btn btn-outline-warning btn-sm me-1"
+                            onClick={() => {
+                              setPacienteEditando(p);
+                              setFormData(p);
+                              setVista("editar");
+                            }}
+                          >
+                            Modificar
+                          </button>
+                          <button
+                            className="btn btn-outline-danger btn-sm"
+                            onClick={() => handleEliminar(p.rut)}
+                          >
+                            Eliminar
                           </button>
                         </td>
                       </tr>
@@ -274,25 +385,94 @@ function DashboardProf() {
       );
     }
 
-    // ============================================================
-    // VISTA 3: DATOS IMPORTANTES
-    // ============================================================
-    if (vista === "datos") {
+    // --------------------- VISTA: EDITAR PACIENTE -------------------------
+    if (vista === "editar" && pacienteEditando) {
       return (
-        <>
-          <h2 className="mt-4">Datos importantes</h2>
-          <p className="text-muted">
-            Aquí puedes registrar información adicional o reportes clínicos.
-          </p>
+        <div className="card shadow-sm mt-4">
+          <div className="card-body">
+            <h4 className="text-primary mb-3">
+              Modificar paciente: {pacienteEditando.nombre}
+            </h4>
+            <form onSubmit={handleGuardarEdicion}>
+              <div className="row g-3">
+                <div className="col-md-6">
+                  <label>Nombre completo</label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    value={formData.nombre}
+                    onChange={(e) =>
+                      setFormData({ ...formData, nombre: e.target.value })
+                    }
+                  />
+                </div>
+                <div className="col-md-6">
+                  <label>Edad</label>
+                  <input
+                    type="number"
+                    className="form-control"
+                    value={formData.edad}
+                    onChange={(e) =>
+                      setFormData({ ...formData, edad: e.target.value })
+                    }
+                  />
+                </div>
+                <div className="col-md-6">
+                  <label>Diagnóstico</label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    value={formData.diagnostico}
+                    onChange={(e) =>
+                      setFormData({ ...formData, diagnostico: e.target.value })
+                    }
+                  />
+                </div>
+                <div className="col-md-6">
+                  <label>Alergias</label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    value={formData.alergias}
+                    onChange={(e) =>
+                      setFormData({ ...formData, alergias: e.target.value })
+                    }
+                  />
+                </div>
+                <div className="col-md-12">
+                  <label>Observaciones</label>
+                  <textarea
+                    className="form-control"
+                    rows="2"
+                    value={formData.observaciones}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        observaciones: e.target.value,
+                      })
+                    }
+                  ></textarea>
+                </div>
+              </div>
 
-          <div className="card shadow-sm">
-            <div className="card-body">
-              <p className="text-muted">
-                Esta sección puede conectarse a futuras funciones.
-              </p>
-            </div>
+              <div className="text-end mt-3">
+                <button type="submit" className="btn btn-warning me-2">
+                  Guardar cambios
+                </button>
+                <button
+                  type="button"
+                  className="btn btn-secondary"
+                  onClick={() => {
+                    setPacienteEditando(null);
+                    setVista("pacientes");
+                  }}
+                >
+                  Cancelar
+                </button>
+              </div>
+            </form>
           </div>
-        </>
+        </div>
       );
     }
 
@@ -300,56 +480,41 @@ function DashboardProf() {
   };
 
   // ---------------------------------------------------------------
-  // RENDER PRINCIPAL
+  // Render principal
   // ---------------------------------------------------------------
   if (!usuario) return null;
 
   return (
     <div className="container-fluid">
       <div className="row">
-        {/* SIDEBAR IZQUIERDO */}
+        {/* SIDEBAR */}
         <aside className="col-md-3 col-lg-2 bg-light p-3 min-vh-100 border-end">
-          <div className="mb-3">
-            <div className="small text-muted">Sesión activa</div>
-            <div className="fw-semibold">Bienvenido, {usuario.nombre}</div>
-          </div>
-
-          <h6 className="text-uppercase text-muted mt-4 mb-2">Menú</h6>
-          <ul className="nav nav-pills flex-column gap-1">
-            <li className="nav-item">
+          <h6 className="text-uppercase text-muted mt-3 mb-2">Menú</h6>
+          <ul className="nav flex-column gap-1">
+            <li>
               <button
-                className={`nav-link text-start ${
-                  vista === "resumen" ? "active" : ""
+                className={`nav-link text-start btn btn-link ${
+                  vista === "resumen" ? "fw-bold text-primary" : ""
                 }`}
                 onClick={() => setVista("resumen")}
               >
                 Resumen
               </button>
             </li>
-            <li className="nav-item">
+            <li>
               <button
-                className={`nav-link text-start ${
-                  vista === "pacientes" ? "active" : ""
+                className={`nav-link text-start btn btn-link ${
+                  vista === "pacientes" ? "fw-bold text-primary" : ""
                 }`}
                 onClick={() => setVista("pacientes")}
               >
                 Pacientes
               </button>
             </li>
-            <li className="nav-item">
-              <button
-                className={`nav-link text-start ${
-                  vista === "datos" ? "active" : ""
-                }`}
-                onClick={() => setVista("datos")}
-              >
-                Datos importantes
-              </button>
-            </li>
           </ul>
         </aside>
 
-        {/* CONTENIDO PRINCIPAL */}
+        {/* CONTENIDO */}
         <main className="col-md-9 col-lg-10 px-md-4 py-4">
           {renderContenido()}
         </main>
