@@ -6,6 +6,9 @@ import { useNavigate } from "react-router-dom";
 function DashboardTutor() {
   const navigate = useNavigate();
 
+  // -----------------------------------------------------------
+  // Estados principales del componente
+  // -----------------------------------------------------------
   const [usuario, setUsuario] = useState(null);
   const [pacientes, setPacientes] = useState([]);
   const [pacienteSeleccionado, setPacienteSeleccionado] = useState(null);
@@ -13,21 +16,36 @@ function DashboardTutor() {
   const [asunto, setAsunto] = useState("");
   const [cuerpo, setCuerpo] = useState("");
 
+  // -----------------------------------------------------------
+  // useEffect: Se ejecuta al cargar el componente
+  // -----------------------------------------------------------
   useEffect(() => {
+    // 1. Se obtiene el usuario activo desde localStorage.
     const activo = JSON.parse(localStorage.getItem("usuarioActivo"));
+
+    // Si no hay usuario o no es tipo Tutor, se redirige al login.
     if (!activo || activo.tipoUsuario !== "Tutor") {
       navigate("/login");
       return;
     }
+
+    // Guarda la información del usuario activo en el estado.
     setUsuario(activo);
 
-    const almacenados = JSON.parse(localStorage.getItem("pacientesData"));
+    // 2. Se obtienen los pacientes guardados en localStorage.
+    //    En App.jsx fueron almacenados con la clave "pacientes".
+    const almacenados = JSON.parse(localStorage.getItem("pacientes"));
+
+    // Si existen y son un arreglo válido, se guardan en el estado.
     if (almacenados && Array.isArray(almacenados)) {
       setPacientes(almacenados);
     } else {
+      // Si no hay datos válidos, se deja el estado vacío.
       setPacientes([]);
     }
 
+    // 3. Si el usuario activo tiene asignado un paciente,
+    //    se busca dentro del arreglo almacenado y se selecciona.
     if (activo.idPaciente) {
       const paciente = almacenados?.find((p) => p.rut === activo.idPaciente);
       if (paciente) {
@@ -36,19 +54,32 @@ function DashboardTutor() {
     }
   }, [navigate]);
 
+  // -----------------------------------------------------------
+  // Función: Envía un mensaje al centro
+  // -----------------------------------------------------------
   const handleEnviarMensaje = () => {
+    // Verifica que ambos campos (asunto y cuerpo) tengan contenido.
     if (asunto.trim() && cuerpo.trim()) {
       const nuevoMensaje = {
         asunto,
         cuerpo,
         fecha: new Date().toLocaleString(),
       };
+
+      // Agrega el nuevo mensaje a la lista existente.
       setMensajes([...mensajes, nuevoMensaje]);
+
+      // Limpia los campos del formulario.
       setAsunto("");
       setCuerpo("");
     }
   };
 
+  // -----------------------------------------------------------
+  // Renderizado condicional
+  // -----------------------------------------------------------
+  // Si no hay usuario o no se encontró paciente asignado,
+  // se muestra un mensaje simple en pantalla.
   if (!usuario || !pacienteSeleccionado) {
     return (
       <div className="container py-4">
@@ -57,6 +88,9 @@ function DashboardTutor() {
     );
   }
 
+  // -----------------------------------------------------------
+  // Render principal del Dashboard del Tutor
+  // -----------------------------------------------------------
   return (
     <div className="container-fluid py-4">
       <div className="row">
