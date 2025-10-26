@@ -1,10 +1,9 @@
-/* ===============================================================
-🎨 ESTILOS DEL FORMULARIO DE REGISTRO / LOGIN — CUIDADO SEGURO
+/* ESTILOS DEL FORMULARIO DE REGISTRO / LOGIN — CUIDADO SEGURO
 Mantiene tu paleta original:
   - Principal: CadetBlue (#5F9EA0)
   - Secundario: LightCoral (#F08080)
   - Acento: Cornsilk (#FFF8DC)
-================================================================ */
+ */
 
 /* CONTENEDOR PRINCIPAL DEL FORMULARIO */
 .formulario {
@@ -111,12 +110,11 @@ Mantiene tu paleta original:
     color: #FFF8DC !important;
 }
 
-/* ===============================================================
-🟩 CHECKBOX DE TÉRMINOS Y CONDICIONES
+/* CHECKBOX DE TÉRMINOS Y CONDICIONES
 - Más pequeño
 - Cuadrado
 - Centrado con el texto
-================================================================ */
+*/
 .formulario .form-check {
     display: flex;
     justify-content: center;
