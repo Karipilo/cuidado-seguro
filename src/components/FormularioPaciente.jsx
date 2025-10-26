@@ -1,39 +1,90 @@
-import React, { useState } from 'react';
+// ===============================================================
+// 🧩 Componente: FormularioPaciente.jsx
+// Descripción: Formulario con validación básica y soporte para testing
+// ===============================================================
 
-function FormularioPaciente() {
+import React, { useState } from "react";
 
-    return (
-        <form onSubmit={handleSubmit} className="p-4 border rounded bg-light">
-            <h3>Formulario Paciente</h3>
+function FormularioPaciente({ onSubmit }) {
+  // ------------------ Estados ------------------
+  const [nombre, setNombre] = useState("");
+  const [rut, setRut] = useState("");
+  const [edad, setEdad] = useState("");
+  const [diagnostico, setDiagnostico] = useState("");
+  const [error, setError] = useState("");
 
-            <div className="mb-3">
-                <label className="form-label">RUT *</label>
-                <input type="text" className="form-control" value={rut} onChange={(e) => setRut(e.target.value)} required />
-            </div>
+  // ------------------ Manejo del envío ------------------
+  function handleSubmit(e) {
+    e.preventDefault();
 
-            <div className="mb-3">
-                <label className="form-label">Nombre *</label>
-                <input type="text" className="form-control" value={nombre} onChange={(e) => setNombre(e.target.value)} required />
-            </div>
+    if (!nombre || !rut || !edad || !diagnostico) {
+      setError("Todos los campos son obligatorios");
+      return;
+    }
 
-            <div className="mb-3">
-                <label className="form-label">Edad *</label>
-                <input type="number" className="form-control" value={edad} onChange={(e) => setEdad(e.target.value)} required />
-            </div>
+    setError("");
+    const datos = { nombre, rut, edad, diagnostico };
 
-            <div className="mb-3">
-                <label className="form-label">Diagnóstico</label>
-                <textarea className="form-control" value={diagnostico} onChange={(e) => setDiagnostico(e.target.value)} />
-            </div>
+    // Si se pasó una función externa (mock en test), la llama
+    if (onSubmit) onSubmit(datos);
 
-            <div className="mb-3">
-                <label className="form-label">Medicamentos</label>
-                <input type="text" className="form-control" value={medicamentos} onChange={(e) => setMedicamentos(e.target.value)} />
-            </div>
+    console.log("Formulario enviado:", datos);
+  }
 
-            <button type="submit" className="btn btn-primary">Guardar Paciente</button>
-        </form>
-    );
+  // ------------------ Render ------------------
+  return (
+    <form onSubmit={handleSubmit} className="p-4 border rounded bg-light">
+      <h3>Formulario Paciente</h3>
+
+      {error && <p className="text-danger">{error}</p>}
+
+      <div className="mb-3">
+        <label htmlFor="nombre" className="form-label">Nombre</label>
+        <input
+          type="text"
+          id="nombre"
+          className="form-control"
+          value={nombre}
+          onChange={(e) => setNombre(e.target.value)}
+        />
+      </div>
+
+      <div className="mb-3">
+        <label htmlFor="rut" className="form-label">RUT</label>
+        <input
+          type="text"
+          id="rut"
+          className="form-control"
+          value={rut}
+          onChange={(e) => setRut(e.target.value)}
+        />
+      </div>
+
+      <div className="mb-3">
+        <label htmlFor="edad" className="form-label">Edad</label>
+        <input
+          type="number"
+          id="edad"
+          className="form-control"
+          value={edad}
+          onChange={(e) => setEdad(e.target.value)}
+        />
+      </div>
+
+      <div className="mb-3">
+        <label htmlFor="diagnostico" className="form-label">Diagnóstico</label>
+        <input
+          type="text"
+          id="diagnostico"
+          className="form-control"
+          value={diagnostico}
+          onChange={(e) => setDiagnostico(e.target.value)}
+        />
+      </div>
+
+      <button type="submit" className="btn btn-primary">Registrar</button>
+    </form>
+  );
 }
 
 export default FormularioPaciente;
