@@ -94,6 +94,7 @@ function FormularioRegistro() {
         <label>Nombre completo</label>
         <input
           type="text"
+          placeholder="Ingresa tu nombre"
           value={nombre}
           onChange={(e) => setNombre(e.target.value)}
           required
@@ -102,6 +103,7 @@ function FormularioRegistro() {
         <label>Email</label>
         <input
           type="email"
+          placeholder="Ingresa tu correo"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
@@ -110,6 +112,7 @@ function FormularioRegistro() {
         <label>Contraseña</label>
         <input
           type="password"
+          placeholder="6 caracteres, 1 mayúscula, 1 número y 1 símbolo."
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
@@ -118,6 +121,7 @@ function FormularioRegistro() {
         <label>Repite tu contraseña</label>
         <input
           type="password"
+          placeholder="6 caracteres, 1 mayúscula, 1 número y 1 símbolo tener al menos 6 caracteres, una mayúscula, un número y un símbolo."
           value={repitePassword}
           onChange={(e) => setRepitePassword(e.target.value)}
           required
