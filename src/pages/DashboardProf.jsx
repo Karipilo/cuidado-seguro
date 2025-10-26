@@ -1,7 +1,7 @@
-// ✅ DashboardProf.jsx — Perfil Profesional Interno con estilo personalizado
+// DashboardProf.jsx — Perfil Profesional Interno con estilo personalizado
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import "../style/dashboardProf.css"; // ✅ Asegúrate de tener este archivo CSS creado
+import "../style/dashboardProf.css"; // Asegúrate de tener este archivo CSS creado
 
 function DashboardProf() {
   const navigate = useNavigate();
@@ -11,7 +11,7 @@ function DashboardProf() {
   const [nota, setNota] = useState("");
   const [control, setControl] = useState("");
 
-  // ✅ Carga usuario y pacientes desde localStorage
+  // Carga usuario y pacientes desde localStorage
   useEffect(() => {
     const activo = JSON.parse(localStorage.getItem("usuarioActivo"));
     if (!activo || activo.tipoUsuario !== "Profesional Interno") {
@@ -80,7 +80,7 @@ function DashboardProf() {
 
   return (
     <div className="container py-4 dashboard-prof">
-      <h4 className="mb-4 text-center">👨‍⚕️ Bienvenido, {usuario.nombre}</h4>
+      <h4 className="mb-4 text-center">Bienvenido, {usuario.nombre}</h4>
       <div className="row">
         {/* Lista de pacientes */}
         <div className="col-md-4">

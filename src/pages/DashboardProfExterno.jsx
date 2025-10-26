@@ -1,9 +1,9 @@
-// ===============================================================
-// Componente: DashboardProfExterno.jsx
-// Descripción: Panel del Profesional Externo.
-// Lee los pacientes desde localStorage (cargados por App.jsx),
-// permite buscarlos y registrar información médica adicional.
-// ===============================================================
+/*
+Componente: DashboardProfExterno.jsx
+Descripción: Panel del Profesional Externo.
+Lee los pacientes desde localStorage (cargados por App.jsx),
+permite buscarlos y registrar información médica adicional.
+*/ 
 
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
@@ -11,9 +11,9 @@ import { useNavigate } from "react-router-dom";
 function DashboardProfExterno() {
   const navigate = useNavigate();
 
-  // ---------------------------------------------------------------
+  
   // Estados principales
-  // ---------------------------------------------------------------
+
   const [usuario, setUsuario] = useState(null);
   const [rutBusqueda, setRutBusqueda] = useState("");
   const [paciente, setPaciente] = useState(null);
@@ -21,9 +21,9 @@ function DashboardProfExterno() {
   const [accion, setAccion] = useState("");
   const [texto, setTexto] = useState("");
 
-  // ---------------------------------------------------------------
+ 
   // Efecto inicial: carga usuario y pacientes desde localStorage
-  // ---------------------------------------------------------------
+
   useEffect(() => {
     const activo = JSON.parse(localStorage.getItem("usuarioActivo"));
 
@@ -46,15 +46,14 @@ function DashboardProfExterno() {
     }
   }, [navigate]);
 
-  // ---------------------------------------------------------------
+ 
   // Función auxiliar: normaliza el RUT para comparación
-  // ---------------------------------------------------------------
+
   const normalizarRut = (rut) =>
     (rut || "").toString().replace(/\s+/g, "").toLowerCase();
 
-  // ---------------------------------------------------------------
   // Buscar paciente por RUT
-  // ---------------------------------------------------------------
+
   const handleBuscar = () => {
     const buscado = normalizarRut(rutBusqueda);
     const encontrado = pacientes.find((p) => normalizarRut(p.rut) === buscado);
@@ -69,9 +68,9 @@ function DashboardProfExterno() {
     }
   };
 
-  // ---------------------------------------------------------------
+  
   // Registrar nueva información médica
-  // ---------------------------------------------------------------
+  
   const handleRegistrar = () => {
     if (!texto.trim() || !accion) {
       alert("Por favor, selecciona una acción y escribe el contenido.");
@@ -107,9 +106,9 @@ function DashboardProfExterno() {
     alert("Información registrada correctamente.");
   };
 
-  // ---------------------------------------------------------------
+  
   // Render principal
-  // ---------------------------------------------------------------
+  
   if (!usuario) return null;
 
   return (

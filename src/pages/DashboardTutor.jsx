@@ -6,9 +6,9 @@ import { useNavigate } from "react-router-dom";
 function DashboardTutor() {
   const navigate = useNavigate();
 
-  // -----------------------------------------------------------
+  
   // Estados principales del componente
-  // -----------------------------------------------------------
+  
   const [usuario, setUsuario] = useState(null);
   const [pacientes, setPacientes] = useState([]);
   const [pacienteSeleccionado, setPacienteSeleccionado] = useState(null);
@@ -16,9 +16,9 @@ function DashboardTutor() {
   const [asunto, setAsunto] = useState("");
   const [cuerpo, setCuerpo] = useState("");
 
-  // -----------------------------------------------------------
+  
   // useEffect: Se ejecuta al cargar el componente
-  // -----------------------------------------------------------
+  
   useEffect(() => {
     // 1. Se obtiene el usuario activo desde localStorage.
     const activo = JSON.parse(localStorage.getItem("usuarioActivo"));
@@ -44,8 +44,9 @@ function DashboardTutor() {
       setPacientes([]);
     }
 
-    // 3. Si el usuario activo tiene asignado un paciente,
-    //    se busca dentro del arreglo almacenado y se selecciona.
+    /* 3. Si el usuario activo tiene asignado un paciente,
+        se busca dentro del arreglo almacenado y se selecciona.
+    */
     if (activo.idPaciente) {
       const paciente = almacenados?.find((p) => p.rut === activo.idPaciente);
       if (paciente) {
@@ -54,9 +55,9 @@ function DashboardTutor() {
     }
   }, [navigate]);
 
-  // -----------------------------------------------------------
+  
   // Función: Envía un mensaje al centro
-  // -----------------------------------------------------------
+  
   const handleEnviarMensaje = () => {
     // Verifica que ambos campos (asunto y cuerpo) tengan contenido.
     if (asunto.trim() && cuerpo.trim()) {
@@ -75,11 +76,12 @@ function DashboardTutor() {
     }
   };
 
-  // -----------------------------------------------------------
+  
   // Renderizado condicional
-  // -----------------------------------------------------------
-  // Si no hay usuario o no se encontró paciente asignado,
-  // se muestra un mensaje simple en pantalla.
+  
+  /* Si no hay usuario o no se encontró paciente asignado,
+     se muestra un mensaje simple en pantalla.
+  */
   if (!usuario || !pacienteSeleccionado) {
     return (
       <div className="container py-4">
@@ -88,9 +90,9 @@ function DashboardTutor() {
     );
   }
 
-  // -----------------------------------------------------------
+  
   // Render principal del Dashboard del Tutor
-  // -----------------------------------------------------------
+  
   return (
     <div className="container-fluid py-4">
       <div className="row">

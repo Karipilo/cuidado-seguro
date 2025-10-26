@@ -1,15 +1,14 @@
-// ===============================================================
-// 🧩 Componente: Login.jsx
-// Descripción:
-//   Formulario de inicio de sesión del sistema "Cuidado Seguro".
-//   Valida credenciales desde localStorage y redirige según el
-//   tipo de usuario registrado (Profesional Interno, Tutor o
-//   Profesional Externo).
-// ===============================================================
+/* Componente: Login.jsx
+ Descripción:
+   Formulario de inicio de sesión del sistema "Cuidado Seguro".
+   Valida credenciales desde localStorage y redirige según el
+   tipo de usuario registrado (Profesional Interno, Tutor o
+   Profesional Externo).
+*/ 
 
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import "../style/formulario.css"; // ✅ Mantiene el estilo visual del registro
+import "../style/formulario.css"; // Mantiene el estilo visual del registro
 
 function Login() {
     // Hook de navegación
@@ -33,16 +32,16 @@ function Login() {
 
         // Si no se encuentra, mostrar alerta
         if (!usuarioEncontrado) {
-            alert("❌ Correo o contraseña incorrectos. Intenta nuevamente.");
+            alert("Correo o contraseña incorrectos. Intenta nuevamente.");
             return;
         }
 
         // Guardar usuario activo en localStorage (sesión)
         localStorage.setItem("usuarioActivo", JSON.stringify(usuarioEncontrado));
 
-        alert(`✅ Bienvenido ${usuarioEncontrado.nombre}`);
+        alert(`Bienvenido ${usuarioEncontrado.nombre}`);
 
-        // ------------------------- REDIRECCIÓN SEGÚN TIPO -------------------------
+        // REDIRECCIÓN SEGÚN TIPO 
         if (usuarioEncontrado.tipoUsuario === "Profesional Interno") {
             navigate("/dashboard-prof");
         } else if (usuarioEncontrado.tipoUsuario === "Tutor") {
@@ -54,9 +53,9 @@ function Login() {
         }
     };
 
-    // ---------------------------------------------------------------
-    // 🔹 RENDERIZADO DEL FORMULARIO
-    // ---------------------------------------------------------------
+    
+    // RENDERIZADO DEL FORMULARIO
+
     return (
         <div className="formulario-container d-flex justify-content-center align-items-center vh-100">
             <div className="formulario card shadow-lg p-4" style={{ maxWidth: "420px", width: "100%" }}>
@@ -107,4 +106,3 @@ function Login() {
 }
 
 export default Login;
-
