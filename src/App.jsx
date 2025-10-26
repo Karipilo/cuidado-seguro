@@ -17,7 +17,7 @@ import Paciente from "./pages/Paciente";
 import DatosMedicos from "./pages/DatosMedicos";
 
 function App() {
-  // ✅ Carga automática de pacientes en localStorage
+  //  Carga automática de pacientes en localStorage
   useEffect(() => {
     const pacientesExistentes = localStorage.getItem("pacientes");
 
