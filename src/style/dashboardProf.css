@@ -1,0 +1,43 @@
+/* ============================================
+   🎨 Estilos personalizados para DashboardProf
+   Aplican solo a este componente
+   ============================================ */
+
+.dashboard-prof-container {
+  background-color: #FFF8DC; /* Fondo acento (Cornsilk) */
+  min-height: 100vh;
+  padding: 20px;
+}
+
+.dashboard-prof-titulo {
+  color: #5F9EA0; /* Color principal (CadetBlue) */
+}
+
+.dashboard-prof-lista .list-group-item {
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.dashboard-prof-lista .list-group-item:hover {
+  background-color: #F08080; /* Color secundario (LightCoral) */
+  color: white;
+}
+
+.dashboard-prof-card {
+  border: 1px solid #5F9EA0;
+  background-color: white;
+  box-shadow: 0 2px 8px rgba(95, 158, 160, 0.2);
+}
+
+.dashboard-prof-card h6 {
+  color: #5F9EA0;
+}
+
+.dashboard-prof-card button {
+  background-color: #5F9EA0;
+  border: none;
+}
+
+.dashboard-prof-card button:hover {
+  background-color: #4a8587;
+}

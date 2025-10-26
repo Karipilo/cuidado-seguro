@@ -1,67 +1,38 @@
-// ✅ DashboardProf.jsx (Profesional Interno)
-// Corrige error de propiedades undefined y asegura compatibilidad con "pacientes" del localStorage.
-
+// ✅ DashboardProf.jsx — Perfil Profesional Interno con estilo personalizado
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import "../style/dashboardProf.css"; // ✅ Asegúrate de tener este archivo CSS creado
 
 function DashboardProf() {
   const navigate = useNavigate();
-
-  // Estados principales
   const [usuario, setUsuario] = useState(null);
   const [pacientes, setPacientes] = useState([]);
   const [pacienteSeleccionado, setPacienteSeleccionado] = useState(null);
   const [nota, setNota] = useState("");
   const [control, setControl] = useState("");
 
-  // -----------------------------------------------------
-  // ✅ useEffect: valida usuario y carga pacientes
-  // -----------------------------------------------------
+  // ✅ Carga usuario y pacientes desde localStorage
   useEffect(() => {
     const activo = JSON.parse(localStorage.getItem("usuarioActivo"));
-
     if (!activo || activo.tipoUsuario !== "Profesional Interno") {
       navigate("/login");
       return;
     }
     setUsuario(activo);
 
-    // ✅ Cargar pacientes desde la clave "pacientes"
     const almacenados = JSON.parse(localStorage.getItem("pacientes"));
-
-    if (almacenados && Array.isArray(almacenados) && almacenados.length > 0) {
-      // Inicializa campos que pudieran faltar (notas, controles, mensajes)
-      const corregidos = almacenados.map((p) => ({
-        ...p,
-        notas: p.notas || [],
-        controles: p.controles || [],
-        mensajes: p.mensajes || [],
-      }));
-      setPacientes(corregidos);
-      setPacienteSeleccionado(corregidos[0]);
-    } else {
-      setPacientes([]);
+    if (almacenados?.length > 0) {
+      setPacientes(almacenados);
+      setPacienteSeleccionado(almacenados[0]);
     }
   }, [navigate]);
 
-  // -----------------------------------------------------
-  // ✅ Cambia paciente seleccionado
-  // -----------------------------------------------------
   const seleccionarPaciente = (paciente) => {
-    setPacienteSeleccionado({
-      ...paciente,
-      notas: paciente.notas || [],
-      controles: paciente.controles || [],
-      mensajes: paciente.mensajes || [],
-    });
+    setPacienteSeleccionado(paciente);
   };
 
-  // -----------------------------------------------------
-  // ✅ Agregar nota clínica
-  // -----------------------------------------------------
   const agregarNota = () => {
-    if (!nota.trim() || !pacienteSeleccionado) return;
-
+    if (!nota.trim()) return;
     const nuevaNota = {
       contenido: nota,
       fecha: new Date().toLocaleString(),
@@ -71,7 +42,10 @@ function DashboardProf() {
 
     const actualizados = pacientes.map((p) => {
       if (p.id === pacienteSeleccionado.id) {
-        const actualizado = { ...p, notas: [...(p.notas || []), nuevaNota] };
+        const actualizado = {
+          ...p,
+          notas: [...(p.notas || []), nuevaNota],
+        };
         setPacienteSeleccionado(actualizado);
         return actualizado;
       }
@@ -83,12 +57,8 @@ function DashboardProf() {
     setNota("");
   };
 
-  // -----------------------------------------------------
-  // ✅ Agregar control médico
-  // -----------------------------------------------------
   const agregarControl = () => {
-    if (!control.trim() || !pacienteSeleccionado) return;
-
+    if (!control.trim()) return;
     const actualizados = pacientes.map((p) => {
       if (p.id === pacienteSeleccionado.id) {
         const actualizado = {
@@ -106,23 +76,19 @@ function DashboardProf() {
     setControl("");
   };
 
-  // -----------------------------------------------------
-  // ✅ Renderizado seguro
-  // -----------------------------------------------------
   if (!usuario) return null;
 
   return (
-    <div className="container py-4">
-      <h4 className="mb-4">Bienvenido, {usuario.nombre}</h4>
-
+    <div className="container py-4 dashboard-prof">
+      <h4 className="mb-4 text-center">👨‍⚕️ Bienvenido, {usuario.nombre}</h4>
       <div className="row">
-        {/* 🔹 Lista lateral de pacientes */}
+        {/* Lista de pacientes */}
         <div className="col-md-4">
-          <h5 className="fw-bold text-primary">Pacientes asignados</h5>
+          <h5 className="text-cadetblue">Pacientes Asignados</h5>
           <ul className="list-group">
-            {pacientes.map((p) => (
+            {pacientes.map((p, i) => (
               <li
-                key={p.id}
+                key={i}
                 className={`list-group-item list-group-item-action ${
                   pacienteSeleccionado?.id === p.id ? "active" : ""
                 }`}
@@ -135,14 +101,12 @@ function DashboardProf() {
           </ul>
         </div>
 
-        {/* 🔹 Panel derecho: Detalle del paciente */}
+        {/* Detalle del paciente */}
         <div className="col-md-8">
           {pacienteSeleccionado && (
             <div className="card shadow-sm">
-              <div className="card-body">
-                <h5 className="text-primary">Resumen del paciente</h5>
-
-                {/* ✅ Datos básicos */}
+              <div className="card-body" style={{ backgroundColor: "#FFF8DC" }}>
+                <h5 className="text-cadetblue">Resumen del Paciente</h5>
                 <p>
                   <strong>Nombre:</strong> {pacienteSeleccionado.nombre}
                 </p>
@@ -164,9 +128,9 @@ function DashboardProf() {
                   {pacienteSeleccionado.observaciones}
                 </p>
 
-                {/* ✅ Formulario: agregar nota clínica */}
-                <div className="mt-4">
-                  <h6>Agregar nota clínica (evolución médica)</h6>
+                {/* Agregar nota */}
+                <div className="mt-3">
+                  <h6 className="text-lightcoral">Agregar Nota Clínica</h6>
                   <textarea
                     className="form-control"
                     rows="2"
@@ -182,9 +146,9 @@ function DashboardProf() {
                   </button>
                 </div>
 
-                {/* ✅ Formulario: agregar control médico */}
-                <div className="mt-4">
-                  <h6>Agregar nuevo control</h6>
+                {/* Agregar control */}
+                <div className="mt-3">
+                  <h6 className="text-lightcoral">Agregar Control Médico</h6>
                   <input
                     type="text"
                     className="form-control"
@@ -200,37 +164,41 @@ function DashboardProf() {
                   </button>
                 </div>
 
-                {/* ✅ Historial: notas clínicas */}
+                {/* Historial clínico */}
                 <div className="mt-4">
-                  <h6>Notas clínicas registradas</h6>
-                  {(pacienteSeleccionado.notas || []).length === 0 ? (
-                    <p className="text-muted">Sin notas aún.</p>
-                  ) : (
+                  <h6 className="text-lightcoral">Notas Clínicas</h6>
+                  {pacienteSeleccionado.notas?.length > 0 ? (
                     <ul>
-                      {(pacienteSeleccionado.notas || []).map((n, i) => (
+                      {pacienteSeleccionado.notas.map((n, i) => (
                         <li key={i}>
                           <strong>{n.fecha}</strong> — <em>{n.autor}</em>:<br />
                           {n.contenido}
                         </li>
                       ))}
                     </ul>
+                  ) : (
+                    <p className="text-muted">Sin notas aún.</p>
                   )}
                 </div>
 
-                {/* ✅ Historial: controles médicos */}
+                {/* Controles médicos */}
                 <div className="mt-4">
-                  <h6>Controles médicos</h6>
-                  <ul>
-                    {(pacienteSeleccionado.controles || []).map((c, i) => (
-                      <li key={i}>{c}</li>
-                    ))}
-                  </ul>
+                  <h6 className="text-lightcoral">Controles Médicos</h6>
+                  {pacienteSeleccionado.controles?.length > 0 ? (
+                    <ul>
+                      {pacienteSeleccionado.controles.map((c, i) => (
+                        <li key={i}>{c}</li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <p className="text-muted">Sin controles registrados.</p>
+                  )}
                 </div>
 
-                {/* ✅ Mensajes del tutor */}
+                {/* Mensajes del tutor */}
                 <div className="mt-4">
-                  <h6>Mensajes del tutor</h6>
-                  {(pacienteSeleccionado.mensajes || []).length > 0 ? (
+                  <h6 className="text-lightcoral">Mensajes del Tutor</h6>
+                  {pacienteSeleccionado.mensajes?.length > 0 ? (
                     <ul>
                       {pacienteSeleccionado.mensajes.map((m, i) => (
                         <li key={i}>
@@ -241,18 +209,20 @@ function DashboardProf() {
                       ))}
                     </ul>
                   ) : (
-                    <p className="text-muted">Sin mensajes disponibles.</p>
+                    <p className="text-muted">Sin mensajes.</p>
                   )}
                 </div>
 
-                {/* ✅ Notas del Profesional Externo */}
+                {/* Notas del profesional externo */}
                 <div className="mt-4">
-                  <h6>Notas del Profesional Externo</h6>
-                  {(pacienteSeleccionado.notas || []).filter(
+                  <h6 className="text-lightcoral">
+                    Notas del Profesional Externo
+                  </h6>
+                  {pacienteSeleccionado.notas?.filter(
                     (n) => n.tipo === "Profesional Externo"
                   ).length > 0 ? (
                     <ul>
-                      {(pacienteSeleccionado.notas || [])
+                      {pacienteSeleccionado.notas
                         .filter((n) => n.tipo === "Profesional Externo")
                         .map((n, i) => (
                           <li key={i}>
@@ -263,9 +233,7 @@ function DashboardProf() {
                         ))}
                     </ul>
                   ) : (
-                    <p className="text-muted">
-                      Sin notas del profesional externo.
-                    </p>
+                    <p className="text-muted">Sin notas externas.</p>
                   )}
                 </div>
               </div>
