@@ -1,7 +1,4 @@
-// ================================================================
-// 🧩 Componente: FormularioRegistro.jsx
 // Descripción: Registro de usuarios con validaciones completas
-// ================================================================
 
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
@@ -43,7 +40,9 @@ function FormularioRegistro() {
     }
 
     if (!passwordRegex.test(password)) {
-      alert("La contraseña debe tener al menos 6 caracteres, una mayúscula, un número y un símbolo.");
+      alert(
+        "La contraseña debe tener al menos 6 caracteres, una mayúscula, un número y un símbolo."
+      );
       return;
     }
 
@@ -93,19 +92,43 @@ function FormularioRegistro() {
       <h3>Registro</h3>
       <form onSubmit={handleSubmit}>
         <label>Nombre completo</label>
-        <input type="text" value={nombre} onChange={(e) => setNombre(e.target.value)} required />
+        <input
+          type="text"
+          value={nombre}
+          onChange={(e) => setNombre(e.target.value)}
+          required
+        />
 
         <label>Email</label>
-        <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+        <input
+          type="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
+        />
 
         <label>Contraseña</label>
-        <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
+        <input
+          type="password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          required
+        />
 
         <label>Repite tu contraseña</label>
-        <input type="password" value={repitePassword} onChange={(e) => setRepitePassword(e.target.value)} required />
+        <input
+          type="password"
+          value={repitePassword}
+          onChange={(e) => setRepitePassword(e.target.value)}
+          required
+        />
 
         <label>Tipo de usuario</label>
-        <select value={tipoUsuario} onChange={(e) => setTipoUsuario(e.target.value)} required>
+        <select
+          value={tipoUsuario}
+          onChange={(e) => setTipoUsuario(e.target.value)}
+          required
+        >
           <option value="">Selecciona una opción</option>
           <option value="Profesional Interno">Profesional Interno</option>
           <option value="Profesional Externo">Profesional Externo</option>
@@ -115,19 +138,29 @@ function FormularioRegistro() {
         {tipoUsuario === "Profesional Interno" && (
           <>
             <label>Tipo Profesional</label>
-            <select value={tipoProf} onChange={(e) => setTipoProf(e.target.value)} required>
+            <select
+              value={tipoProf}
+              onChange={(e) => setTipoProf(e.target.value)}
+              required
+            >
               <option value="">Seleccione tipo profesional</option>
               <option value="Médico">Médico</option>
               <option value="Enfermero">Enfermero</option>
               <option value="Kinesiólogo">Kinesiólogo</option>
               <option value="Psicólogo">Psicólogo</option>
               <option value="Nutricionista">Nutricionista</option>
-              <option value="Terapeuta Ocupacional">Terapeuta Ocupacional</option>
+              <option value="Terapeuta Ocupacional">
+                Terapeuta Ocupacional
+              </option>
               <option value="Paramédico">Paramédico</option>
             </select>
 
             <label>Institución</label>
-            <select value={institucion} onChange={(e) => setInstitucion(e.target.value)} required>
+            <select
+              value={institucion}
+              onChange={(e) => setInstitucion(e.target.value)}
+              required
+            >
               <option value="">Seleccione institución</option>
               <option value="Clínica Los Alerces">Clínica Los Alerces</option>
               <option value="Clínica Los Carrera">Clínica Los Carrera</option>
@@ -142,7 +175,11 @@ function FormularioRegistro() {
         {tipoUsuario === "Profesional Externo" && (
           <>
             <label>Tipo de profesional</label>
-            <select value={tipoProf} onChange={(e) => setTipoProf(e.target.value)} required>
+            <select
+              value={tipoProf}
+              onChange={(e) => setTipoProf(e.target.value)}
+              required
+            >
               <option value="">Selecciona una opción</option>
               <option value="Médico">Médico</option>
               <option value="Enfermero">Enfermero</option>
@@ -152,17 +189,32 @@ function FormularioRegistro() {
             </select>
 
             <label>RNPI</label>
-            <input type="text" value={rnpi} onChange={(e) => setRnpi(e.target.value)} required />
+            <input
+              type="text"
+              value={rnpi}
+              onChange={(e) => setRnpi(e.target.value)}
+              required
+            />
           </>
         )}
 
         {tipoUsuario === "Tutor" && (
           <>
             <label>RUT del Familiar</label>
-            <input type="text" value={idPaciente} onChange={(e) => setIdPaciente(e.target.value)} required />
+            <input
+              type="text"
+              value={idPaciente}
+              onChange={(e) => setIdPaciente(e.target.value)}
+              required
+            />
 
             <label>Código del Centro</label>
-            <input type="text" value={codigoCentro} onChange={(e) => setCodigoCentro(e.target.value)} required />
+            <input
+              type="text"
+              value={codigoCentro}
+              onChange={(e) => setCodigoCentro(e.target.value)}
+              required
+            />
           </>
         )}
 

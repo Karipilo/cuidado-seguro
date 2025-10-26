@@ -1,9 +1,5 @@
-// -----------------------------------------------------------
-// Componente: NavBar.jsx
 // Descripción: Barra de navegación superior de la aplicación.
-// Permite navegar entre secciones públicas y privadas,
-// y acceder a la sesión del usuario según su tipo.
-// -----------------------------------------------------------
+// Permite navegar entre secciones públicas y privadas, y acceder a la sesión del usuario según su tipo.
 
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
@@ -14,18 +10,16 @@ function NavBar() {
   // Se obtiene el usuario activo desde localStorage.
   const usuarioActivo = JSON.parse(localStorage.getItem("usuarioActivo"));
 
-  // -----------------------------------------------------------
   // Cerrar sesión: elimina el usuario activo y redirige al login.
-  // -----------------------------------------------------------
+
   const handleLogout = () => {
     localStorage.removeItem("usuarioActivo");
     alert("Sesión cerrada correctamente");
     navigate("/login");
   };
 
-  // -----------------------------------------------------------
   // Redirigir a la sesión según el tipo de usuario.
-  // -----------------------------------------------------------
+
   const irAMiSesion = () => {
     if (!usuarioActivo) return;
 
@@ -50,9 +44,8 @@ function NavBar() {
     }
   };
 
-  // -----------------------------------------------------------
   // Render principal de la barra de navegación
-  // -----------------------------------------------------------
+
   return (
     <nav className="navbar navbar-expand-lg navbar-dark custom-navbar">
       <div className="container-fluid">

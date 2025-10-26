@@ -1,19 +1,17 @@
-// ===============================================================
-// 🧩 Componente: FormularioPaciente.jsx
+// Componente: FormularioPaciente.jsx
 // Descripción: Formulario con validación básica y soporte para testing
-// ===============================================================
 
 import React, { useState } from "react";
 
 function FormularioPaciente({ onSubmit }) {
-  // ------------------ Estados ------------------
+  // Estados
   const [nombre, setNombre] = useState("");
   const [rut, setRut] = useState("");
   const [edad, setEdad] = useState("");
   const [diagnostico, setDiagnostico] = useState("");
   const [error, setError] = useState("");
 
-  // ------------------ Manejo del envío ------------------
+  // Manejo del envío
   function handleSubmit(e) {
     e.preventDefault();
 
@@ -30,8 +28,7 @@ function FormularioPaciente({ onSubmit }) {
 
     console.log("Formulario enviado:", datos);
   }
-
-  // ------------------ Render ------------------
+  //  Render
   return (
     <form onSubmit={handleSubmit} className="p-4 border rounded bg-light">
       <h3>Formulario Paciente</h3>
@@ -39,7 +36,9 @@ function FormularioPaciente({ onSubmit }) {
       {error && <p className="text-danger">{error}</p>}
 
       <div className="mb-3">
-        <label htmlFor="nombre" className="form-label">Nombre</label>
+        <label htmlFor="nombre" className="form-label">
+          Nombre
+        </label>
         <input
           type="text"
           id="nombre"
@@ -50,7 +49,9 @@ function FormularioPaciente({ onSubmit }) {
       </div>
 
       <div className="mb-3">
-        <label htmlFor="rut" className="form-label">RUT</label>
+        <label htmlFor="rut" className="form-label">
+          RUT
+        </label>
         <input
           type="text"
           id="rut"
@@ -61,7 +62,9 @@ function FormularioPaciente({ onSubmit }) {
       </div>
 
       <div className="mb-3">
-        <label htmlFor="edad" className="form-label">Edad</label>
+        <label htmlFor="edad" className="form-label">
+          Edad
+        </label>
         <input
           type="number"
           id="edad"
@@ -72,7 +75,9 @@ function FormularioPaciente({ onSubmit }) {
       </div>
 
       <div className="mb-3">
-        <label htmlFor="diagnostico" className="form-label">Diagnóstico</label>
+        <label htmlFor="diagnostico" className="form-label">
+          Diagnóstico
+        </label>
         <input
           type="text"
           id="diagnostico"
@@ -82,7 +87,9 @@ function FormularioPaciente({ onSubmit }) {
         />
       </div>
 
-      <button type="submit" className="btn btn-primary">Registrar</button>
+      <button type="submit" className="btn btn-primary">
+        Registrar
+      </button>
     </form>
   );
 }

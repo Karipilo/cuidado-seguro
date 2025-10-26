@@ -1,4 +1,4 @@
-// src/components/Footer.jsx
+// Pie de página del sitio web Cuidado Seguro
 import React from "react";
 
 function Footer() {
@@ -30,13 +30,19 @@ function Footer() {
             <h5 className="fw-bold">CONTÁCTANOS</h5>
             <p className="mb-1">Teléfono de contacto:</p>
             <p>
-              <a href="tel:+56964190492" className="link-footer text-light text-decoration-none">
+              <a
+                href="tel:+56964190492"
+                className="link-footer text-light text-decoration-none"
+              >
                 +56 9 6419 0492
               </a>
             </p>
             <p className="mb-1">Correo electrónico</p>
             <p>
-              <a href="mailto:contacto@cuidadoseguro.cl" className="link-footer text-light text-decoration-none">
+              <a
+                href="mailto:contacto@cuidadoseguro.cl"
+                className="link-footer text-light text-decoration-none"
+              >
                 contacto@cuidadoseguro.cl
               </a>
             </p>

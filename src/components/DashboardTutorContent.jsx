@@ -1,8 +1,4 @@
-// ===============================================================
-// 🧩 Componente: DashboardTutorContent.jsx
-// Descripción: Panel del tutor/familiar con pestañas para
-// visualizar detalles del paciente y enviar mensajes.
-// ===============================================================
+// Descripción: Panel del tutor/familiar con pestañas para visualizar detalles del paciente y enviar mensajes.
 
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -11,9 +7,8 @@ import { paciente } from "../data";
 function DashboardTutorContent() {
   const navigate = useNavigate();
 
-  // -------------------------------------------------------------
-  // 🔹 ESTADOS PRINCIPALES
-  // -------------------------------------------------------------
+  // ESTADOS PRINCIPALES
+
   const [usuario, setUsuario] = useState(null);
   const [tab, setTab] = useState("detalle"); // "detalle" | "mensajes"
   const [mensajes, setMensajes] = useState([]);
@@ -21,7 +16,7 @@ function DashboardTutorContent() {
   const [asunto, setAsunto] = useState("");
   const [cuerpo, setCuerpo] = useState("");
 
-  // Paciente simulado (como en la versión HTML)
+  // Paciente simulado
   const paciente = {
     nombre: "Juan Pérez Soto",
     edad: 82,
@@ -34,9 +29,8 @@ function DashboardTutorContent() {
     imagen: "/images/luis.png",
   };
 
-  // -------------------------------------------------------------
-  // 🔹 EFECTO: CARGA DE USUARIO ACTIVO
-  // -------------------------------------------------------------
+  //  EFECTO: CARGA DE USUARIO ACTIVO
+
   useEffect(() => {
     const activo = JSON.parse(localStorage.getItem("usuarioActivo"));
 
@@ -59,9 +53,8 @@ function DashboardTutorContent() {
     setUsuario(activo);
   }, [navigate]);
 
-  // -------------------------------------------------------------
-  // 🔹 MANEJAR ENVÍO DE MENSAJE
-  // -------------------------------------------------------------
+  //  MANEJAR ENVÍO DE MENSAJE
+
   const handleEnviarMensaje = (e) => {
     e.preventDefault();
 
@@ -83,13 +76,11 @@ function DashboardTutorContent() {
     setCuerpo("");
   };
 
-  // -------------------------------------------------------------
-  // 🔹 RENDER DE CONTENIDO SEGÚN TAB
-  // -------------------------------------------------------------
+  // RENDER DE CONTENIDO SEGÚN TAB
+
   const renderContenido = () => {
-    // ===============================
     // TAB: DETALLE PACIENTE
-    // ===============================
+
     if (tab === "detalle") {
       return (
         <div>
@@ -120,9 +111,8 @@ function DashboardTutorContent() {
       );
     }
 
-    // ===============================
     // TAB: MENSAJES
-    // ===============================
+
     if (tab === "mensajes") {
       return (
         <div>
@@ -204,9 +194,8 @@ function DashboardTutorContent() {
     }
   };
 
-  // -------------------------------------------------------------
-  // 🔹 RENDER PRINCIPAL
-  // -------------------------------------------------------------
+  // RENDER PRINCIPAL
+
   if (!usuario) return <p className="text-center mt-5">Cargando...</p>;
 
   return (
