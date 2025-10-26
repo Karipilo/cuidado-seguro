@@ -1,700 +1,277 @@
-// ===============================================================
-// Componente: DashboardProf.jsx
-// Descripción: Panel principal del "Profesional Interno".
-// Incluye listado de pacientes con CRUD básico:
-// - Ver detalle
-// - Modificar
-// - Eliminar
-// - Agregar nuevo paciente
-// Los datos se leen y persisten en localStorage (clave: "pacientes").
-// ===============================================================
+// ✅ DashboardProf.jsx (Profesional Interno)
+// Corrige error de propiedades undefined y asegura compatibilidad con "pacientes" del localStorage.
 
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import CardResumen from "../components/CardResumen";
 
 function DashboardProf() {
-  // ---------------------------------------------------------------
-  // Hooks y estados principales
-  // ---------------------------------------------------------------
   const navigate = useNavigate();
 
+  // Estados principales
   const [usuario, setUsuario] = useState(null);
-  const [vista, setVista] = useState("resumen"); // "resumen" | "pacientes" | "agregar" | "editar"
-  const [institucion, setInstitucion] = useState("");
   const [pacientes, setPacientes] = useState([]);
-  const [pacienteSeleccionado, setPacienteSeleccionado] = useState(null); // para "Ver detalle"
-  const [pacienteEditando, setPacienteEditando] = useState(null); // para "Modificar"
+  const [pacienteSeleccionado, setPacienteSeleccionado] = useState(null);
+  const [nota, setNota] = useState("");
+  const [control, setControl] = useState("");
 
-  // Estado para formulario de agregar/modificar
-  const [formData, setFormData] = useState({
-    rut: "",
-    nombre: "",
-    edad: "",
-    diagnostico: "",
-    alergias: "",
-    observaciones: "",
-    imagen: "",
-  });
-
-  // ---------------------------------------------------------------
-  // Carga de usuario y pacientes desde localStorage
-  // ---------------------------------------------------------------
+  // -----------------------------------------------------
+  // ✅ useEffect: valida usuario y carga pacientes
+  // -----------------------------------------------------
   useEffect(() => {
-    // Validación de sesión y tipo de usuario
     const activo = JSON.parse(localStorage.getItem("usuarioActivo"));
+
     if (!activo || activo.tipoUsuario !== "Profesional Interno") {
       navigate("/login");
       return;
     }
     setUsuario(activo);
-    if (activo.institucion) setInstitucion(activo.institucion);
 
-    // Carga de pacientes persistidos
+    // ✅ Cargar pacientes desde la clave "pacientes"
     const almacenados = JSON.parse(localStorage.getItem("pacientes"));
-    if (almacenados && Array.isArray(almacenados)) {
-      setPacientes(almacenados);
+
+    if (almacenados && Array.isArray(almacenados) && almacenados.length > 0) {
+      // Inicializa campos que pudieran faltar (notas, controles, mensajes)
+      const corregidos = almacenados.map((p) => ({
+        ...p,
+        notas: p.notas || [],
+        controles: p.controles || [],
+        mensajes: p.mensajes || [],
+      }));
+      setPacientes(corregidos);
+      setPacienteSeleccionado(corregidos[0]);
     } else {
       setPacientes([]);
     }
   }, [navigate]);
 
-  // ---------------------------------------------------------------
-  // Utilidad: guardar en estado y en localStorage
-  // ---------------------------------------------------------------
-  const guardarPacientes = (nuevos) => {
-    setPacientes(nuevos);
-    localStorage.setItem("pacientes", JSON.stringify(nuevos));
+  // -----------------------------------------------------
+  // ✅ Cambia paciente seleccionado
+  // -----------------------------------------------------
+  const seleccionarPaciente = (paciente) => {
+    setPacienteSeleccionado({
+      ...paciente,
+      notas: paciente.notas || [],
+      controles: paciente.controles || [],
+      mensajes: paciente.mensajes || [],
+    });
   };
 
-  // ---------------------------------------------------------------
-  // Acciones: Agregar paciente
-  // ---------------------------------------------------------------
-  const handleAgregarPaciente = (e) => {
-    e.preventDefault();
+  // -----------------------------------------------------
+  // ✅ Agregar nota clínica
+  // -----------------------------------------------------
+  const agregarNota = () => {
+    if (!nota.trim() || !pacienteSeleccionado) return;
 
-    // Validaciones mínimas
-    if (
-      !formData.rut.trim() ||
-      !formData.nombre.trim() ||
-      !formData.edad.toString().trim()
-    ) {
-      alert("Debes completar al menos RUT, nombre y edad.");
-      return;
-    }
-
-    // Evitar duplicados por RUT
-    const existe = pacientes.some((p) => p.rut === formData.rut);
-    if (existe) {
-      alert("Ya existe un paciente con ese RUT.");
-      return;
-    }
-
-    // Preparar objeto nuevo con campos clínicos en arreglos vacíos si no existen
-    const nuevo = {
-      ...formData,
-      edad: parseInt(formData.edad, 10),
-      medicamentos: [],
-      controles: [],
-      notas: [],
-      recetas: [],
-      examenes: [],
-      certificados: [],
+    const nuevaNota = {
+      contenido: nota,
+      fecha: new Date().toLocaleString(),
+      autor: usuario.nombre,
+      tipo: "Profesional Interno",
     };
 
-    const actualizados = [...pacientes, nuevo];
-    guardarPacientes(actualizados);
-
-    // Reset del formulario y vuelta al listado
-    setFormData({
-      rut: "",
-      nombre: "",
-      edad: "",
-      diagnostico: "",
-      alergias: "",
-      observaciones: "",
-      imagen: "",
-    });
-    setVista("pacientes");
-    alert("Paciente agregado correctamente.");
-  };
-
-  // ---------------------------------------------------------------
-  // Acciones: Preparar edición de paciente
-  // ---------------------------------------------------------------
-  const prepararEdicion = (p) => {
-    setPacienteEditando(p);
-    setFormData({
-      rut: p.rut, // RUT se muestra pero no se debe cambiar para mantener integridad
-      nombre: p.nombre || "",
-      edad: p.edad?.toString() || "",
-      diagnostico: p.diagnostico || "",
-      alergias: p.alergias || "",
-      observaciones: p.observaciones || "",
-      imagen: p.imagen || "",
-    });
-    setVista("editar");
-  };
-
-  // ---------------------------------------------------------------
-  // Acciones: Guardar edición
-  // ---------------------------------------------------------------
-  const handleGuardarEdicion = (e) => {
-    e.preventDefault();
-
-    // El RUT no se modifica. Se actualizan los demás campos.
-    const actualizados = pacientes.map((p) =>
-      p.rut === pacienteEditando.rut
-        ? {
-            ...p,
-            nombre: formData.nombre,
-            edad: parseInt(formData.edad, 10),
-            diagnostico: formData.diagnostico,
-            alergias: formData.alergias,
-            observaciones: formData.observaciones,
-            imagen: formData.imagen,
-          }
-        : p
-    );
-
-    guardarPacientes(actualizados);
-    setPacienteEditando(null);
-    setVista("pacientes");
-    alert("Paciente modificado correctamente.");
-  };
-
-  // ---------------------------------------------------------------
-  // Acciones: Eliminar paciente
-  // ---------------------------------------------------------------
-  const handleEliminar = (rut) => {
-    if (!window.confirm("¿Seguro que deseas eliminar este paciente?")) return;
-    const actualizados = pacientes.filter((p) => p.rut !== rut);
-    guardarPacientes(actualizados);
-    // Si el eliminado estaba seleccionado, limpiar selección
-    if (pacienteSeleccionado?.rut === rut) setPacienteSeleccionado(null);
-    alert("Paciente eliminado.");
-  };
-
-  // ---------------------------------------------------------------
-  // Estadísticas rápidas (simuladas)
-  // ---------------------------------------------------------------
-  const stats = {
-    pacientes: pacientes.length,
-    alertas: 3,
-    notificaciones: 8,
-  };
-
-  // ---------------------------------------------------------------
-  // Render de contenido por vista
-  // ---------------------------------------------------------------
-  const renderContenido = () => {
-    // --------------------- VISTA: RESUMEN -------------------------
-    if (vista === "resumen") {
-      return (
-        <>
-          <h2 className="mt-4 text-center">
-            Resumen general
-            {institucion && (
-              <span className="text-primary d-block fs-5 mt-1">
-                {institucion}
-              </span>
-            )}
-          </h2>
-
-          <div className="row mt-4 g-3">
-            <div className="col-12 col-md-4">
-              <CardResumen titulo="Pacientes" valor={stats.pacientes} />
-            </div>
-            <div className="col-12 col-md-4">
-              <CardResumen
-                titulo="Alertas"
-                valor={<span className="text-danger">{stats.alertas}</span>}
-              />
-            </div>
-            <div className="col-12 col-md-4">
-              <CardResumen
-                titulo="Notificaciones"
-                valor={
-                  <span className="text-warning">{stats.notificaciones}</span>
-                }
-              />
-            </div>
-          </div>
-        </>
-      );
-    }
-
-    // --------------------- VISTA: AGREGAR -------------------------
-    if (vista === "agregar") {
-      return (
-        <div className="card shadow-sm mt-4">
-          <div className="card-body">
-            <h4 className="text-primary mb-3">Agregar nuevo paciente</h4>
-
-            <form onSubmit={handleAgregarPaciente}>
-              <div className="row g-3">
-                <div className="col-md-4">
-                  <label>RUT</label>
-                  <input
-                    type="text"
-                    className="form-control"
-                    value={formData.rut}
-                    onChange={(e) =>
-                      setFormData({ ...formData, rut: e.target.value })
-                    }
-                    required
-                  />
-                </div>
-
-                <div className="col-md-4">
-                  <label>Nombre completo</label>
-                  <input
-                    type="text"
-                    className="form-control"
-                    value={formData.nombre}
-                    onChange={(e) =>
-                      setFormData({ ...formData, nombre: e.target.value })
-                    }
-                    required
-                  />
-                </div>
-
-                <div className="col-md-4">
-                  <label>Edad</label>
-                  <input
-                    type="number"
-                    className="form-control"
-                    value={formData.edad}
-                    onChange={(e) =>
-                      setFormData({ ...formData, edad: e.target.value })
-                    }
-                    required
-                  />
-                </div>
-
-                <div className="col-md-6">
-                  <label>Diagnóstico</label>
-                  <input
-                    type="text"
-                    className="form-control"
-                    value={formData.diagnostico}
-                    onChange={(e) =>
-                      setFormData({ ...formData, diagnostico: e.target.value })
-                    }
-                  />
-                </div>
-
-                <div className="col-md-6">
-                  <label>Alergias</label>
-                  <input
-                    type="text"
-                    className="form-control"
-                    value={formData.alergias}
-                    onChange={(e) =>
-                      setFormData({ ...formData, alergias: e.target.value })
-                    }
-                  />
-                </div>
-
-                <div className="col-md-12">
-                  <label>Observaciones</label>
-                  <textarea
-                    className="form-control"
-                    rows="2"
-                    value={formData.observaciones}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        observaciones: e.target.value,
-                      })
-                    }
-                  ></textarea>
-                </div>
-
-                <div className="col-md-12">
-                  <label>URL de imagen</label>
-                  <input
-                    type="text"
-                    className="form-control"
-                    placeholder="/images/paciente.png"
-                    value={formData.imagen}
-                    onChange={(e) =>
-                      setFormData({ ...formData, imagen: e.target.value })
-                    }
-                  />
-                </div>
-              </div>
-
-              <div className="text-end mt-3">
-                <button type="submit" className="btn btn-success">
-                  Guardar paciente
-                </button>
-                <button
-                  type="button"
-                  className="btn btn-secondary ms-2"
-                  onClick={() => setVista("pacientes")}
-                >
-                  Cancelar
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      );
-    }
-
-    // --------------------- VISTA: EDITAR --------------------------
-    if (vista === "editar" && pacienteEditando) {
-      return (
-        <div className="card shadow-sm mt-4">
-          <div className="card-body">
-            <h4 className="text-primary mb-3">
-              Modificar paciente: {pacienteEditando.nombre}
-            </h4>
-
-            <form onSubmit={handleGuardarEdicion}>
-              <div className="row g-3">
-                <div className="col-md-4">
-                  <label>RUT (no editable)</label>
-                  <input
-                    type="text"
-                    className="form-control"
-                    value={formData.rut}
-                    disabled
-                  />
-                </div>
-
-                <div className="col-md-4">
-                  <label>Nombre completo</label>
-                  <input
-                    type="text"
-                    className="form-control"
-                    value={formData.nombre}
-                    onChange={(e) =>
-                      setFormData({ ...formData, nombre: e.target.value })
-                    }
-                  />
-                </div>
-
-                <div className="col-md-4">
-                  <label>Edad</label>
-                  <input
-                    type="number"
-                    className="form-control"
-                    value={formData.edad}
-                    onChange={(e) =>
-                      setFormData({ ...formData, edad: e.target.value })
-                    }
-                  />
-                </div>
-
-                <div className="col-md-6">
-                  <label>Diagnóstico</label>
-                  <input
-                    type="text"
-                    className="form-control"
-                    value={formData.diagnostico}
-                    onChange={(e) =>
-                      setFormData({ ...formData, diagnostico: e.target.value })
-                    }
-                  />
-                </div>
-
-                <div className="col-md-6">
-                  <label>Alergias</label>
-                  <input
-                    type="text"
-                    className="form-control"
-                    value={formData.alergias}
-                    onChange={(e) =>
-                      setFormData({ ...formData, alergias: e.target.value })
-                    }
-                  />
-                </div>
-
-                <div className="col-md-12">
-                  <label>Observaciones</label>
-                  <textarea
-                    className="form-control"
-                    rows="2"
-                    value={formData.observaciones}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        observaciones: e.target.value,
-                      })
-                    }
-                  ></textarea>
-                </div>
-
-                <div className="col-md-12">
-                  <label>URL de imagen</label>
-                  <input
-                    type="text"
-                    className="form-control"
-                    value={formData.imagen}
-                    onChange={(e) =>
-                      setFormData({ ...formData, imagen: e.target.value })
-                    }
-                  />
-                </div>
-              </div>
-
-              <div className="text-end mt-3">
-                <button type="submit" className="btn btn-warning">
-                  Guardar cambios
-                </button>
-                <button
-                  type="button"
-                  className="btn btn-secondary ms-2"
-                  onClick={() => {
-                    setPacienteEditando(null);
-                    setVista("pacientes");
-                  }}
-                >
-                  Cancelar
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      );
-    }
-
-    // --------------------- VISTA: PACIENTES -----------------------
-    if (vista === "pacientes") {
-      // Si hay un paciente seleccionado, mostrar su detalle clínico completo.
-      if (pacienteSeleccionado) {
-        return (
-          <div className="card shadow-sm mt-4">
-            <div className="card-body">
-              <h4 className="text-primary mb-3">
-                Detalle del paciente: {pacienteSeleccionado.nombre}
-              </h4>
-
-              <p>
-                <strong>RUT:</strong> {pacienteSeleccionado.rut}
-              </p>
-              <p>
-                <strong>Edad:</strong> {pacienteSeleccionado.edad}
-              </p>
-              <p>
-                <strong>Diagnóstico:</strong> {pacienteSeleccionado.diagnostico}
-              </p>
-              <p>
-                <strong>Alergias:</strong> {pacienteSeleccionado.alergias}
-              </p>
-              <p>
-                <strong>Observaciones:</strong>{" "}
-                {pacienteSeleccionado.observaciones}
-              </p>
-
-              <h6 className="fw-bold text-primary mt-3">Medicamentos</h6>
-              <ul>
-                {(Array.isArray(pacienteSeleccionado.medicamentos)
-                  ? pacienteSeleccionado.medicamentos
-                  : []
-                ).map((m, i) => (
-                  <li key={i}>{m}</li>
-                ))}
-              </ul>
-
-              <h6 className="fw-bold text-primary mt-3">Controles</h6>
-              <ul>
-                {(Array.isArray(pacienteSeleccionado.controles)
-                  ? pacienteSeleccionado.controles
-                  : []
-                ).map((c, i) => (
-                  <li key={i}>{c}</li>
-                ))}
-              </ul>
-
-              <h6 className="fw-bold text-primary mt-3">Notas clínicas</h6>
-              {Array.isArray(pacienteSeleccionado.notas) &&
-              pacienteSeleccionado.notas.length > 0 ? (
-                <ul>
-                  {pacienteSeleccionado.notas.map((n, i) => (
-                    <li key={i}>
-                      <strong>{n.fecha}:</strong> {n.contenido}
-                    </li>
-                  ))}
-                </ul>
-              ) : (
-                <p className="text-muted">Sin notas clínicas registradas.</p>
-              )}
-
-              <h6 className="fw-bold text-primary mt-3">Recetas</h6>
-              {Array.isArray(pacienteSeleccionado.recetas) &&
-              pacienteSeleccionado.recetas.length > 0 ? (
-                <ul>
-                  {pacienteSeleccionado.recetas.map((r, i) => (
-                    <li key={i}>
-                      <strong>{r.fecha}:</strong> {r.contenido}
-                    </li>
-                  ))}
-                </ul>
-              ) : (
-                <p className="text-muted">Sin recetas registradas.</p>
-              )}
-
-              <h6 className="fw-bold text-primary mt-3">Exámenes</h6>
-              {Array.isArray(pacienteSeleccionado.examenes) &&
-              pacienteSeleccionado.examenes.length > 0 ? (
-                <ul>
-                  {pacienteSeleccionado.examenes.map((e, i) => (
-                    <li key={i}>
-                      <strong>{e.fecha}:</strong> {e.contenido}
-                    </li>
-                  ))}
-                </ul>
-              ) : (
-                <p className="text-muted">Sin exámenes registrados.</p>
-              )}
-
-              <h6 className="fw-bold text-primary mt-3">Certificados</h6>
-              {Array.isArray(pacienteSeleccionado.certificados) &&
-              pacienteSeleccionado.certificados.length > 0 ? (
-                <ul>
-                  {pacienteSeleccionado.certificados.map((c, i) => (
-                    <li key={i}>
-                      <strong>{c.fecha}:</strong> {c.contenido}
-                    </li>
-                  ))}
-                </ul>
-              ) : (
-                <p className="text-muted">Sin certificados registrados.</p>
-              )}
-
-              <button
-                className="btn btn-secondary mt-3"
-                onClick={() => setPacienteSeleccionado(null)}
-              >
-                Volver al listado
-              </button>
-            </div>
-          </div>
-        );
+    const actualizados = pacientes.map((p) => {
+      if (p.id === pacienteSeleccionado.id) {
+        const actualizado = { ...p, notas: [...(p.notas || []), nuevaNota] };
+        setPacienteSeleccionado(actualizado);
+        return actualizado;
       }
+      return p;
+    });
 
-      // Listado con acciones: Ver detalle, Modificar, Eliminar + botón para Agregar
-      return (
-        <>
-          <div className="d-flex justify-content-between align-items-center mt-4 mb-3">
-            <h4>Pacientes</h4>
-            <button
-              className="btn btn-success"
-              onClick={() => setVista("agregar")}
-            >
-              + Agregar paciente
-            </button>
-          </div>
-
-          <div className="card shadow-sm">
-            <div className="card-body p-0">
-              <div className="table-responsive">
-                <table className="table table-hover mb-0 align-middle">
-                  <thead className="table-light">
-                    <tr>
-                      <th>RUT</th>
-                      <th>Nombre</th>
-                      <th>Edad</th>
-                      <th>Acciones</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {pacientes.map((p) => (
-                      <tr key={p.rut}>
-                        <td>{p.rut}</td>
-                        <td>{p.nombre}</td>
-                        <td>{p.edad}</td>
-                        <td>
-                          <button
-                            className="btn btn-outline-primary btn-sm me-1"
-                            onClick={() => setPacienteSeleccionado(p)}
-                          >
-                            Ver detalle
-                          </button>
-
-                          <button
-                            className="btn btn-outline-warning btn-sm me-1"
-                            onClick={() => prepararEdicion(p)}
-                          >
-                            Modificar
-                          </button>
-
-                          <button
-                            className="btn btn-outline-danger btn-sm"
-                            onClick={() => handleEliminar(p.rut)}
-                          >
-                            Eliminar
-                          </button>
-                        </td>
-                      </tr>
-                    ))}
-
-                    {pacientes.length === 0 && (
-                      <tr>
-                        <td colSpan="4" className="text-center text-muted py-3">
-                          No hay pacientes registrados.
-                        </td>
-                      </tr>
-                    )}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </div>
-        </>
-      );
-    }
-
-    return null;
+    localStorage.setItem("pacientes", JSON.stringify(actualizados));
+    setPacientes(actualizados);
+    setNota("");
   };
 
-  // ---------------------------------------------------------------
-  // Render principal
-  // ---------------------------------------------------------------
+  // -----------------------------------------------------
+  // ✅ Agregar control médico
+  // -----------------------------------------------------
+  const agregarControl = () => {
+    if (!control.trim() || !pacienteSeleccionado) return;
+
+    const actualizados = pacientes.map((p) => {
+      if (p.id === pacienteSeleccionado.id) {
+        const actualizado = {
+          ...p,
+          controles: [...(p.controles || []), control],
+        };
+        setPacienteSeleccionado(actualizado);
+        return actualizado;
+      }
+      return p;
+    });
+
+    localStorage.setItem("pacientes", JSON.stringify(actualizados));
+    setPacientes(actualizados);
+    setControl("");
+  };
+
+  // -----------------------------------------------------
+  // ✅ Renderizado seguro
+  // -----------------------------------------------------
   if (!usuario) return null;
 
   return (
-    <div className="container-fluid">
+    <div className="container py-4">
+      <h4 className="mb-4">Bienvenido, {usuario.nombre}</h4>
+
       <div className="row">
-        {/* Sidebar izquierdo */}
-        <aside className="col-md-3 col-lg-2 bg-light p-3 min-vh-100 border-end">
-          <div className="mb-3">
-            <div className="small text-muted">Sesión activa</div>
-            <div className="fw-semibold">Bienvenido, {usuario.nombre}</div>
-          </div>
-
-          <h6 className="text-uppercase text-muted mt-4 mb-2">Menú</h6>
-          <ul className="nav nav-pills flex-column gap-1">
-            <li className="nav-item">
-              <button
-                className={`nav-link text-start ${
-                  vista === "resumen" ? "active" : ""
+        {/* 🔹 Lista lateral de pacientes */}
+        <div className="col-md-4">
+          <h5 className="fw-bold text-primary">Pacientes asignados</h5>
+          <ul className="list-group">
+            {pacientes.map((p) => (
+              <li
+                key={p.id}
+                className={`list-group-item list-group-item-action ${
+                  pacienteSeleccionado?.id === p.id ? "active" : ""
                 }`}
-                onClick={() => setVista("resumen")}
+                onClick={() => seleccionarPaciente(p)}
+                style={{ cursor: "pointer" }}
               >
-                Resumen
-              </button>
-            </li>
-            <li className="nav-item">
-              <button
-                className={`nav-link text-start ${
-                  vista === "pacientes" ? "active" : ""
-                }`}
-                onClick={() => setVista("pacientes")}
-              >
-                Pacientes
-              </button>
-            </li>
+                {p.nombre}
+              </li>
+            ))}
           </ul>
-        </aside>
+        </div>
 
-        {/* Contenido principal */}
-        <main className="col-md-9 col-lg-10 px-md-4 py-4">
-          {renderContenido()}
-        </main>
+        {/* 🔹 Panel derecho: Detalle del paciente */}
+        <div className="col-md-8">
+          {pacienteSeleccionado && (
+            <div className="card shadow-sm">
+              <div className="card-body">
+                <h5 className="text-primary">Resumen del paciente</h5>
+
+                {/* ✅ Datos básicos */}
+                <p>
+                  <strong>Nombre:</strong> {pacienteSeleccionado.nombre}
+                </p>
+                <p>
+                  <strong>RUT:</strong> {pacienteSeleccionado.rut}
+                </p>
+                <p>
+                  <strong>Edad:</strong> {pacienteSeleccionado.edad}
+                </p>
+                <p>
+                  <strong>Diagnóstico:</strong>{" "}
+                  {pacienteSeleccionado.diagnostico}
+                </p>
+                <p>
+                  <strong>Alergias:</strong> {pacienteSeleccionado.alergias}
+                </p>
+                <p>
+                  <strong>Observaciones:</strong>{" "}
+                  {pacienteSeleccionado.observaciones}
+                </p>
+
+                {/* ✅ Formulario: agregar nota clínica */}
+                <div className="mt-4">
+                  <h6>Agregar nota clínica (evolución médica)</h6>
+                  <textarea
+                    className="form-control"
+                    rows="2"
+                    value={nota}
+                    onChange={(e) => setNota(e.target.value)}
+                    placeholder="Escribe la evolución médica..."
+                  />
+                  <button
+                    className="btn btn-success mt-2"
+                    onClick={agregarNota}
+                  >
+                    Guardar nota
+                  </button>
+                </div>
+
+                {/* ✅ Formulario: agregar control médico */}
+                <div className="mt-4">
+                  <h6>Agregar nuevo control</h6>
+                  <input
+                    type="text"
+                    className="form-control"
+                    value={control}
+                    onChange={(e) => setControl(e.target.value)}
+                    placeholder="Ej: Presión 120/80, Peso 68kg"
+                  />
+                  <button
+                    className="btn btn-primary mt-2"
+                    onClick={agregarControl}
+                  >
+                    Guardar control
+                  </button>
+                </div>
+
+                {/* ✅ Historial: notas clínicas */}
+                <div className="mt-4">
+                  <h6>Notas clínicas registradas</h6>
+                  {(pacienteSeleccionado.notas || []).length === 0 ? (
+                    <p className="text-muted">Sin notas aún.</p>
+                  ) : (
+                    <ul>
+                      {(pacienteSeleccionado.notas || []).map((n, i) => (
+                        <li key={i}>
+                          <strong>{n.fecha}</strong> — <em>{n.autor}</em>:<br />
+                          {n.contenido}
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+
+                {/* ✅ Historial: controles médicos */}
+                <div className="mt-4">
+                  <h6>Controles médicos</h6>
+                  <ul>
+                    {(pacienteSeleccionado.controles || []).map((c, i) => (
+                      <li key={i}>{c}</li>
+                    ))}
+                  </ul>
+                </div>
+
+                {/* ✅ Mensajes del tutor */}
+                <div className="mt-4">
+                  <h6>Mensajes del tutor</h6>
+                  {(pacienteSeleccionado.mensajes || []).length > 0 ? (
+                    <ul>
+                      {pacienteSeleccionado.mensajes.map((m, i) => (
+                        <li key={i}>
+                          <strong>{m.fecha}</strong> — <em>{m.asunto}</em>:
+                          <br />
+                          {m.cuerpo}
+                        </li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <p className="text-muted">Sin mensajes disponibles.</p>
+                  )}
+                </div>
+
+                {/* ✅ Notas del Profesional Externo */}
+                <div className="mt-4">
+                  <h6>Notas del Profesional Externo</h6>
+                  {(pacienteSeleccionado.notas || []).filter(
+                    (n) => n.tipo === "Profesional Externo"
+                  ).length > 0 ? (
+                    <ul>
+                      {(pacienteSeleccionado.notas || [])
+                        .filter((n) => n.tipo === "Profesional Externo")
+                        .map((n, i) => (
+                          <li key={i}>
+                            <strong>{n.fecha}</strong> — <em>{n.autor}</em>:
+                            <br />
+                            {n.contenido}
+                          </li>
+                        ))}
+                    </ul>
+                  ) : (
+                    <p className="text-muted">
+                      Sin notas del profesional externo.
+                    </p>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
