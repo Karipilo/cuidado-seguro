@@ -51,6 +51,7 @@ function FormularioRegistro() {
       return;
     }
 
+    // Crea el nuevo usuario
     const nuevoUsuario = {
       nombre,
       email,
@@ -73,7 +74,16 @@ function FormularioRegistro() {
       nuevoUsuario.codigoCentro = codigoCentro;
     }
 
-    // Guardar usuario
+    // ======================================================
+    // ✅ GUARDA EL USUARIO DE FORMA PERMANENTE EN LOCALSTORAGE
+    // ======================================================
+    const usuariosGuardados =
+      JSON.parse(localStorage.getItem("usuarios")) || [];
+    usuariosGuardados.push(nuevoUsuario);
+    localStorage.setItem("usuarios", JSON.stringify(usuariosGuardados));
+    // ======================================================
+
+    // Guarda el usuario activo
     localStorage.setItem("usuarioActivo", JSON.stringify(nuevoUsuario));
     alert("Registro exitoso");
 
@@ -121,7 +131,7 @@ function FormularioRegistro() {
         <label>Repite tu contraseña</label>
         <input
           type="password"
-          placeholder="6 caracteres, 1 mayúscula, 1 número y 1 símbolo tener al menos 6 caracteres, una mayúscula, un número y un símbolo."
+          placeholder="Repite tu contraseña"
           value={repitePassword}
           onChange={(e) => setRepitePassword(e.target.value)}
           required
