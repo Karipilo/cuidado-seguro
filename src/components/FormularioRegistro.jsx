@@ -4,7 +4,6 @@ import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import "../style/formulario.css";
 
-// Validaciones
 const validarEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 const passwordRegex =
   /^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&._-])[A-Za-z\d@$!%*?&._-]{6,}$/;
@@ -12,7 +11,6 @@ const passwordRegex =
 function FormularioRegistro() {
   const navigate = useNavigate();
 
-  // Estados
   const [nombre, setNombre] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -25,7 +23,6 @@ function FormularioRegistro() {
   const [codigoCentro, setCodigoCentro] = useState("");
   const [aceptaTerminos, setAceptaTerminos] = useState(false);
 
-  // Manejar envío
   const handleSubmit = (e) => {
     e.preventDefault();
 
@@ -40,9 +37,7 @@ function FormularioRegistro() {
     }
 
     if (!passwordRegex.test(password)) {
-      alert(
-        "La contraseña debe tener al menos 6 caracteres, una mayúscula, un número y un símbolo."
-      );
+      alert("La contraseña debe tener al menos 6 caracteres, una mayúscula, un número y un símbolo.");
       return;
     }
 
@@ -51,12 +46,7 @@ function FormularioRegistro() {
       return;
     }
 
-    const nuevoUsuario = {
-      nombre,
-      email,
-      password,
-      tipoUsuario,
-    };
+    const nuevoUsuario = { nombre, email, password, tipoUsuario };
 
     if (tipoUsuario === "Profesional Interno") {
       nuevoUsuario.tipoProf = tipoProf;
@@ -73,11 +63,9 @@ function FormularioRegistro() {
       nuevoUsuario.codigoCentro = codigoCentro;
     }
 
-    // Guardar usuario
     localStorage.setItem("usuarioActivo", JSON.stringify(nuevoUsuario));
     alert("Registro exitoso");
 
-    // Redirigir según tipo
     if (tipoUsuario === "Profesional Interno") {
       navigate("/dashboard-prof");
     } else if (tipoUsuario === "Profesional Externo") {
@@ -109,24 +97,73 @@ function FormularioRegistro() {
           required
         />
 
-        <label>Contraseña</label>
-        <input
-          type="password"
-          placeholder="6 caracteres, 1 mayúscula, 1 número y 1 símbolo."
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-        />
+        {/* Contraseña */}
+        <div style={{ marginBottom: "12px" }}>
+          <label htmlFor="password" style={{ fontWeight: "bold", marginBottom: "4px", display: "block" }}>
+            Contraseña
+          </label>
+          <input
+            type="password"
+            placeholder="Ingresa tu contraseña"
+            id="password"
+            style={{
+              width: "100%",
+              padding: "10px",
+              borderRadius: "6px",
+              border: "1px solid #ccc",
+              fontSize: "1rem",
+              marginBottom: "4px"
+            }}
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
+          <div
+            style={{
+              fontSize: "13px",
+              color: "#f0f0f0",
+              lineHeight: "1.2",
+              marginLeft: "2px"
+            }}
+          >
+            Debe tener al menos 6 caracteres, una mayúscula, un número y un símbolo.
+          </div>
+        </div>
 
-        <label>Repite tu contraseña</label>
-        <input
-          type="password"
-          placeholder="6 caracteres, 1 mayúscula, 1 número y 1 símbolo tener al menos 6 caracteres, una mayúscula, un número y un símbolo."
-          value={repitePassword}
-          onChange={(e) => setRepitePassword(e.target.value)}
-          required
-        />
+        {/* Repite Contraseña */}
+        <div style={{ marginBottom: "12px" }}>
+          <label htmlFor="repitePassword" style={{ fontWeight: "bold", marginBottom: "4px", display: "block" }}>
+            Repite tu contraseña
+          </label>
+          <input
+            type="password"
+            placeholder="Ingresa nuevamente tu contraseña"
+            id="repitePassword"
+            style={{
+              width: "100%",
+              padding: "10px",
+              borderRadius: "6px",
+              border: "1px solid #ccc",
+              fontSize: "1rem",
+              marginBottom: "4px"
+            }}
+            value={repitePassword}
+            onChange={(e) => setRepitePassword(e.target.value)}
+            required
+          />
+          <div
+            style={{
+              fontSize: "13px",
+              color: "#f0f0f0",
+              lineHeight: "1.2",
+              marginLeft: "2px"
+            }}
+          >
+            Debe tener al menos 6 caracteres, una mayúscula, un número y un símbolo.
+          </div>
+        </div>
 
+        {/* Tipo Usuario */}
         <label>Tipo de usuario</label>
         <select
           value={tipoUsuario}
@@ -139,32 +176,23 @@ function FormularioRegistro() {
           <option value="Tutor">Tutor</option>
         </select>
 
+        {/* Campos dinámicos */}
         {tipoUsuario === "Profesional Interno" && (
           <>
             <label>Tipo Profesional</label>
-            <select
-              value={tipoProf}
-              onChange={(e) => setTipoProf(e.target.value)}
-              required
-            >
+            <select value={tipoProf} onChange={(e) => setTipoProf(e.target.value)} required>
               <option value="">Seleccione tipo profesional</option>
               <option value="Médico">Médico</option>
               <option value="Enfermero">Enfermero</option>
               <option value="Kinesiólogo">Kinesiólogo</option>
               <option value="Psicólogo">Psicólogo</option>
               <option value="Nutricionista">Nutricionista</option>
-              <option value="Terapeuta Ocupacional">
-                Terapeuta Ocupacional
-              </option>
+              <option value="Terapeuta Ocupacional">Terapeuta Ocupacional</option>
               <option value="Paramédico">Paramédico</option>
             </select>
 
             <label>Institución</label>
-            <select
-              value={institucion}
-              onChange={(e) => setInstitucion(e.target.value)}
-              required
-            >
+            <select value={institucion} onChange={(e) => setInstitucion(e.target.value)} required>
               <option value="">Seleccione institución</option>
               <option value="Clínica Los Alerces">Clínica Los Alerces</option>
               <option value="Clínica Los Carrera">Clínica Los Carrera</option>
@@ -179,11 +207,7 @@ function FormularioRegistro() {
         {tipoUsuario === "Profesional Externo" && (
           <>
             <label>Tipo de profesional</label>
-            <select
-              value={tipoProf}
-              onChange={(e) => setTipoProf(e.target.value)}
-              required
-            >
+            <select value={tipoProf} onChange={(e) => setTipoProf(e.target.value)} required>
               <option value="">Selecciona una opción</option>
               <option value="Médico">Médico</option>
               <option value="Enfermero">Enfermero</option>
@@ -193,32 +217,17 @@ function FormularioRegistro() {
             </select>
 
             <label>RNPI</label>
-            <input
-              type="text"
-              value={rnpi}
-              onChange={(e) => setRnpi(e.target.value)}
-              required
-            />
+            <input type="text" value={rnpi} onChange={(e) => setRnpi(e.target.value)} required />
           </>
         )}
 
         {tipoUsuario === "Tutor" && (
           <>
             <label>RUT del Familiar</label>
-            <input
-              type="text"
-              value={idPaciente}
-              onChange={(e) => setIdPaciente(e.target.value)}
-              required
-            />
+            <input type="text" value={idPaciente} onChange={(e) => setIdPaciente(e.target.value)} required />
 
             <label>Código del Centro</label>
-            <input
-              type="text"
-              value={codigoCentro}
-              onChange={(e) => setCodigoCentro(e.target.value)}
-              required
-            />
+            <input type="text" value={codigoCentro} onChange={(e) => setCodigoCentro(e.target.value)} required />
           </>
         )}
 

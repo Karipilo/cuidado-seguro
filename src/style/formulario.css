@@ -139,3 +139,38 @@ Mantiene tu paleta original:
     font-size: 0.95rem;
     text-align: center;
 }
+
+/* Estilo para etiquetas del formulario */
+.formulario label {
+  font-weight: 600;
+  font-size: 1rem;
+  color: #2c2c2c;
+  margin-bottom: 4px;
+  display: block;
+}
+
+/* Texto explicativo bajo el input */
+.formulario small {
+  color: #888;
+  font-size: 0.8rem;
+  margin-top: 2px;
+  display: block;
+  font-style: italic;
+}
+
+/* Inputs del formulario */
+.formulario input,
+.formulario select {
+  border: 1px solid #b3c100;
+  border-radius: 4px;
+  padding: 0.5rem;
+  font-size: 1rem;
+  color: #333;
+  width: 100%;
+}
+
+/* Placeholder gris tenue */
+.formulario input::placeholder {
+  color: #aaa;
+}
+
