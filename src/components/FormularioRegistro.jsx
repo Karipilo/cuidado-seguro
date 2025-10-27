@@ -46,7 +46,12 @@ function FormularioRegistro() {
       return;
     }
 
-    const nuevoUsuario = { nombre, email, password, tipoUsuario };
+    const nuevoUsuario = {
+      nombre,
+      email,
+      password,
+      tipoUsuario,
+    };
 
     if (tipoUsuario === "Profesional Interno") {
       nuevoUsuario.tipoProf = tipoProf;
@@ -63,6 +68,7 @@ function FormularioRegistro() {
       nuevoUsuario.codigoCentro = codigoCentro;
     }
 
+    // Guardar usuario
     localStorage.setItem("usuarioActivo", JSON.stringify(nuevoUsuario));
     alert("Registro exitoso");
 
@@ -97,73 +103,24 @@ function FormularioRegistro() {
           required
         />
 
-        {/* Contraseña */}
-        <div style={{ marginBottom: "12px" }}>
-          <label htmlFor="password" style={{ fontWeight: "bold", marginBottom: "4px", display: "block" }}>
-            Contraseña
-          </label>
-          <input
-            type="password"
-            placeholder="Ingresa tu contraseña"
-            id="password"
-            style={{
-              width: "100%",
-              padding: "10px",
-              borderRadius: "6px",
-              border: "1px solid #ccc",
-              fontSize: "1rem",
-              marginBottom: "4px"
-            }}
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-          <div
-            style={{
-              fontSize: "13px",
-              color: "#f0f0f0",
-              lineHeight: "1.2",
-              marginLeft: "2px"
-            }}
-          >
-            Debe tener al menos 6 caracteres, una mayúscula, un número y un símbolo.
-          </div>
-        </div>
+        <label>Contraseña</label>
+        <input
+          type="password"
+          placeholder="6 caracteres, 1 mayúscula, 1 número y 1 símbolo."
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          required
+        />
 
-        {/* Repite Contraseña */}
-        <div style={{ marginBottom: "12px" }}>
-          <label htmlFor="repitePassword" style={{ fontWeight: "bold", marginBottom: "4px", display: "block" }}>
-            Repite tu contraseña
-          </label>
-          <input
-            type="password"
-            placeholder="Ingresa nuevamente tu contraseña"
-            id="repitePassword"
-            style={{
-              width: "100%",
-              padding: "10px",
-              borderRadius: "6px",
-              border: "1px solid #ccc",
-              fontSize: "1rem",
-              marginBottom: "4px"
-            }}
-            value={repitePassword}
-            onChange={(e) => setRepitePassword(e.target.value)}
-            required
-          />
-          <div
-            style={{
-              fontSize: "13px",
-              color: "#f0f0f0",
-              lineHeight: "1.2",
-              marginLeft: "2px"
-            }}
-          >
-            Debe tener al menos 6 caracteres, una mayúscula, un número y un símbolo.
-          </div>
-        </div>
+        <label>Repite tu contraseña</label>
+        <input
+          type="password"
+          placeholder="6 caracteres, 1 mayúscula, 1 número y 1 símbolo tener al menos 6 caracteres, una mayúscula, un número y un símbolo."
+          value={repitePassword}
+          onChange={(e) => setRepitePassword(e.target.value)}
+          required
+        />
 
-        {/* Tipo Usuario */}
         <label>Tipo de usuario</label>
         <select
           value={tipoUsuario}

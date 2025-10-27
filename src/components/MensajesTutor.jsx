@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 
 function MensajesTutor({
   mensajes,
@@ -10,20 +10,54 @@ function MensajesTutor({
   cuerpo,
   setCuerpo,
 }) {
+  // ---------------------------------------------------------------
+  // 🔹 Enviar mensaje y guardarlo en localStorage
+  // ---------------------------------------------------------------
   const enviarMensaje = () => {
     if (asunto.trim() === "" || cuerpo.trim() === "") return;
+
     const nuevo = {
       id: mensajes.length + 1,
       para,
       asunto,
       cuerpo,
       leido: false,
+      fecha: new Date().toLocaleString(),
     };
+
+    // Actualiza el estado local del componente
     setMensajes([nuevo, ...mensajes]);
     setAsunto("");
     setCuerpo("");
+
+    // ======================================================
+    // ✅ GUARDA LOS MENSAJES DEL TUTOR EN LOCALSTORAGE
+    // ======================================================
+    const mensajesGuardados =
+      JSON.parse(localStorage.getItem("mensajesTutor")) || [];
+
+    // Agrega el nuevo mensaje al arreglo existente
+    mensajesGuardados.unshift(nuevo);
+
+    // Guarda los mensajes actualizados en localStorage
+    localStorage.setItem("mensajesTutor", JSON.stringify(mensajesGuardados));
+    // ======================================================
   };
 
+  // ---------------------------------------------------------------
+  // 🔹 Cargar mensajes guardados al iniciar el componente
+  // ---------------------------------------------------------------
+  useEffect(() => {
+    const mensajesGuardados =
+      JSON.parse(localStorage.getItem("mensajesTutor")) || [];
+    if (mensajesGuardados.length > 0) {
+      setMensajes(mensajesGuardados);
+    }
+  }, [setMensajes]);
+
+  // ---------------------------------------------------------------
+  // 🔹 Render principal del componente
+  // ---------------------------------------------------------------
   return (
     <div className="row g-3">
       <div className="col-lg-8">
@@ -43,7 +77,9 @@ function MensajesTutor({
             {mensajes.map((msg) => (
               <div key={msg.id} className="list-group-item">
                 <div className="fw-semibold">{msg.asunto}</div>
-                <small className="text-muted">Para: {msg.para}</small>
+                <small className="text-muted">
+                  Para: {msg.para} — {msg.fecha}
+                </small>
                 <p className="mb-1 small">{msg.cuerpo}</p>
               </div>
             ))}
