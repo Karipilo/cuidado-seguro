@@ -44,7 +44,7 @@ export function initLocalStoragePacientes() {
     {
       id: 2,
       nombre: "Juan Pérez Soto",
-      rut: "12.345.678-9",
+      rut: "6.345.678-9",
       edad: 79,
       diagnostico: "Demencia moderada",
       alergias: "Penicilina",
@@ -75,12 +75,12 @@ export function initLocalStoragePacientes() {
       recetas: [],
       examenes: [],
       certificados: [],
-      imagen: "/images/juan.png",
+      imagen: "/images/hector.png",
     },
     {
       id: 3,
       nombre: "María López Rivas",
-      rut: "15.789.456-2",
+      rut: "5.789.456-2",
       edad: 82,
       diagnostico: "Alzheimer avanzado",
       alergias: "Ninguna conocida",
