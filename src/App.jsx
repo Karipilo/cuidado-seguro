@@ -1,6 +1,7 @@
 // Importa las herramientas de enrutamiento de React
 import React, { useEffect } from "react";
 import { Routes, Route } from "react-router-dom";
+import "bootstrap-icons/font/bootstrap-icons.css";
 
 // Importa los componentes comunes
 import NavBar from "./components/NavBar";
@@ -16,27 +17,22 @@ import DashboardTutor from "./pages/DashboardTutor";
 import DashboardProfExterno from "./pages/DashboardProfExterno";
 import Paciente from "./pages/Paciente";
 import DatosMedicos from "./pages/DatosMedicos";
+import FichaPaciente from "./pages/FichaPaciente";
+
+// IMPORTANTE → cargar pacientes desde archivo y sincronizar
+import { inicializarLocalStorage } from "./utils/initLocalStorage";
 
 // ===============================================================
 // 🧩 Componente principal de la aplicación
 // ===============================================================
-function App() {
-  // ---------------------------------------------------------------
-  // 🔹 Verifica que existan datos en localStorage
-  //    Si no existen, los crea vacíos para evitar errores
-  // ---------------------------------------------------------------
-  useEffect(() => {
-    // Verifica si ya existen pacientes guardados
-    const pacientesGuardados = localStorage.getItem("pacientes");
-    if (!pacientesGuardados) {
-      // Si no hay pacientes, crea una lista vacía
-      localStorage.setItem("pacientes", JSON.stringify([]));
-    }
 
-    // Verifica si ya existen usuarios guardados
+function App() {
+  // Inicializa pacientes y sincroniza con paciente.js
+  useEffect(() => {
+    inicializarLocalStorage();
+
     const usuariosGuardados = localStorage.getItem("usuarios");
     if (!usuariosGuardados) {
-      // Si no hay usuarios, crea una lista vacía
       localStorage.setItem("usuarios", JSON.stringify([]));
     }
   }, []);
@@ -46,10 +42,8 @@ function App() {
   // ---------------------------------------------------------------
   return (
     <>
-      {/* Barra de navegación visible en todas las páginas */}
       <NavBar />
 
-      {/* Define todas las rutas del sitio */}
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/home" element={<Home />} />
@@ -64,9 +58,9 @@ function App() {
         />
         <Route path="/paciente" element={<Paciente />} />
         <Route path="/datos-medicos" element={<DatosMedicos />} />
+        <Route path="/ficha-paciente/:id" element={<FichaPaciente />} />
       </Routes>
 
-      {/* Pie de página visible en todas las páginas */}
       <Footer />
     </>
   );
