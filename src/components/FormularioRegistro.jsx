@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import "../style/formulario.css";
 
+import { normalizarRut, validarRut, formatearRut } from "../utils/rutUtils";
+
 const validarEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 const passwordRegex =
   /^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&._-])[A-Za-z\d@$!%*?&._-]{6,}$/;
@@ -21,6 +23,9 @@ function FormularioRegistro() {
   const [codigoCentro, setCodigoCentro] = useState("");
   const [aceptaTerminos, setAceptaTerminos] = useState(false);
 
+  // ============================================================
+  // SUBMIT DEL FORMULARIO
+  // ============================================================
   const handleSubmit = (e) => {
     e.preventDefault();
 
@@ -30,7 +35,7 @@ function FormularioRegistro() {
     }
 
     if (!validarEmail(email)) {
-      alert("El correo debe contener '@' y terminar en '.com'");
+      alert("Ingrese un correo válido.");
       return;
     }
 
@@ -53,32 +58,46 @@ function FormularioRegistro() {
       tipoUsuario,
     };
 
+    // PROFESIONAL INTERNO
     if (tipoUsuario === "Profesional Interno") {
       nuevoUsuario.tipoProf = tipoProf;
       nuevoUsuario.institucion = institucion;
     }
 
+    // PROFESIONAL EXTERNO
     if (tipoUsuario === "Profesional Externo") {
       nuevoUsuario.tipoProf = tipoProf;
       nuevoUsuario.rnpi = rnpi;
     }
 
+    // ============================================================
+    // TUTOR — VALIDAR RUT DEL PACIENTE (CORREGIDO)
+    // ============================================================
     if (tipoUsuario === "Tutor") {
-      nuevoUsuario.idPaciente = idPaciente;
+      // Validar usando el RUT tal cual lo ingresó el usuario
+      if (!validarRut(idPaciente)) {
+        alert("El RUT del paciente no es válido.");
+        return;
+      }
+
+      // Formatear RUT correctamente
+      const rutFormateado = formatearRut(idPaciente);
+
+      nuevoUsuario.idPaciente = rutFormateado;
       nuevoUsuario.codigoCentro = codigoCentro;
     }
 
-    // ✅ Guardar usuario en la lista general (sin sobrescribir)
+    // Guardar usuario
     const usuarios = JSON.parse(localStorage.getItem("usuarios")) || [];
     usuarios.push(nuevoUsuario);
     localStorage.setItem("usuarios", JSON.stringify(usuarios));
 
-    // ✅ Guardar también la sesión activa actual
+    // Guardar sesión activa
     localStorage.setItem("usuarioActivo", JSON.stringify(nuevoUsuario));
 
     alert("Registro exitoso");
 
-    // Redirección según tipo de usuario
+    // Redirección
     if (tipoUsuario === "Profesional Interno") {
       navigate("/dashboard-prof");
     } else if (tipoUsuario === "Profesional Externo") {
@@ -88,6 +107,9 @@ function FormularioRegistro() {
     }
   };
 
+  // ============================================================
+  // RENDER DEL FORMULARIO
+  // ============================================================
   return (
     <div className="formulario card formulario">
       <h3>Registro</h3>
@@ -95,7 +117,6 @@ function FormularioRegistro() {
         <label>Nombre completo</label>
         <input
           type="text"
-          placeholder="Ingresa tu nombre"
           value={nombre}
           onChange={(e) => setNombre(e.target.value)}
           required
@@ -104,7 +125,6 @@ function FormularioRegistro() {
         <label>Email</label>
         <input
           type="email"
-          placeholder="Ingresa tu correo"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
@@ -113,7 +133,6 @@ function FormularioRegistro() {
         <label>Contraseña</label>
         <input
           type="password"
-          placeholder="6 caracteres, 1 mayúscula, 1 número y 1 símbolo."
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
@@ -122,7 +141,6 @@ function FormularioRegistro() {
         <label>Repite tu contraseña</label>
         <input
           type="password"
-          placeholder="6 caracteres, 1 mayúscula, 1 número y 1 símbolo tener al menos 6 caracteres, una mayúscula, un número y un símbolo."
           value={repitePassword}
           onChange={(e) => setRepitePassword(e.target.value)}
           required
@@ -140,7 +158,7 @@ function FormularioRegistro() {
           <option value="Tutor">Tutor</option>
         </select>
 
-        {/* Campos dinámicos */}
+        {/* PROFESIONAL INTERNO */}
         {tipoUsuario === "Profesional Interno" && (
           <>
             <label>Tipo Profesional</label>
@@ -168,9 +186,6 @@ function FormularioRegistro() {
               required
             >
               <option value="">Seleccione institución</option>
-              <option value="Clínica Los Alerces">Clínica Los Alerces</option>
-              <option value="Clínica Los Carrera">Clínica Los Carrera</option>
-              <option value="Clínica Miraflores">Clínica Miraflores</option>
               <option value="ELEAM Las Palmas">ELEAM Las Palmas</option>
               <option value="Hogar San José">Hogar San José</option>
               <option value="Hogar Santa María">Hogar Santa María</option>
@@ -178,6 +193,7 @@ function FormularioRegistro() {
           </>
         )}
 
+        {/* PROFESIONAL EXTERNO */}
         {tipoUsuario === "Profesional Externo" && (
           <>
             <label>Tipo de profesional</label>
@@ -204,11 +220,13 @@ function FormularioRegistro() {
           </>
         )}
 
+        {/* TUTOR */}
         {tipoUsuario === "Tutor" && (
           <>
-            <label>RUT del Familiar</label>
+            <label>RUT del Paciente</label>
             <input
               type="text"
+              placeholder="Ej: 6.345.678-9"
               value={idPaciente}
               onChange={(e) => setIdPaciente(e.target.value)}
               required
