@@ -1,0 +1,25 @@
+/* ========================================================
+   VARIABLES GLOBALES — PALETA OFICIAL CUIDADO SEGURO
+   ======================================================== */
+
+:root {
+  /* Paleta Institucional */
+  --color-principal: #5F9EA0;   /* CadetBlue */
+  --color-secundario: #F08080; /* LightCoral */
+  --color-acento: #FFF8DC;     /* Cornsilk */
+
+  /* Colores generales */
+  --color-fondo: transparent;
+
+  --color-texto: #333;
+  --color-borde: #e4e4e4;
+
+  /* Tarjetas y sombras */
+  --card-bg: #ffffff;
+  --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  --radius: 12px;
+
+  /* Tipos */
+  --font-normal: 15px;
+  --font-small: 13px;
+}

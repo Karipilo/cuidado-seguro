@@ -1,42 +1,67 @@
-/* Estilos personalizados para DashboardProf
-   Aplican solo a este componente
-   */
+@import "./variables.css";
+
+/* ===========================================================
+   TARJETAS DE PACIENTES EN DASHBOARD PROFESIONAL INTERNO
+   =========================================================== */
 
 .dashboard-prof-container {
-  background-color: #FFF8DC; /* Fondo acento (Cornsilk) */
-  min-height: 100vh;
-  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
 }
 
-.dashboard-prof-titulo {
-  color: #5F9EA0; /* Color principal (CadetBlue) */
-}
-
-.dashboard-prof-lista .list-group-item {
+/* Tarjeta mini del paciente */
+.paciente-card-mini {
+  width: 100%;
+  border-radius: var(--radius);
+  overflow: hidden;
+  background: var(--card-bg);
+  box-shadow: var(--shadow);
+  transition: transform 0.2s ease;
   cursor: pointer;
-  transition: background-color 0.2s ease-in-out;
 }
 
-.dashboard-prof-lista .list-group-item:hover {
-  background-color: #F08080; /* Color secundario (LightCoral) */
+.paciente-card-mini:hover {
+  transform: scale(1.02);
+}
+
+/* Foto miniatura */
+.foto-mini {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  object-position: top;
+  display: block;
+}
+
+/* Nombre del paciente */
+.paciente-card-mini .card-body {
+  padding: 12px;
+  text-align: center;
+  font-weight: 600;
+  color: var(--texto-oscuro);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .foto-mini {
+    height: 140px;
+  }
+}
+
+.header-dashboard-prof {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  padding: 0 10px;
+}
+
+.institucion-tag {
+  background: #5F9EA0;   /* tu color principal CadetBlue */
   color: white;
-}
-
-.dashboard-prof-card {
-  border: 1px solid #5F9EA0;
-  background-color: white;
-  box-shadow: 0 2px 8px rgba(95, 158, 160, 0.2);
-}
-
-.dashboard-prof-card h6 {
-  color: #5F9EA0;
-}
-
-.dashboard-prof-card button {
-  background-color: #5F9EA0;
-  border: none;
-}
-
-.dashboard-prof-card button:hover {
-  background-color: #4a8587;
+  padding: 6px 14px;
+  border-radius: 8px;
+  font-weight: bold;
+  font-size: 14px;
 }

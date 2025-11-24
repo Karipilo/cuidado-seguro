@@ -1,0 +1,118 @@
+/* ============================================================
+   INDEX.CSS — ESTILOS ESPECÍFICOS DEL HOME (Carrusel, Cards, Footer, Navbar)
+   NO incluye colores ni tipografías globales (eso está en global.css)
+   ============================================================ */
+
+/* ==== CARRUSEL ==== */
+.carousel-item img[alt="Derechos y deberes"] {
+  object-fit: contain !important;
+  background: #fff;
+}
+
+.carousel-item img,
+.d-block.w-100 {
+  max-height: 520px;
+  object-fit: cover;
+}
+
+/* ==== IMÁGENES COMPACTAS PARA CARDS ==== */
+.card-img-top,
+.card img {
+  width: 100%;
+  height: 240px;
+  object-fit: cover;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card-img-top:hover {
+  transform: scale(1.03);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.25);
+}
+
+/* ==== CARDS ==== */
+.card {
+  border: none;
+  border-radius: 12px;
+  overflow: hidden;
+  background-color: #f8f9fa;
+  transition: transform 0.2s ease;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+}
+
+.card-title {
+  font-weight: 600;
+}
+
+/* ==== BADGES ==== */
+.badge {
+  font-size: 0.8rem;
+  padding: 6px 10px;
+  border-radius: 20px;
+}
+
+/* ==== NAVBAR === */
+.custom-navbar {
+  background-color: var(--color-acento) !important;
+  border-bottom: 1px solid var(--color-borde);
+  padding-top: 0.25rem !important;
+  padding-bottom: 0.25rem !important;
+  min-height: 48px;
+}
+
+.custom-navbar .navbar-brand,
+.custom-navbar .nav-link,
+.custom-navbar .navbar-text {
+  color: var(--texto-oscuro) !important;
+  font-weight: 600;
+}
+
+.custom-navbar .nav-link.active,
+.custom-navbar .nav-link:hover {
+  color: var(--color-principal) !important;
+  background: rgba(95, 158, 160, 0.08);
+  border-radius: 6px;
+}
+
+/* ==== FOOTER ==== */
+.footer-rect {
+  background-color: #000;
+  color: #fff;
+  margin-top: 20px;
+  border-radius: 8px 8px 0 0;
+  padding: 10px 16px 6px;
+  font-size: 0.95rem;
+}
+
+.footer-rect h5 {
+  color: #F8BBD0;
+  margin-bottom: 4px;
+}
+
+.footer-logo {
+  max-width: 60px;
+  border-radius: 50%;
+  background-color: #fff;
+  padding: 4px;
+}
+
+.link-footer {
+  color: #5CC8A1;
+  text-decoration: none;
+}
+
+.link-footer:hover {
+  text-decoration: underline;
+}
+
+/* ==== RESPONSIVE ==== */
+@media (max-width: 768px) {
+  .card-img-top,
+  .card img {
+    height: 180px;
+  }
+}

@@ -1,0 +1,75 @@
+@import "./variables.css";
+
+body {
+  margin: 0;
+  font-family: "Inter", system-ui, sans-serif;
+  color: var(--color-texto);
+
+  /* ==== FONDO OFICIAL DEL SISTEMA ==== */
+  background: 
+    linear-gradient(rgba(255, 255, 255, 0.55), rgba(255, 255, 255, 0.55)),
+    url('/images/fondoWeb.png') center center/cover no-repeat fixed;
+}
+
+/* Quitar decoraciones globales */
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+/* Botón primario uniforme */
+.btn-guardar,
+.btn-primary {
+  background: var(--color-principal) !important;
+  border: none !important;
+  color: white !important;
+  font-weight: 500;
+  transition: 0.2s;
+}
+
+.btn-guardar:hover,
+.btn-primary:hover {
+  background: #4f8b8d !important;
+}
+
+/* Botón secundario */
+.btn-secondary {
+  background: var(--color-secundario) !important;
+  border: none !important;
+  color: white !important;
+}
+
+.btn-secondary:hover {
+  background: #d86f6f !important;
+}
+
+/* Tarjetas globales */
+.card {
+  border-radius: var(--radius) !important;
+  box-shadow: var(--shadow);
+  background: var(--card-bg);
+}
+
+/* Headers de tarjetas */
+.card-header {
+  background: var(--color-acento) !important;
+  font-size: var(--font-normal);
+  font-weight: 600;
+}
+
+/* Badges */
+.badge-primary,
+.text-bg-primary {
+  background: var(--color-principal) !important;
+}
+
+.badge-secondary,
+.text-bg-secondary {
+  background: var(--color-secundario) !important;
+}
+
+.badge-light {
+  background: var(--color-acento) !important;
+  color: var(--color-texto) !important;
+  border: 1px solid var(--color-borde);
+}

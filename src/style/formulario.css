@@ -1,176 +1,134 @@
-/* ESTILOS DEL FORMULARIO DE REGISTRO / LOGIN — CUIDADO SEGURO
-Mantiene tu paleta original:
-  - Principal: CadetBlue (#5F9EA0)
-  - Secundario: LightCoral (#F08080)
-  - Acento: Cornsilk (#FFF8DC)
- */
+@import "./variables.css";
 
-/* CONTENEDOR PRINCIPAL DEL FORMULARIO */
+/* ===========================================================
+   FORMULARIOS REGISTRO / LOGIN — CUIDADO SEGURO
+   Paleta oficial:
+   - Principal: var(--color-principal)
+   - Secundario: var(--color-secundario)
+   - Acento: var(--color-acento)
+   =========================================================== */
+
+/* CONTENEDOR PRINCIPAL */
 .formulario {
-    background-color: #5F9EA0;
-    color: #FFFFFF;
-    border-radius: 15px;
-    padding: 2rem;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-    max-width: 400px;
-    margin: 60px auto;
-    /* 💡 más arriba: antes 80px */
+  background-color: var(--color-principal);
+  color: white;
+  border-radius: 15px;
+  padding: 2rem;
+  box-shadow: var(--shadow);
+  max-width: 400px;
+  margin: 60px auto;
 }
 
-/* TÍTULO DEL FORMULARIO */
+/* TÍTULO */
 .formulario h3 {
-    color: #FFF8DC;
-    text-align: center;
-    margin-bottom: 1rem;
+  color: var(--color-acento);
+  text-align: center;
+  margin-bottom: 1rem;
 }
 
 /* ETIQUETAS */
 .formulario label {
-    color: #FFF8DC;
-    font-weight: 500;
-}
-
-/* CAMPOS DE ENTRADA */
-.formulario input {
-    background-color: #FFFFFF;
-    color: #708090;
-    border: 1px solid #F08080;
-    border-radius: 10px;
-    padding: 10px;
-    width: 100%;
-    margin-bottom: 1rem;
-    transition: border-color 0.3s;
-}
-
-/* EFECTO FOCUS */
-.formulario input:focus {
-    border-color: #5F9EA0;
-    outline: none;
-}
-
-/* SELECTS */
-.formulario select {
-    background-color: #FFFFFF;
-    color: #708090;
-    border: 1px solid #F08080;
-    border-radius: 10px;
-    padding: 10px;
-    width: 100%;
-    margin-bottom: 1rem;
-    transition: border-color 0.3s;
-}
-
-.formulario select:focus {
-    border-color: #5F9EA0;
-    outline: none;
-}
-
-/* BOTÓN DE ENVÍO */
-.formulario button {
-    background-color: #F08080;
-    color: #FFFFFF;
-    border: none;
-    padding: 10px;
-    width: 100%;
-    border-radius: 10px;
-    cursor: pointer;
-    font-weight: bold;
-    transition: background-color 0.3s;
-}
-
-/* EFECTO HOVER EN BOTÓN */
-.formulario button:hover {
-    background-color: #5F9EA0;
-}
-
-/* ENLACES */
-.formulario a {
-    color: #FFF8DC;
-    text-decoration: none;
-    font-weight: bold;
-}
-
-.formulario a:hover {
-    color: #F08080;
-}
-
-/* CORRECCIÓN TARJETA BOOTSTRAP */
-.card.formulario {
-    background-color: #5F9EA0 !important;
-    color: #FFFFFF !important;
-    border: none !important;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2) !important;
-    max-width: 400px !important;
-    margin: 60px auto !important;
-    /* 💡 antes 80px, ahora más arriba */
-}
-
-.card.formulario h3,
-.card.formulario label {
-    color: #FFF8DC !important;
-}
-
-/* CHECKBOX DE TÉRMINOS Y CONDICIONES
-- Más pequeño
-- Cuadrado
-- Centrado con el texto
-*/
-.formulario .form-check {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.formulario .form-check-input {
-    width: 16px;
-    /* cuadrado pequeño */
-    height: 16px;
-    margin-right: 8px;
-    cursor: pointer;
-    border-radius: 2px;
-    /* bordes rectos (no redondos) */
-    border: 1px solid #FFF8DC;
-    accent-color: #F08080;
-    /* color del check (lightcoral) */
-}
-
-.formulario .form-check-label {
-    color: #FFF8DC;
-    font-size: 0.95rem;
-    text-align: center;
-}
-
-/* Estilo para etiquetas del formulario */
-.formulario label {
+  color: var(--color-acento);
   font-weight: 600;
-  font-size: 1rem;
-  color: #2c2c2c;
   margin-bottom: 4px;
   display: block;
 }
 
-/* Texto explicativo bajo el input */
-.formulario small {
-  color: #888;
-  font-size: 0.8rem;
-  margin-top: 2px;
-  display: block;
-  font-style: italic;
-}
-
-/* Inputs del formulario */
+/* INPUTS Y SELECTS */
 .formulario input,
 .formulario select {
-  border: 1px solid #b3c100;
-  border-radius: 4px;
-  padding: 0.5rem;
-  font-size: 1rem;
-  color: #333;
+  background-color: #ffffff;
+  color: var(--color-texto);
+  border: 1px solid var(--color-secundario);
+  border-radius: 10px;
+  padding: 10px;
   width: 100%;
+  margin-bottom: 1rem;
+  transition: border-color 0.3s ease;
 }
 
-/* Placeholder gris tenue */
 .formulario input::placeholder {
-  color: #aaa;
+  color: #999;
 }
 
+.formulario input:focus,
+.formulario select:focus {
+  border: 1px solid var(--color-principal);
+  outline: none;
+}
+
+/* BOTÓN PRINCIPAL */
+.formulario button {
+  background-color: var(--color-secundario);
+  color: #ffffff;
+  border: none;
+  padding: 12px;
+  width: 100%;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 1rem;
+  transition: background-color 0.3s ease;
+}
+
+.formulario button:hover {
+  background-color: var(--color-principal);
+}
+
+/* ENLACES */
+.formulario a {
+  color: var(--color-acento);
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.formulario a:hover {
+  color: var(--color-secundario);
+}
+
+/* CARD (Bootstrap override para matching) */
+.card.formulario {
+  background-color: var(--color-principal) !important;
+  color: white !important;
+  border: none !important;
+  box-shadow: var(--shadow) !important;
+  max-width: 400px !important;
+  margin: 60px auto !important;
+}
+
+.card.formulario h3,
+.card.formulario label {
+  color: var(--color-acento) !important;
+}
+
+/* CHECKBOX */
+.formulario .form-check {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.formulario .form-check-input {
+  width: 18px;
+  height: 18px;
+  margin-right: 8px;
+  cursor: pointer;
+  border-radius: 4px;
+  border: 1px solid var(--color-acento);
+  accent-color: var(--color-secundario); /* color del check */
+}
+
+.formulario .form-check-label {
+  color: var(--color-acento);
+  font-size: 0.95rem;
+}
+
+/* TEXTO EXPLICATIVO */
+.formulario small {
+  color: white;
+  opacity: 0.8;
+  font-style: italic;
+  margin-top: -8px;
+  display: block;
+  margin-bottom: 10px;
+}
