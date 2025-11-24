@@ -1,120 +1,114 @@
-// DashboardProf.jsx — Perfil Profesional Interno con estilo personalizado
+// DashboardProf.jsx — Perfil Profesional Interno con vista detallada y botón volver
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import "../style/dashboardProf.css"; // Asegúrate de tener este archivo CSS creado
+import "../style/dashboardProf.css";
 
 function DashboardProf() {
   const navigate = useNavigate();
   const [usuario, setUsuario] = useState(null);
   const [pacientes, setPacientes] = useState([]);
   const [pacienteSeleccionado, setPacienteSeleccionado] = useState(null);
-  const [nota, setNota] = useState("");
-  const [control, setControl] = useState("");
 
-  // Carga usuario y pacientes desde localStorage
+  // Cargar usuario y pacientes
   useEffect(() => {
     const activo = JSON.parse(localStorage.getItem("usuarioActivo"));
     if (!activo || activo.tipoUsuario !== "Profesional Interno") {
       navigate("/login");
       return;
     }
+
     setUsuario(activo);
 
     const almacenados = JSON.parse(localStorage.getItem("pacientes"));
-    if (almacenados?.length > 0) {
-      setPacientes(almacenados);
-      setPacienteSeleccionado(almacenados[0]);
+    if (Array.isArray(almacenados)) {
+      const filtrados = almacenados.filter(
+        (p) => p.centro === activo.institucion
+      );
+      setPacientes(filtrados);
     }
   }, [navigate]);
 
-  const seleccionarPaciente = (paciente) => {
-    setPacienteSeleccionado(paciente);
+  const handleSeleccionarPaciente = (p) => {
+    setPacienteSeleccionado(p);
   };
 
-  const agregarNota = () => {
-    if (!nota.trim()) return;
-    const nuevaNota = {
-      contenido: nota,
-      fecha: new Date().toLocaleString(),
-      autor: usuario.nombre,
-      tipo: "Profesional Interno",
-    };
-
-    const actualizados = pacientes.map((p) => {
-      if (p.id === pacienteSeleccionado.id) {
-        const actualizado = {
-          ...p,
-          notas: [...(p.notas || []), nuevaNota],
-        };
-        setPacienteSeleccionado(actualizado);
-        return actualizado;
-      }
-      return p;
-    });
-
-    localStorage.setItem("pacientes", JSON.stringify(actualizados));
-    setPacientes(actualizados);
-    setNota("");
-  };
-
-  const agregarControl = () => {
-    if (!control.trim()) return;
-    const actualizados = pacientes.map((p) => {
-      if (p.id === pacienteSeleccionado.id) {
-        const actualizado = {
-          ...p,
-          controles: [...(p.controles || []), control],
-        };
-        setPacienteSeleccionado(actualizado);
-        return actualizado;
-      }
-      return p;
-    });
-
-    localStorage.setItem("pacientes", JSON.stringify(actualizados));
-    setPacientes(actualizados);
-    setControl("");
+  const volverAtras = () => {
+    setPacienteSeleccionado(null);
   };
 
   if (!usuario) return null;
 
   return (
-    <div className="container py-4 dashboard-prof">
-      <h4 className="mb-4 text-center">Bienvenido, {usuario.nombre}</h4>
-      <div className="row">
-        {/* Lista de pacientes */}
-        <div className="col-md-4">
-          <h5 className="text-cadetblue">Pacientes Asignados</h5>
-          <ul className="list-group">
-            {pacientes.map((p, i) => (
-              <li
-                key={i}
-                className={`list-group-item list-group-item-action ${
-                  pacienteSeleccionado?.id === p.id ? "active" : ""
-                }`}
-                onClick={() => seleccionarPaciente(p)}
-                style={{ cursor: "pointer" }}
-              >
-                {p.nombre}
-              </li>
-            ))}
-          </ul>
-        </div>
+    <div className="dashboard-prof-container py-4 container">
+      {/* CABECERA */}
+      <div className="header-dashboard-prof d-flex justify-content-between align-items-center">
+        <h2 className="fw-bold">Pacientes</h2>
 
-        {/* Detalle del paciente */}
-        <div className="col-md-8">
-          {pacienteSeleccionado && (
+        {usuario.institucion && (
+          <span className="institucion-tag">{usuario.institucion}</span>
+        )}
+      </div>
+
+      {/* ============================ */}
+      {/*   SIN SELECCIONAR PACIENTE   */}
+      {/* ============================ */}
+      {!pacienteSeleccionado && (
+        <div className="row mt-3">
+          {pacientes.map((p) => (
+            <div
+              key={p.id}
+              className="col-12 col-sm-6 col-md-4 col-lg-4 mb-4"
+              onClick={() => handleSeleccionarPaciente(p)}
+              style={{ cursor: "pointer" }}
+            >
+              <div
+                className="card shadow-sm h-100 p-0"
+                style={{ borderRadius: "15px", overflow: "hidden" }}
+              >
+                <img
+                  src={p.foto}
+                  alt={p.nombre}
+                  style={{
+                    width: "100%",
+                    height: "260px",
+                    objectFit: "cover",
+                    display: "block",
+                  }}
+                />
+                <div className="text-center py-3">
+                  <h6 className="fw-bold m-0">{p.nombre}</h6>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* ============================ */}
+      {/*   PACIENTE SELECCIONADO      */}
+      {/* ============================ */}
+      {pacienteSeleccionado && (
+        <div className="row mt-3">
+          {/* BOTÓN VOLVER */}
+          <div className="col-12 mb-3">
+            <button className="btn btn-secondary" onClick={volverAtras}>
+              ← Volver atrás
+            </button>
+          </div>
+
+          {/* PANEL DEL PACIENTE */}
+          <div className="col-12 col-lg-8 mx-auto">
             <div className="card shadow-sm">
-              <div className="card-body" style={{ backgroundColor: "#FFF8DC" }}>
-                <h5 className="text-cadetblue">Resumen del Paciente</h5>
-                <p>
-                  <strong>Nombre:</strong> {pacienteSeleccionado.nombre}
-                </p>
+              <div className="card-body">
+                <h4 className="text-primary fw-bold">
+                  {pacienteSeleccionado.nombre}
+                </h4>
+
                 <p>
                   <strong>RUT:</strong> {pacienteSeleccionado.rut}
                 </p>
                 <p>
-                  <strong>Edad:</strong> {pacienteSeleccionado.edad}
+                  <strong>Edad:</strong> {pacienteSeleccionado.edad} años
                 </p>
                 <p>
                   <strong>Diagnóstico:</strong>{" "}
@@ -128,119 +122,97 @@ function DashboardProf() {
                   {pacienteSeleccionado.observaciones}
                 </p>
 
-                {/* Agregar nota */}
+                {/* ----- MENSAJES DEL TUTOR ----- */}
+                <hr />
+                <h5 className="text-info fw-bold mt-3">Mensajes del Tutor</h5>
                 <div className="mt-3">
-                  <h6 className="text-lightcoral">Agregar Nota Clínica</h6>
-                  <textarea
-                    className="form-control"
-                    rows="2"
-                    value={nota}
-                    onChange={(e) => setNota(e.target.value)}
-                    placeholder="Escribe la evolución médica..."
-                  />
-                  <button
-                    className="btn btn-success mt-2"
-                    onClick={agregarNota}
-                  >
-                    Guardar nota
-                  </button>
-                </div>
-
-                {/* Agregar control */}
-                <div className="mt-3">
-                  <h6 className="text-lightcoral">Agregar Control Médico</h6>
-                  <input
-                    type="text"
-                    className="form-control"
-                    value={control}
-                    onChange={(e) => setControl(e.target.value)}
-                    placeholder="Ej: Presión 120/80, Peso 68kg"
-                  />
-                  <button
-                    className="btn btn-primary mt-2"
-                    onClick={agregarControl}
-                  >
-                    Guardar control
-                  </button>
-                </div>
-
-                {/* Historial clínico */}
-                <div className="mt-4">
-                  <h6 className="text-lightcoral">Notas Clínicas</h6>
-                  {pacienteSeleccionado.notas?.length > 0 ? (
+                  {pacienteSeleccionado.mensajesTutor?.length > 0 ? (
                     <ul>
-                      {pacienteSeleccionado.notas.map((n, i) => (
+                      {pacienteSeleccionado.mensajesTutor.map((m, i) => (
                         <li key={i}>
-                          <strong>{n.fecha}</strong> — <em>{n.autor}</em>:<br />
-                          {n.contenido}
+                          <strong>{m.fecha}:</strong> {m.asunto} — {m.cuerpo}
                         </li>
                       ))}
                     </ul>
                   ) : (
-                    <p className="text-muted">Sin notas aún.</p>
+                    <p className="text-muted">Sin mensajes del tutor.</p>
                   )}
                 </div>
 
-                {/* Controles médicos */}
-                <div className="mt-4">
-                  <h6 className="text-lightcoral">Controles Médicos</h6>
-                  {pacienteSeleccionado.controles?.length > 0 ? (
-                    <ul>
-                      {pacienteSeleccionado.controles.map((c, i) => (
-                        <li key={i}>{c}</li>
-                      ))}
-                    </ul>
-                  ) : (
-                    <p className="text-muted">Sin controles registrados.</p>
-                  )}
-                </div>
+                {/* ----- PROFESIONAL EXTERNO ----- */}
+                <hr />
+                <h5 className="text-info fw-bold mt-3">
+                  Información del Profesional Externo
+                </h5>
 
-                {/* Mensajes del tutor */}
-                <div className="mt-4">
-                  <h6 className="text-lightcoral">Mensajes del Tutor</h6>
-                  {pacienteSeleccionado.mensajes?.length > 0 ? (
+                {/* Notas */}
+                <div className="mt-3">
+                  <h6 className="fw-bold">Notas</h6>
+                  {pacienteSeleccionado.notasExterno?.length > 0 ? (
                     <ul>
-                      {pacienteSeleccionado.mensajes.map((m, i) => (
+                      {pacienteSeleccionado.notasExterno.map((n, i) => (
                         <li key={i}>
-                          <strong>{m.fecha}</strong> — <em>{m.asunto}</em>:
-                          <br />
-                          {m.cuerpo}
+                          <strong>{n.fecha}:</strong> {n.contenido}
                         </li>
                       ))}
                     </ul>
                   ) : (
-                    <p className="text-muted">Sin mensajes.</p>
+                    <p className="text-muted">Sin notas registradas.</p>
                   )}
                 </div>
 
-                {/* Notas del profesional externo */}
-                <div className="mt-4">
-                  <h6 className="text-lightcoral">
-                    Notas del Profesional Externo
-                  </h6>
-                  {pacienteSeleccionado.notas?.filter(
-                    (n) => n.tipo === "Profesional Externo"
-                  ).length > 0 ? (
+                {/* Exámenes */}
+                <div className="mt-3">
+                  <h6 className="fw-bold">Exámenes</h6>
+                  {pacienteSeleccionado.examenes?.length > 0 ? (
                     <ul>
-                      {pacienteSeleccionado.notas
-                        .filter((n) => n.tipo === "Profesional Externo")
-                        .map((n, i) => (
-                          <li key={i}>
-                            <strong>{n.fecha}</strong> — <em>{n.autor}</em>:
-                            <br />
-                            {n.contenido}
-                          </li>
-                        ))}
+                      {pacienteSeleccionado.examenes.map((x, i) => (
+                        <li key={i}>
+                          <strong>{x.fecha}:</strong> {x.contenido}
+                        </li>
+                      ))}
                     </ul>
                   ) : (
-                    <p className="text-muted">Sin notas externas.</p>
+                    <p className="text-muted">Sin exámenes registrados.</p>
+                  )}
+                </div>
+
+                {/* Recetas */}
+                <div className="mt-3">
+                  <h6 className="fw-bold">Recetas</h6>
+                  {pacienteSeleccionado.recetas?.length > 0 ? (
+                    <ul>
+                      {pacienteSeleccionado.recetas.map((r, i) => (
+                        <li key={i}>
+                          <strong>{r.fecha}:</strong> {r.contenido}
+                        </li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <p className="text-muted">Sin recetas registradas.</p>
+                  )}
+                </div>
+
+                {/* Certificados */}
+                <div className="mt-3">
+                  <h6 className="fw-bold">Certificados</h6>
+                  {pacienteSeleccionado.certificados?.length > 0 ? (
+                    <ul>
+                      {pacienteSeleccionado.certificados.map((c, i) => (
+                        <li key={i}>
+                          <strong>{c.fecha}:</strong> {c.contenido}
+                        </li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <p className="text-muted">Sin certificados registrados.</p>
                   )}
                 </div>
               </div>
             </div>
-          )}
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }

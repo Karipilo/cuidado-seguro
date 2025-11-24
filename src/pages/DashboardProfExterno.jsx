@@ -3,7 +3,7 @@ Componente: DashboardProfExterno.jsx
 Descripción: Panel del Profesional Externo.
 Lee los pacientes desde localStorage (cargados por App.jsx),
 permite buscarlos y registrar información médica adicional.
-*/ 
+*/
 
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
@@ -11,9 +11,7 @@ import { useNavigate } from "react-router-dom";
 function DashboardProfExterno() {
   const navigate = useNavigate();
 
-  
   // Estados principales
-
   const [usuario, setUsuario] = useState(null);
   const [rutBusqueda, setRutBusqueda] = useState("");
   const [paciente, setPaciente] = useState(null);
@@ -21,9 +19,7 @@ function DashboardProfExterno() {
   const [accion, setAccion] = useState("");
   const [texto, setTexto] = useState("");
 
- 
   // Efecto inicial: carga usuario y pacientes desde localStorage
-
   useEffect(() => {
     const activo = JSON.parse(localStorage.getItem("usuarioActivo"));
 
@@ -46,14 +42,11 @@ function DashboardProfExterno() {
     }
   }, [navigate]);
 
- 
   // Función auxiliar: normaliza el RUT para comparación
-
   const normalizarRut = (rut) =>
     (rut || "").toString().replace(/\s+/g, "").toLowerCase();
 
   // Buscar paciente por RUT
-
   const handleBuscar = () => {
     const buscado = normalizarRut(rutBusqueda);
     const encontrado = pacientes.find((p) => normalizarRut(p.rut) === buscado);
@@ -68,9 +61,7 @@ function DashboardProfExterno() {
     }
   };
 
-  
   // Registrar nueva información médica
-  
   const handleRegistrar = () => {
     if (!texto.trim() || !accion) {
       alert("Por favor, selecciona una acción y escribe el contenido.");
@@ -85,10 +76,13 @@ function DashboardProfExterno() {
     const actualizado = pacientes.map((p) => {
       if (p.rut === paciente.rut) {
         const copia = { ...p };
-        if (accion === "nota") copia.notas.push(nuevaEntrada);
+
+        // CAMBIOS SOLICITADOS
+        if (accion === "nota") copia.notasExterno.push(nuevaEntrada);
         if (accion === "receta") copia.recetas.push(nuevaEntrada);
         if (accion === "examen") copia.examenes.push(nuevaEntrada);
         if (accion === "certificado") copia.certificados.push(nuevaEntrada);
+
         return copia;
       }
       return p;
@@ -106,9 +100,7 @@ function DashboardProfExterno() {
     alert("Información registrada correctamente.");
   };
 
-  
   // Render principal
-  
   if (!usuario) return null;
 
   return (
@@ -241,18 +233,25 @@ function DashboardProfExterno() {
 
               {/* Sección de registros existentes */}
               <div className="row">
-                {["notas", "recetas", "examenes", "certificados"].map(
+                {["notasExterno", "recetas", "examenes", "certificados"].map(
                   (tipo) => {
                     const lista = Array.isArray(paciente[tipo])
                       ? paciente[tipo]
                       : [];
+
+                    const titulos = {
+                      notasExterno: "Notas del Profesional Externo",
+                      recetas: "Recetas",
+                      examenes: "Exámenes",
+                      certificados: "Certificados",
+                    };
+
                     return (
                       <div key={tipo} className="col-md-6 mb-3">
                         <div className="card shadow-sm">
                           <div className="card-body">
-                            <h6 className="fw-bold text-capitalize mb-2">
-                              {tipo}
-                            </h6>
+                            <h6 className="fw-bold mb-2">{titulos[tipo]}</h6>
+
                             {lista.length === 0 ? (
                               <p className="text-muted">Sin registros.</p>
                             ) : (
