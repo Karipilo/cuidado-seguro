@@ -29,10 +29,10 @@ function DashboardTutor() {
 
     //  YA NO SE CARGA DESDE LOCALSTORAGE NI DESDE pacientes.js
     // Solo se prepara un "placeholder" hasta conectar backend
-    if (activo.idPaciente) {
+    if (activo.rutPaciente) {
       setPacienteSeleccionado({
         nombre: "Paciente asignado",
-        rut: activo.idPaciente,
+        rut: activo.rutPaciente,
         edad: "—",
         diagnostico: "—",
         alergias: "—",
