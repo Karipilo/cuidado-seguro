@@ -1,5 +1,5 @@
 // Importa las herramientas de enrutamiento de React
-import React, { useEffect } from "react";
+import React from "react";
 import { Routes, Route } from "react-router-dom";
 import "bootstrap-icons/font/bootstrap-icons.css";
 
@@ -19,27 +19,8 @@ import Paciente from "./pages/Paciente";
 import DatosMedicos from "./pages/DatosMedicos";
 import FichaPaciente from "./pages/FichaPaciente";
 
-// IMPORTANTE → cargar pacientes desde archivo y sincronizar
-import { inicializarLocalStorage } from "./utils/initLocalStorage";
-
-// ===============================================================
-// 🧩 Componente principal de la aplicación
-// ===============================================================
-
 function App() {
-  // Inicializa pacientes y sincroniza con paciente.js
-  useEffect(() => {
-    inicializarLocalStorage();
 
-    const usuariosGuardados = localStorage.getItem("usuarios");
-    if (!usuariosGuardados) {
-      localStorage.setItem("usuarios", JSON.stringify([]));
-    }
-  }, []);
-
-  // ---------------------------------------------------------------
-  // 🔹 Render principal de la aplicación
-  // ---------------------------------------------------------------
   return (
     <>
       <NavBar />
@@ -52,10 +33,7 @@ function App() {
         <Route path="/registro" element={<Registro />} />
         <Route path="/dashboard-prof" element={<DashboardProf />} />
         <Route path="/dashboard-tutor" element={<DashboardTutor />} />
-        <Route
-          path="/dashboard-prof-externo"
-          element={<DashboardProfExterno />}
-        />
+        <Route path="/dashboard-prof-externo" element={<DashboardProfExterno />} />
         <Route path="/paciente" element={<Paciente />} />
         <Route path="/datos-medicos" element={<DatosMedicos />} />
         <Route path="/ficha-paciente/:id" element={<FichaPaciente />} />

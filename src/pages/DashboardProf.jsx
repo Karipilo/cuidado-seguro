@@ -1,32 +1,67 @@
-// DashboardProf.jsx — Perfil Profesional Interno con vista detallada y botón volver
+// DashboardProf.jsx — Perfil Profesional Interno conectado al backend real
+
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "../style/dashboardProf.css";
+import { getPacientes } from "../services/pacienteService";
 
 function DashboardProf() {
   const navigate = useNavigate();
+
   const [usuario, setUsuario] = useState(null);
   const [pacientes, setPacientes] = useState([]);
   const [pacienteSeleccionado, setPacienteSeleccionado] = useState(null);
 
-  // Cargar usuario y pacientes
+  
+  // CARGAR USUARIO ACTIVO
+  
   useEffect(() => {
     const activo = JSON.parse(localStorage.getItem("usuarioActivo"));
+
     if (!activo || activo.tipoUsuario !== "Profesional Interno") {
       navigate("/login");
       return;
     }
 
     setUsuario(activo);
-
-    const almacenados = JSON.parse(localStorage.getItem("pacientes"));
-    if (Array.isArray(almacenados)) {
-      const filtrados = almacenados.filter(
-        (p) => p.centro === activo.institucion
-      );
-      setPacientes(filtrados);
-    }
   }, [navigate]);
+
+  
+  // CARGAR PACIENTES DEL BACKEND SEGÚN LA INSTITUCIÓN DEL PROFESIONAL
+  
+  useEffect(() => {
+    if (!usuario) return;
+
+    const cargar = async () => {
+      try {
+        const data = await getPacientes();
+
+        // Convertir nombres del backend (snake_case) a camelCase
+        const pacientesConvertidos = data.map((p) => ({
+          id: p.id,
+          nombreCompleto: p.nombre_completo,
+          rut: p.rut,
+          edad: p.edad,
+          diagnostico: p.diagnostico,
+          alergias: p.alergias,
+          observaciones: p.observaciones,
+          ciudad: p.ciudad,
+          centro: p.centro,
+        }));
+
+        // Filtrar los pacientes de la institución del profesional
+        const filtrados = pacientesConvertidos.filter(
+          (p) => p.centro === usuario.institucion
+        );
+
+        setPacientes(filtrados);
+      } catch (error) {
+        console.error("Error obteniendo pacientes:", error);
+      }
+    };
+
+    cargar();
+  }, [usuario]);
 
   const handleSeleccionarPaciente = (p) => {
     setPacienteSeleccionado(p);
@@ -49,44 +84,38 @@ function DashboardProf() {
         )}
       </div>
 
-      {/* ============================ */}
-      {/*   SIN SELECCIONAR PACIENTE   */}
-      {/* ============================ */}
+      {/* LISTA DE PACIENTES */}
       {!pacienteSeleccionado && (
         <div className="row mt-3">
-          {pacientes.map((p) => (
-            <div
-              key={p.id}
-              className="col-12 col-sm-6 col-md-4 col-lg-4 mb-4"
-              onClick={() => handleSeleccionarPaciente(p)}
-              style={{ cursor: "pointer" }}
-            >
+          {pacientes.length === 0 ? (
+            <p className="text-muted mt-4">No hay pacientes registrados para este centro.</p>
+          ) : (
+            pacientes.map((p) => (
               <div
-                className="card shadow-sm h-100 p-0"
-                style={{ borderRadius: "15px", overflow: "hidden" }}
+                key={p.id}
+                className="col-12 col-sm-6 col-md-4 col-lg-4 mb-4"
+                onClick={() => handleSeleccionarPaciente(p)}
+                style={{ cursor: "pointer" }}
               >
-                <img
-                  src={p.foto}
-                  alt={p.nombre}
-                  style={{
-                    width: "100%",
-                    height: "260px",
-                    objectFit: "cover",
-                    display: "block",
-                  }}
-                />
-                <div className="text-center py-3">
-                  <h6 className="fw-bold m-0">{p.nombre}</h6>
+                <div
+                  className="card shadow-sm h-100 p-0"
+                  style={{ borderRadius: "15px", overflow: "hidden" }}
+                >
+                  <div
+                    className="text-center py-3"
+                    style={{ height: "260px", background: "#f2f2f2" }}
+                  >
+                    <h6 className="fw-bold">{p.nombreCompleto}</h6>
+                    <p className="text-muted">{p.rut}</p>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            ))
+          )}
         </div>
       )}
 
-      {/* ============================ */}
-      {/*   PACIENTE SELECCIONADO      */}
-      {/* ============================ */}
+      {/* PACIENTE SELECCIONADO */}
       {pacienteSeleccionado && (
         <div className="row mt-3">
           {/* BOTÓN VOLVER */}
@@ -101,113 +130,41 @@ function DashboardProf() {
             <div className="card shadow-sm">
               <div className="card-body">
                 <h4 className="text-primary fw-bold">
-                  {pacienteSeleccionado.nombre}
+                  {pacienteSeleccionado.nombreCompleto}
                 </h4>
 
-                <p>
-                  <strong>RUT:</strong> {pacienteSeleccionado.rut}
-                </p>
-                <p>
-                  <strong>Edad:</strong> {pacienteSeleccionado.edad} años
-                </p>
-                <p>
-                  <strong>Diagnóstico:</strong>{" "}
-                  {pacienteSeleccionado.diagnostico}
-                </p>
-                <p>
-                  <strong>Alergias:</strong> {pacienteSeleccionado.alergias}
-                </p>
-                <p>
-                  <strong>Observaciones:</strong>{" "}
-                  {pacienteSeleccionado.observaciones}
-                </p>
+                <p><strong>RUT:</strong> {pacienteSeleccionado.rut}</p>
+                <p><strong>Edad:</strong> {pacienteSeleccionado.edad || "-"}</p>
+                <p><strong>Diagnóstico:</strong> {pacienteSeleccionado.diagnostico || "No registrado"}</p>
+                <p><strong>Alergias:</strong> {pacienteSeleccionado.alergias || "No registradas"}</p>
+                <p><strong>Observaciones:</strong> {pacienteSeleccionado.observaciones || "Sin observaciones"}</p>
+                <p><strong>Ciudad:</strong> {pacienteSeleccionado.ciudad}</p>
+                <p><strong>Centro:</strong> {pacienteSeleccionado.centro}</p>
 
-                {/* ----- MENSAJES DEL TUTOR ----- */}
+                {/* SECCIONES */}
+                <hr />
+                <h5 className="text-info fw-bold mt-3">Notas Clínicas</h5>
+                <p className="text-muted">Sin notas clínicas registradas.</p>
+
+                <hr />
+                <h5 className="text-info fw-bold mt-3">Controles Médicos</h5>
+                <p className="text-muted">Sin controles registrados.</p>
+
                 <hr />
                 <h5 className="text-info fw-bold mt-3">Mensajes del Tutor</h5>
-                <div className="mt-3">
-                  {pacienteSeleccionado.mensajesTutor?.length > 0 ? (
-                    <ul>
-                      {pacienteSeleccionado.mensajesTutor.map((m, i) => (
-                        <li key={i}>
-                          <strong>{m.fecha}:</strong> {m.asunto} — {m.cuerpo}
-                        </li>
-                      ))}
-                    </ul>
-                  ) : (
-                    <p className="text-muted">Sin mensajes del tutor.</p>
-                  )}
-                </div>
+                <p className="text-muted">Mensajes no conectados al backend aún.</p>
 
-                {/* ----- PROFESIONAL EXTERNO ----- */}
                 <hr />
-                <h5 className="text-info fw-bold mt-3">
-                  Información del Profesional Externo
-                </h5>
+                <h5 className="text-info fw-bold mt-3">Exámenes</h5>
+                <p className="text-muted">Sin exámenes registrados.</p>
 
-                {/* Notas */}
-                <div className="mt-3">
-                  <h6 className="fw-bold">Notas</h6>
-                  {pacienteSeleccionado.notasExterno?.length > 0 ? (
-                    <ul>
-                      {pacienteSeleccionado.notasExterno.map((n, i) => (
-                        <li key={i}>
-                          <strong>{n.fecha}:</strong> {n.contenido}
-                        </li>
-                      ))}
-                    </ul>
-                  ) : (
-                    <p className="text-muted">Sin notas registradas.</p>
-                  )}
-                </div>
+                <hr />
+                <h5 className="text-info fw-bold mt-3">Recetas</h5>
+                <p className="text-muted">Sin recetas registradas.</p>
 
-                {/* Exámenes */}
-                <div className="mt-3">
-                  <h6 className="fw-bold">Exámenes</h6>
-                  {pacienteSeleccionado.examenes?.length > 0 ? (
-                    <ul>
-                      {pacienteSeleccionado.examenes.map((x, i) => (
-                        <li key={i}>
-                          <strong>{x.fecha}:</strong> {x.contenido}
-                        </li>
-                      ))}
-                    </ul>
-                  ) : (
-                    <p className="text-muted">Sin exámenes registrados.</p>
-                  )}
-                </div>
-
-                {/* Recetas */}
-                <div className="mt-3">
-                  <h6 className="fw-bold">Recetas</h6>
-                  {pacienteSeleccionado.recetas?.length > 0 ? (
-                    <ul>
-                      {pacienteSeleccionado.recetas.map((r, i) => (
-                        <li key={i}>
-                          <strong>{r.fecha}:</strong> {r.contenido}
-                        </li>
-                      ))}
-                    </ul>
-                  ) : (
-                    <p className="text-muted">Sin recetas registradas.</p>
-                  )}
-                </div>
-
-                {/* Certificados */}
-                <div className="mt-3">
-                  <h6 className="fw-bold">Certificados</h6>
-                  {pacienteSeleccionado.certificados?.length > 0 ? (
-                    <ul>
-                      {pacienteSeleccionado.certificados.map((c, i) => (
-                        <li key={i}>
-                          <strong>{c.fecha}:</strong> {c.contenido}
-                        </li>
-                      ))}
-                    </ul>
-                  ) : (
-                    <p className="text-muted">Sin certificados registrados.</p>
-                  )}
-                </div>
+                <hr />
+                <h5 className="text-info fw-bold mt-3">Certificados</h5>
+                <p className="text-muted">Sin certificados registrados.</p>
               </div>
             </div>
           </div>

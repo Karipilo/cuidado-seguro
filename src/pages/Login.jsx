@@ -1,48 +1,74 @@
 /* Componente: Login.jsx
-   Formulario de inicio de sesión del sistema "Cuidado Seguro".
-   Valida credenciales por correo y contraseña desde localStorage
-   y redirige según el tipo de usuario.
+   Conectado al backend real (EC2).
+   Normaliza los valores de tipoUsuario del backend
+   para que coincidan con los dashboards del frontend.
 */
 
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import "../style/formulario.css";
+import { login } from "../services/authService";
 
 function Login() {
   const navigate = useNavigate();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
 
-    const usuarios = JSON.parse(localStorage.getItem("usuarios")) || [];
+    try {
+      // Llamar a backend /api/auth/login
+      const data = await login(email, password);
 
-    // Buscar solo por EMAIL + PASSWORD
-    const usuarioEncontrado = usuarios.find(
-      (u) => u.email === email && u.password === password
-    );
+      if (!data || !data.tipoUsuario) {
+        setError("Credenciales inválidas");
+        return;
+      }
 
-    if (!usuarioEncontrado) {
-      alert("Correo o contraseña incorrectos. Intenta nuevamente.");
-      return;
-    }
+      console.log("Respuesta backend:", data);
 
-    // Guardar sesión activa
-    localStorage.setItem("usuarioActivo", JSON.stringify(usuarioEncontrado));
+      
+      // NORMALIZAR tipoUsuario DEL BACKEND
+      
+      let tipo = data.tipoUsuario;
 
-    alert(`Bienvenido ${usuarioEncontrado.nombre}`);
+      if (tipo === "PROF_INTERNO") tipo = "Profesional Interno";
+      if (tipo === "PROF_EXTERNO") tipo = "Profesional Externo";
+      if (tipo === "TUTOR") tipo = "Tutor";
 
-    // Redirección según tipo de usuario
-    if (usuarioEncontrado.tipoUsuario === "Profesional Interno") {
-      navigate("/dashboard-prof");
-    } else if (usuarioEncontrado.tipoUsuario === "Tutor") {
-      navigate("/dashboard-tutor");
-    } else if (usuarioEncontrado.tipoUsuario === "Profesional Externo") {
-      navigate("/dashboard-prof-externo");
-    } else {
-      navigate("/home"); // fallback
+      data.tipoUsuario = tipo;
+
+      // Guardar sesión normalizada
+      localStorage.setItem("usuarioActivo", JSON.stringify(data));
+
+      alert(`Bienvenido ${data.nombre}`);
+
+      
+      // REDIRECCIÓN SEGÚN TIPO
+      
+      switch (data.tipoUsuario) {
+        case "Profesional Interno":
+          navigate("/dashboard-prof");
+          break;
+
+        case "Tutor":
+          navigate("/dashboard-tutor");
+          break;
+
+        case "Profesional Externo":
+          navigate("/dashboard-prof-externo");
+          break;
+
+        default:
+          alert("Tipo de usuario no reconocido");
+          navigate("/home");
+      }
+    } catch (err) {
+      console.error(err);
+      setError("Error: correo o contraseña incorrectos.");
     }
   };
 
@@ -54,8 +80,11 @@ function Login() {
       >
         <h3 className="text-center mb-3 text-primary">Iniciar Sesión</h3>
 
+        {error && (
+          <div className="alert alert-danger text-center">{error}</div>
+        )}
+
         <form onSubmit={handleLogin}>
-          {/* Email */}
           <div className="mb-3">
             <label className="form-label">Correo electrónico</label>
             <input
@@ -68,7 +97,6 @@ function Login() {
             />
           </div>
 
-          {/* Contraseña */}
           <div className="mb-3">
             <label className="form-label">Contraseña</label>
             <input
@@ -81,7 +109,6 @@ function Login() {
             />
           </div>
 
-          {/* Botón ingresar */}
           <div className="d-grid">
             <button type="submit" className="btn btn-primary">
               Ingresar

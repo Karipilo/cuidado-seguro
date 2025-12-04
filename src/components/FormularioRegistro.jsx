@@ -1,8 +1,13 @@
+/* FormularioRegistro.jsx
+   Conectado a backend real via /api/auth/registro
+*/
+
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import "../style/formulario.css";
 
 import { normalizarRut, validarRut, formatearRut } from "../utils/rutUtils";
+import { registerUser } from "../services/authService";
 
 const validarEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 const passwordRegex =
@@ -23,12 +28,10 @@ function FormularioRegistro() {
   const [codigoCentro, setCodigoCentro] = useState("");
   const [aceptaTerminos, setAceptaTerminos] = useState(false);
 
-  // ============================================================
-  // SUBMIT DEL FORMULARIO
-  // ============================================================
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
+    // VALIDACIONES
     if (!aceptaTerminos) {
       alert("Debes aceptar los Términos y Condiciones.");
       return;
@@ -51,12 +54,20 @@ function FormularioRegistro() {
       return;
     }
 
-    const nuevoUsuario = {
-      nombre,
-      email,
-      password,
-      tipoUsuario,
-    };
+    // OBJETO BASE PARA EL BACKEND
+   let tipoBackend = "";
+
+    if (tipoUsuario === "Tutor") tipoBackend = "TUTOR";
+    if (tipoUsuario === "Profesional Interno") tipoBackend = "PROF_INTERNO";
+    if (tipoUsuario === "Profesional Externo") tipoBackend = "PROF_EXTERNO";
+
+  const nuevoUsuario = {
+    nombre,
+    email,
+    password,
+    tipoUsuario: tipoBackend,
+  };
+
 
     // PROFESIONAL INTERNO
     if (tipoUsuario === "Profesional Interno") {
@@ -70,49 +81,35 @@ function FormularioRegistro() {
       nuevoUsuario.rnpi = rnpi;
     }
 
-    // ============================================================
-    // TUTOR — VALIDAR RUT DEL PACIENTE (CORREGIDO)
-    // ============================================================
+    // TUTOR (VALIDA RUT PACIENTE)
     if (tipoUsuario === "Tutor") {
-      // Validar usando el RUT tal cual lo ingresó el usuario
       if (!validarRut(idPaciente)) {
         alert("El RUT del paciente no es válido.");
         return;
       }
 
-      // Formatear RUT correctamente
       const rutFormateado = formatearRut(idPaciente);
 
       nuevoUsuario.idPaciente = rutFormateado;
       nuevoUsuario.codigoCentro = codigoCentro;
     }
 
-    // Guardar usuario
-    const usuarios = JSON.parse(localStorage.getItem("usuarios")) || [];
-    usuarios.push(nuevoUsuario);
-    localStorage.setItem("usuarios", JSON.stringify(usuarios));
+    try {
+      // LLAMADA REAL AL BACKEND
+      await registerUser(nuevoUsuario);
 
-    // Guardar sesión activa
-    localStorage.setItem("usuarioActivo", JSON.stringify(nuevoUsuario));
-
-    alert("Registro exitoso");
-
-    // Redirección
-    if (tipoUsuario === "Profesional Interno") {
-      navigate("/dashboard-prof");
-    } else if (tipoUsuario === "Profesional Externo") {
-      navigate("/dashboard-prof-externo");
-    } else if (tipoUsuario === "Tutor") {
-      navigate("/dashboard-tutor");
+      alert("Registro exitoso");
+      navigate("/login");
+    } catch (error) {
+      console.error("Error al registrar:", error);
+      alert("Error al registrar usuario en el servidor.");
     }
   };
 
-  // ============================================================
-  // RENDER DEL FORMULARIO
-  // ============================================================
   return (
     <div className="formulario card formulario">
       <h3>Registro</h3>
+
       <form onSubmit={handleSubmit}>
         <label>Nombre completo</label>
         <input

@@ -1,47 +1,28 @@
-// Descripción: Panel del tutor/familiar con pestañas para visualizar detalles del paciente y enviar mensajes.
+// DashboardTutorContent.jsx
+// Panel del Tutor conectado al backend REAL (GET /api/pacientes)
 
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { paciente } from "../data";
+import { getPacientes } from "../services/pacienteService";
 
 function DashboardTutorContent() {
   const navigate = useNavigate();
 
-  // ESTADOS PRINCIPALES
-
   const [usuario, setUsuario] = useState(null);
-  const [tab, setTab] = useState("detalle"); // "detalle" | "mensajes"
+  const [paciente, setPaciente] = useState(null);
+  const [tab, setTab] = useState("detalle");
   const [mensajes, setMensajes] = useState([]);
-  const [para, setPara] = useState("");
   const [asunto, setAsunto] = useState("");
   const [cuerpo, setCuerpo] = useState("");
 
-  // Paciente simulado
-  const paciente = {
-    nombre: "Juan Pérez Soto",
-    edad: 82,
-    diagnostico: "Parkinson",
-    centro: "ELEAM Alerces",
-    ciudad: "Viña del Mar",
-    medicamentos: ["Levodopa 100mg - cada 8 hrs", "Clonazepam 0.5mg - noche"],
-    controles: ["Presión: 130/85 mmHg", "Peso: 70 kg"],
-    observaciones: "Leves temblores controlados con medicación.",
-    imagen: "/images/luis.png",
-  };
-
-  //  EFECTO: CARGA DE USUARIO ACTIVO
-
+  
+  // CARGA DE USUARIO ACTIVO 
+  
   useEffect(() => {
     const activo = JSON.parse(localStorage.getItem("usuarioActivo"));
 
-    // Evita bloqueos en pruebas (Vitest)
-    if (process.env.NODE_ENV === "test") {
-      setUsuario(activo || { nombre: "TestUser", tipoUsuario: "Tutor" });
-      return;
-    }
-
     if (!activo) {
-      setUsuario({ nombre: "TestUser", tipoUsuario: "Tutor" });
+      navigate("/login");
       return;
     }
 
@@ -53,150 +34,67 @@ function DashboardTutorContent() {
     setUsuario(activo);
   }, [navigate]);
 
-  //  MANEJAR ENVÍO DE MENSAJE
+  
+  // CARGAR PACIENTE DESDE EL BACKEND POR RUT 
+  
+  useEffect(() => {
+    if (!usuario) return;
 
+    const cargarPaciente = async () => {
+      try {
+        const data = await getPacientes();
+
+        // Buscamos el paciente asignado al tutor
+        const encontrado = data.find((p) => p.rut === usuario.idPaciente);
+
+        if (!encontrado) {
+          console.warn("Paciente no encontrado para este tutor.");
+        }
+
+        setPaciente(encontrado);
+      } catch (error) {
+        console.error("Error al cargar pacientes:", error);
+      }
+    };
+
+    cargarPaciente();
+  }, [usuario]);
+
+  
+  // MANEJO DE MENSAJES (local por ahora)
+  
   const handleEnviarMensaje = (e) => {
     e.preventDefault();
 
-    if (!para || !asunto || !cuerpo) {
+    if (!asunto || !cuerpo) {
       alert("Todos los campos son obligatorios.");
       return;
     }
 
     const nuevoMensaje = {
-      para,
       asunto,
       cuerpo,
       fecha: new Date().toLocaleString(),
     };
 
-    setMensajes([...mensajes, nuevoMensaje]);
-    setPara("");
+    setMensajes((prev) => [...prev, nuevoMensaje]);
+
     setAsunto("");
     setCuerpo("");
   };
 
-  // RENDER DE CONTENIDO SEGÚN TAB
+  
+  // RENDER FINAL 
+  
+  if (!usuario) return <p className="text-center mt-5">Cargando usuario...</p>;
 
-  const renderContenido = () => {
-    // TAB: DETALLE PACIENTE
-
-    if (tab === "detalle") {
-      return (
-        <div>
-          <h5 className="fw-bold">{paciente.nombre}</h5>
-          <p className="text-muted mb-1">{paciente.centro}</p>
-          <p className="text-muted">Ubicación: {paciente.ciudad}</p>
-          <p>
-            <strong>Diagnóstico:</strong> {paciente.diagnostico}
-          </p>
-          <p>
-            <strong>Observaciones:</strong> {paciente.observaciones}
-          </p>
-
-          <h6 className="mt-3 fw-semibold text-primary">Medicamentos</h6>
-          <ul>
-            {paciente.medicamentos.map((m, i) => (
-              <li key={i}>{m}</li>
-            ))}
-          </ul>
-
-          <h6 className="mt-3 fw-semibold text-primary">Controles recientes</h6>
-          <ul>
-            {paciente.controles.map((c, i) => (
-              <li key={i}>{c}</li>
-            ))}
-          </ul>
-        </div>
-      );
-    }
-
-    // TAB: MENSAJES
-
-    if (tab === "mensajes") {
-      return (
-        <div>
-          <h5 className="fw-bold mb-3 text-primary">📩 Enviar mensaje</h5>
-
-          <form onSubmit={handleEnviarMensaje}>
-            <div className="mb-3">
-              <label htmlFor="para" className="form-label">
-                Para
-              </label>
-              <select
-                id="para"
-                className="form-select"
-                value={para}
-                onChange={(e) => setPara(e.target.value)}
-              >
-                <option value="">Selecciona destinatario</option>
-                <option value="Administrativo">Administrativo</option>
-                <option value="Profesional de Salud a cargo">
-                  Profesional de Salud a cargo
-                </option>
-              </select>
-            </div>
-
-            <div className="mb-3">
-              <label htmlFor="asunto" className="form-label">
-                Asunto
-              </label>
-              <input
-                id="asunto"
-                type="text"
-                className="form-control"
-                value={asunto}
-                onChange={(e) => setAsunto(e.target.value)}
-                placeholder="Ej: Solicitud de información"
-              />
-            </div>
-
-            <div className="mb-3">
-              <label htmlFor="mensaje" className="form-label">
-                Mensaje
-              </label>
-              <textarea
-                id="mensaje"
-                className="form-control"
-                rows="3"
-                value={cuerpo}
-                onChange={(e) => setCuerpo(e.target.value)}
-                placeholder="Escribe tu mensaje aquí..."
-              />
-            </div>
-
-            <button type="submit" className="btn btn-primary">
-              Enviar
-            </button>
-          </form>
-
-          <hr />
-
-          <h6 className="fw-bold text-primary">📬 Bandeja de mensajes</h6>
-
-          {mensajes.length === 0 ? (
-            <p className="text-muted">No hay mensajes aún.</p>
-          ) : (
-            <ul className="list-group">
-              {mensajes.map((m, i) => (
-                <li key={i} className="list-group-item">
-                  <strong>{m.asunto}</strong> <br />
-                  <span>{m.cuerpo}</span>
-                  <p className="small text-muted mb-0">
-                    Para: {m.para} — {m.fecha}
-                  </p>
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
-      );
-    }
-  };
-
-  // RENDER PRINCIPAL
-
-  if (!usuario) return <p className="text-center mt-5">Cargando...</p>;
+  if (!paciente)
+    return (
+      <div className="container mt-5 text-center">
+        <h4>No se encontró un paciente asignado a este tutor.</h4>
+        <p>Verifica el RUT asignado en el registro.</p>
+      </div>
+    );
 
   return (
     <div className="container py-4">
@@ -214,6 +112,7 @@ function DashboardTutorContent() {
             Detalle del Paciente
           </button>
         </li>
+
         <li className="nav-item">
           <button
             className={`nav-link ${tab === "mensajes" ? "active" : ""}`}
@@ -224,8 +123,84 @@ function DashboardTutorContent() {
         </li>
       </ul>
 
-      {/* Contenido dinámico */}
-      <div className="card shadow-sm p-4">{renderContenido()}</div>
+      <div className="card shadow-sm p-4">
+        {tab === "detalle" && (
+          <div>
+            <h5 className="fw-bold">{paciente.nombreCompleto}</h5>
+            <p className="text-muted mb-1">{paciente.centro}</p>
+            <p className="text-muted">Ubicación: {paciente.ciudad}</p>
+
+            <p>
+              <strong>Diagnóstico:</strong> {paciente.diagnostico || "Sin registro"}
+            </p>
+
+            <p>
+              <strong>Alergias:</strong> {paciente.alergias || "No registradas"}
+            </p>
+
+            <p>
+              <strong>Observaciones:</strong>{" "}
+              {paciente.observaciones || "Sin observaciones"}
+            </p>
+
+            <p>
+              <strong>Edad:</strong> {paciente.edad || "-"}
+            </p>
+          </div>
+        )}
+
+        {tab === "mensajes" && (
+          <div>
+            <h5 className="fw-bold mb-3 text-primary">📩 Enviar mensaje</h5>
+
+            <form onSubmit={handleEnviarMensaje}>
+              <div className="mb-3">
+                <label className="form-label">Asunto</label>
+                <input
+                  type="text"
+                  className="form-control"
+                  value={asunto}
+                  onChange={(e) => setAsunto(e.target.value)}
+                  placeholder="Ej: Consulta sobre medicación"
+                />
+              </div>
+
+              <div className="mb-3">
+                <label className="form-label">Mensaje</label>
+                <textarea
+                  className="form-control"
+                  rows="3"
+                  value={cuerpo}
+                  onChange={(e) => setCuerpo(e.target.value)}
+                  placeholder="Escribe tu mensaje..."
+                />
+              </div>
+
+              <button type="submit" className="btn btn-primary">
+                Enviar
+              </button>
+            </form>
+
+            <hr />
+
+            <h6 className="fw-bold text-primary">📬 Bandeja de mensajes</h6>
+
+            {mensajes.length === 0 ? (
+              <p className="text-muted">No hay mensajes aún.</p>
+            ) : (
+              <ul className="list-group">
+                {mensajes.map((m, i) => (
+                  <li key={i} className="list-group-item">
+                    <strong>{m.asunto}</strong> <br />
+                    <span>{m.cuerpo}</span>
+                    <p className="small text-muted mb-0">{m.fecha}</p>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        )}
+      </div>
     </div>
   );
 }

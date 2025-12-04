@@ -1,4 +1,4 @@
-// DashboardTutor.jsx — Versión corregida para buscar paciente por RUT
+// DashboardTutor.jsx — Versión corregida sin pacientes locales
 
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -14,9 +14,9 @@ function DashboardTutor() {
   const [asunto, setAsunto] = useState("");
   const [cuerpo, setCuerpo] = useState("");
 
-  // =====================================================
+  
   // Cargar datos del usuario y paciente asignado
-  // =====================================================
+  
   useEffect(() => {
     const activo = JSON.parse(localStorage.getItem("usuarioActivo"));
 
@@ -27,28 +27,29 @@ function DashboardTutor() {
 
     setUsuario(activo);
 
-    const almacenados = JSON.parse(localStorage.getItem("pacientes")) || [];
-
-    let pac = null;
-
-    // =====================================================
-    // ✔ Buscar paciente por coincidencia de RUT normalizado
-    // =====================================================
+    //  YA NO SE CARGA DESDE LOCALSTORAGE NI DESDE pacientes.js
+    // Solo se prepara un "placeholder" hasta conectar backend
     if (activo.idPaciente) {
-      pac = almacenados.find(
-        (p) => normalizarRut(p.rut) === normalizarRut(activo.idPaciente)
-      );
-    }
-
-    if (pac) {
-      setPacienteSeleccionado(pac);
-      setMensajes(pac.mensajesTutor || []);
+      setPacienteSeleccionado({
+        nombre: "Paciente asignado",
+        rut: activo.idPaciente,
+        edad: "—",
+        diagnostico: "—",
+        alergias: "—",
+        observaciones: "—",
+        foto: "/images/default-user.png",
+        medicamentos: [],
+        notas: [],
+        controles: [],
+        mensajesTutor: [],
+        evoluciones: [],
+      });
     }
   }, [navigate]);
 
-  // =====================================================
-  // Enviar mensaje
-  // =====================================================
+  
+  // Enviar mensaje (por ahora guardado solo localmente)
+  
   const handleEnviarMensaje = () => {
     if (!asunto.trim() || !cuerpo.trim()) return;
 
@@ -61,24 +62,14 @@ function DashboardTutor() {
     const nuevosMensajes = [...mensajes, nuevoMensaje];
     setMensajes(nuevosMensajes);
 
-    // Guardar también en localStorage
-    const pacientesLS = JSON.parse(localStorage.getItem("pacientes"));
-
-    const actualizados = pacientesLS.map((p) =>
-      p.id === pacienteSeleccionado.id
-        ? { ...p, mensajesTutor: nuevosMensajes }
-        : p
-    );
-
-    localStorage.setItem("pacientes", JSON.stringify(actualizados));
-
+    // Cuando conectemos backend: aquí irá el POST real
     setAsunto("");
     setCuerpo("");
   };
 
-  // =====================================================
+  
   // Si no existe paciente asignado
-  // =====================================================
+  
   if (!usuario || !pacienteSeleccionado) {
     return (
       <div className="container py-4">
@@ -156,7 +147,7 @@ function DashboardTutor() {
         {/* COLUMNA DERECHA — Información del paciente */}
         <div className="col-lg-8">
           <div className="dashboard-card">
-            {/* ENCABEZADO PACIENTE (✔ VERSION ORDENADA) */}
+            {/* ENCABEZADO PACIENTE */}
             <div className="row g-4 align-items-center">
               <div className="col-md-4 text-center">
                 <img
@@ -175,11 +166,10 @@ function DashboardTutor() {
                   <strong>RUT:</strong> {pacienteSeleccionado.rut}
                 </p>
                 <p>
-                  <strong>Edad:</strong> {pacienteSeleccionado.edad} años
+                  <strong>Edad:</strong> {pacienteSeleccionado.edad}
                 </p>
                 <p>
-                  <strong>Diagnóstico:</strong>{" "}
-                  {pacienteSeleccionado.diagnostico}
+                  <strong>Diagnóstico:</strong> {pacienteSeleccionado.diagnostico}
                 </p>
                 <p>
                   <strong>Alergias:</strong> {pacienteSeleccionado.alergias}
@@ -193,22 +183,13 @@ function DashboardTutor() {
 
             <hr />
 
-            {/* SECCIONES DEL PACIENTE */}
+            {/* SECCIONES */}
             {[
-              {
-                titulo: "Medicamentos",
-                lista: pacienteSeleccionado.medicamentos,
-              },
+              { titulo: "Medicamentos", lista: pacienteSeleccionado.medicamentos },
               { titulo: "Controles", lista: pacienteSeleccionado.controles },
               { titulo: "Notas Clínicas", lista: pacienteSeleccionado.notas },
-              {
-                titulo: "Mensajes del Tutor",
-                lista: pacienteSeleccionado.mensajesTutor,
-              },
-              {
-                titulo: "Evoluciones",
-                lista: pacienteSeleccionado.evoluciones,
-              },
+              { titulo: "Mensajes del Tutor", lista: mensajes },
+              { titulo: "Evoluciones", lista: pacienteSeleccionado.evoluciones },
             ].map((item, idx) => (
               <div key={idx} className="section-box">
                 <h5 className="fw-bold text-primary">{item.titulo}</h5>
